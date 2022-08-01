@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { createContactSchema } from "../../schema/contact.schema";
+import { createContactSchema, deleteContactSchema } from "../../schema/contact.schema";
 import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -22,4 +22,27 @@ export const contactRouter = createProtectedRouter()
         },
       });
     },
+  })
+  .mutation("delete", {
+    input: deleteContactSchema,
+    resolve({ ctx, input }) {
+      console.log(input);
+      return ctx.prisma.contact.deleteMany({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        },
+      });
+    }
+  })
+  .query("getAll", {
+    async resolve({ ctx }) {
+      return ctx.prisma.contact.findMany({
+        where: {
+          user: {
+            id: ctx.session.user.id
+          }
+        }
+      });
+    }
   })

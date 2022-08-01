@@ -7,3 +7,7 @@ export const createContactSchema = z.object({
 })
 
 export type CreateContactSchemaInput = z.TypeOf<typeof createContactSchema>
+
+export const deleteContactSchema = z.object({
+  id: z.string().cuid()
+});

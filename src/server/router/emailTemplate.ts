@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { createEmailTemplateSchema } from "../../schema/emailTemplate.schema";
+import { createEmailTemplateSchema, deleteEmailTemplateSchema } from "../../schema/emailTemplate.schema";
 import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -36,3 +36,25 @@ export const emailTemplateRouter = createProtectedRouter()
       });
     },
   })
+  .mutation("delete", {
+    input: deleteEmailTemplateSchema,
+    resolve({ ctx, input }) {
+      return ctx.prisma.emailTemplate.deleteMany({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        },
+      });
+    }
+  })
+  .query("getAll", {
+    resolve({ ctx }) {
+      return ctx.prisma.emailTemplate.findMany({
+        where: {
+          user: {
+            id: ctx.session.user.id
+          }
+        }
+      });
+    }
+  });

@@ -6,3 +6,7 @@ export const createEmailTemplateSchema = z.object({
 })
 
 export type CreateEmailTemplateInput = z.TypeOf<typeof createEmailTemplateSchema>
+
+export const deleteEmailTemplateSchema = z.object({
+  id: z.string().cuid(),
+})

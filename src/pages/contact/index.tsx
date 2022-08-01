@@ -5,6 +5,8 @@ import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { NextPage } from "next";
 import { CreateContactSchemaInput } from "../../schema/contact.schema";
+import CreateContact from "../../components/contact/ContactCreate";
+import ContactList from "../../components/contact/ContactList";
 
 const CreateContactPage: NextPage = () => {
 
@@ -24,14 +26,11 @@ const CreateContactPage: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {error && <p>{error.message}</p>}
-          <input className="border" type="email" placeholder="email" {...register("email")}></input>
-          <br />
-          <input className="border" placeholder="nickName" {...register("nickName")}></input>
-          <br />
-          <button className="border" type="submit">Submit</button>
-        </form>
+        <CreateContact />
+
+        <br />
+
+        <ContactList />
 
       </main>
     </>
