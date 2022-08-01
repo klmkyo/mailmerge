@@ -9,8 +9,8 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
   // if emailId somehow is an array, select first element
   const emailIdStr = Array.isArray(emailId) ? emailId[0] : emailId;
 
-  const { headers, cookies } = req;
-  const requestData = {headers, cookies};
+  const { headers, cookies, query,  } = req;
+  const requestData = {headers, cookies, query};
 
   saveVisit({ emailId: emailIdStr!, requestData });
 
