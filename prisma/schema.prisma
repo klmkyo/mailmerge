@@ -18,7 +18,7 @@ model Example {
 model Contact {
   id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
+  userId String
 
   email     String
   nickName  String?
@@ -31,7 +31,7 @@ model Contact {
 model Email {
   id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
+  userId String
 
   subject String
   body    String
@@ -61,7 +61,7 @@ model EmailVisit {
 model EmailTemplate {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  userId    String
   subject   String
   body      String
   createdAt DateTime @default(now())
