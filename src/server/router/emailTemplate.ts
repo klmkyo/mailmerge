@@ -23,7 +23,7 @@ export const emailTemplateRouter = createProtectedRouter()
       };
 
       // TODO user relation, cause for some reason vscode is not complaining
-      return ctx.prisma.emailTemplate.create({
+      return await ctx.prisma.emailTemplate.create({
         data: {
           subject,
           body,
@@ -38,8 +38,8 @@ export const emailTemplateRouter = createProtectedRouter()
   })
   .mutation("delete", {
     input: deleteEmailTemplateSchema,
-    resolve({ ctx, input }) {
-      return ctx.prisma.emailTemplate.deleteMany({
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.emailTemplate.deleteMany({
         where: {
           id: input.id,
           user: { id: ctx.session.user.id },

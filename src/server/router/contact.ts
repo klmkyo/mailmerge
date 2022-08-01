@@ -25,9 +25,8 @@ export const contactRouter = createProtectedRouter()
   })
   .mutation("delete", {
     input: deleteContactSchema,
-    resolve({ ctx, input }) {
-      console.log(input);
-      return ctx.prisma.contact.deleteMany({
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.contact.deleteMany({
         where: {
           id: input.id,
           user: { id: ctx.session.user.id },
@@ -37,7 +36,7 @@ export const contactRouter = createProtectedRouter()
   })
   .query("getAll", {
     async resolve({ ctx }) {
-      return ctx.prisma.contact.findMany({
+      return await ctx.prisma.contact.findMany({
         where: {
           user: {
             id: ctx.session.user.id

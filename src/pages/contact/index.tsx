@@ -10,14 +10,6 @@ import ContactList from "../../components/contact/ContactList";
 
 const CreateContactPage: NextPage = () => {
 
-  const { handleSubmit, register, control } = useForm<CreateContactSchemaInput>();
-
-  const { mutate, error } = trpc.useMutation(["contact.create"])
-
-  const onSubmit = (data: CreateContactSchemaInput) => {
-    mutate(data)
-  }
-
   return (
     <>
       <Head>

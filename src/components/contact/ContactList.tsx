@@ -31,9 +31,14 @@ const ContactList: FC = () => {
 
 const Contact = ({ contact }: { contact: Contact }) => {
 
+  const utils = trpc.useContext();
+
   const { mutate, error } = trpc.useMutation(['contact.delete'], {
     onError: (error) => {
       alert(error)
+    },
+    onSuccess: (data) => {
+      utils.invalidateQueries('contact.getAll')
     }
   })
 
