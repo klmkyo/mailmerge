@@ -35,6 +35,8 @@ model Email {
 
   subject String
   body    String
+  // eg. dropbox, gdrive...
+  tags    String[]
 
   contactId String
   contact   Contact @relation(fields: [contactId], references: [id])
@@ -59,11 +61,14 @@ model EmailVisit {
 
 // email template model
 model EmailTemplate {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  subject   String
-  body      String
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  subject String
+  body    String
+  tags    String[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
