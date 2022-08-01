@@ -16,10 +16,11 @@ model Example {
 
 // Contact in an address book
 model Contact {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  firstName String?
-  lastName  String?
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  email     String
   nickName  String?
   tags      String[]
   createdAt DateTime @default(now())
@@ -28,7 +29,10 @@ model Contact {
 }
 
 model Email {
-  id      String @id @default(cuid())
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
   subject String
   body    String
 
@@ -44,9 +48,9 @@ model Email {
 }
 
 model EmailVisit {
-  id          String  @id @default(cuid())
+  id          String @id @default(cuid())
   emailId     String
-  email       Email   @relation(fields: [emailId], references: [id])
+  email       Email  @relation(fields: [emailId], references: [id])
   requestData Json?
 
   createdAt DateTime @default(now())
@@ -56,6 +60,8 @@ model EmailVisit {
 // email template model
 model EmailTemplate {
   id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
   subject   String
   body      String
   createdAt DateTime @default(now())
@@ -97,6 +103,10 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  Email         Email[]
+  EmailTemplate EmailTemplate[]
+  Contact       Contact[]
 }
 
 model VerificationToken {
