@@ -11,12 +11,12 @@ datasource db {
 }
 
 model Example {
-  id String @id @default(uuid())
+  id String @id @default(cuid())
 }
 
 // Contact in an address book
 model Contact {
-  id     String @id @default(uuid())
+  id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
@@ -29,7 +29,7 @@ model Contact {
 }
 
 model Email {
-  id     String @id @default(uuid())
+  id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
@@ -48,7 +48,7 @@ model Email {
 }
 
 model EmailVisit {
-  id          String @id @default(uuid())
+  id          String @id @default(cuid())
   emailId     String
   email       Email  @relation(fields: [emailId], references: [id])
   requestData Json?
@@ -59,7 +59,7 @@ model EmailVisit {
 
 // email template model
 model EmailTemplate {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String
   subject   String
@@ -70,7 +70,7 @@ model EmailTemplate {
 
 // Necessary for Next auth
 model Account {
-  id                String  @id @default(uuid())
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -88,7 +88,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
@@ -96,7 +96,7 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
