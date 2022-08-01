@@ -6,12 +6,11 @@ export default function EmailCreate() {
 
   const { handleSubmit, register, control } = useForm<>();
 
-  const { mutate, error } = trpc.useMutation(["contact.create"])
+  const { mutate, error } = trpc.useMutation(["email.create"])
 
   // contacts array
-
-
   // email template array
+  // on client construct the email and send them to the server
 
   const onSubmit = (data: ) => {
     mutate(data)
