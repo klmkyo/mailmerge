@@ -7,7 +7,6 @@ import { NextPage } from "next";
 import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 
 const CreateEmailTemplatePage: NextPage = () => {
-  const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
 
   const { handleSubmit, register } = useForm<CreateEmailTemplateInput>();
 
