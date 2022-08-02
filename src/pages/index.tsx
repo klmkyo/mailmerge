@@ -1,11 +1,11 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
 type TechnologyCardProps = {
   name: string;
-  description: string;
-  documentation: string;
+  link: string;
 };
 
 const Home: NextPage = () => {
@@ -26,24 +26,20 @@ const Home: NextPage = () => {
         <p className="text-2xl text-gray-700">This stack uses:</p>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
           <TechnologyCard
-            name="NextJS"
-            description="The React framework for production"
-            documentation="https://nextjs.org/"
+            name="Contacts"
+            link="/contact"
           />
           <TechnologyCard
-            name="TypeScript"
-            description="Strongly typed programming language that builds on JavaScript, giving you better tooling at any scale"
-            documentation="https://www.typescriptlang.org/"
+            name="Email Templates"
+            link="/emailTemplate"
           />
           <TechnologyCard
-            name="TailwindCSS"
-            description="Rapidly build modern websites without ever leaving your HTML"
-            documentation="https://tailwindcss.com/"
+            name="Emails"
+            link="/email"
           />
           <TechnologyCard
-            name="tRPC"
-            description="End-to-end typesafe APIs made easy"
-            documentation="https://trpc.io/"
+            name="uhh idk"
+            link="https://trpc.io/"
           />
         </div>
         <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
@@ -56,22 +52,20 @@ const Home: NextPage = () => {
 
 const TechnologyCard = ({
   name,
-  description,
-  documentation,
+  link
 }: TechnologyCardProps) => {
   return (
-    <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
-      <h2 className="text-lg text-gray-700">{name}</h2>
-      <p className="text-sm text-gray-600">{description}</p>
-      <a
-        className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
-        href={documentation}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Documentation
-      </a>
-    </section>
+    <Link
+      className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
+      href={link}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
+        <h2 className="text-lg text-gray-700">{name}</h2>
+        {"->"}
+      </section>
+    </Link>
   );
 };
 

@@ -14,7 +14,6 @@ const CreateContact: FC = () => {
 
   const { mutate, error } = trpc.useMutation(["contact.create"], {
     onSuccess: (data) => {
-      console.log('mutated')
       utils.invalidateQueries('contact.getAll')
     }
   })
