@@ -38,7 +38,7 @@ const Home: NextPage = () => {
             link="/email"
           />
           <TechnologyCard
-            name="uhh idk"
+            name="Otworzenia Maili"
             link="https://trpc.io/"
           />
         </div>

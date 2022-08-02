@@ -53,6 +53,7 @@ export function EmailCreateUnwrapped() {
           const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
           const emails = generateEmails(selectedContacts, selectedEmailTemplates);
           console.log({ emails });
+          mutate(emails);
         }}>
           Save Drafts
         </button>
