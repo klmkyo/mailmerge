@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { NextPage } from "next";
 import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import EmailTemplateCreate from "../../components/emailTemplate/EmailTemplateCreate";
+import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
 
 const CreateEmailTemplatePage: NextPage = () => {
 
@@ -17,6 +18,8 @@ const CreateEmailTemplatePage: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
         <EmailTemplateCreate />
+        <br />
+        <EmailTemplateList />
       </main>
     </>
   );

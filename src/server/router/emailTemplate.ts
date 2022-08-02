@@ -54,7 +54,7 @@ export const emailTemplateRouter = createProtectedRouter()
           user: {
             id: ctx.session.user.id
           }
-        }
+        },
       });
     }
   });
