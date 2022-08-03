@@ -75,8 +75,8 @@ export const settingsRouter = createProtectedRouter()
     input: z.object({ email: z.string().email() }),
     async resolve({ ctx, input }) {
       const { user } = ctx.session;
-      return ctx.prisma.user.update({
-        where: { id: user.id },
+      return ctx.prisma.gmailSettings.update({
+        where: { userId: user.id },
         data: { email: input.email }
       });
     }

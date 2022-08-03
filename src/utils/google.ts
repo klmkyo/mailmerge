@@ -4,7 +4,7 @@ import { getBaseUrl } from "../pages/_app";
 export const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  `${getBaseUrl()}/api/emailAuth`
+  `${getBaseUrl()}/settings`
 );
 
 const scopes = [
