@@ -58,6 +58,7 @@ const Email = ({ email }: {email: Email & {
       <div>Treść: {email.body}</div>
       <div>Tagi: {email.tags}</div>
       <div>Będzie wysłane: {email.toBeSentAt ? dateString : "Nie zaplanowane"}</div>
+      <div>ID: {email.id}</div>
       <button onClick={onDelete}>Delete</button>
     </div>
   )

@@ -17,15 +17,19 @@ const EmailVisitPage: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        {
-          emailVisits?.map(emailVisit => {
-            return (
-              <div key={emailVisit.id}>
-                {JSON.stringify(emailVisit)}
-              </div>
-            )
-          })
-        }
+        <div className="flex flex-col gap-4">
+          {
+            emailVisits?.map(emailVisit => {
+              const email = emailVisit.email;
+              const contact = email.contact;
+              return (
+                <div key={emailVisit.id}>
+                  <div>{contact.email}{contact.nickName && ` (${contact.nickName})`} otworzył {`"${email.subject}" (${email.id})`} | {emailVisit.visitedAt.toLocaleString()}</div>
+                </div>
+              )
+            })
+          }
+        </div>
       </main>
     </>
   );

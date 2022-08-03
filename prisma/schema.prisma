@@ -68,8 +68,7 @@ model EmailVisit {
   email       Email  @relation(fields: [emailId], references: [id])
   requestData Json?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  visitedAt DateTime @default(now())
 }
 
 // email template model

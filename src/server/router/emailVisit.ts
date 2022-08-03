@@ -13,7 +13,11 @@ export const emailVisitRouter = createProtectedRouter()
           }
         },
         include: {
-          email: true
+          email: {
+            include: {
+              contact: true
+            }
+          }
         }
       });
     }
@@ -29,7 +33,11 @@ export const emailVisitRouter = createProtectedRouter()
           }
         },
         include: {
-          email: true
+          email: {
+            include: {
+              contact: true
+            }
+          }
         }
       });
     }
