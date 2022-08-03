@@ -5,6 +5,8 @@ import { generateEmails } from "../../utils/emails";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
 import { ContactContext, ContactContextProvider, EmailTemplateContext, EmailTemplateProvider } from "./contexts";
+import { Button } from "@mui/material";
+
 
 export function EmailCreateUnwrapped() {
 
@@ -54,8 +56,10 @@ export function EmailCreateUnwrapped() {
       <br />
 
       <div className="fixed bottom-0 m-2 mr-8 flex gap-4 justify-end w-full">
-        {isDev && <button onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</button>}
-        <button onClick={() => {
+        {isDev && <Button variant="contained" onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</Button>}
+        <Button 
+          variant="contained"
+          onClick={() => {
           const selectedContacts = contacts.filter(contact => contact.selected);
           const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
           const emails = generateEmails(selectedContacts, selectedEmailTemplates);
@@ -63,7 +67,7 @@ export function EmailCreateUnwrapped() {
           mutate(emails);
         }}>
           Przygotuj Maile
-        </button>
+        </Button>
       </div>
     </>
   )

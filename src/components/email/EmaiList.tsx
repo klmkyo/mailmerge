@@ -3,6 +3,7 @@ import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FC } from "react";
 import { Email, Contact } from "@prisma/client";
+import { Box, Grid } from "@mui/material";
 
 const EmailList: FC = () => {
 
@@ -17,19 +18,23 @@ const EmailList: FC = () => {
   }
 
   return (
-    <div className="flex w-full justify-center h-52">
+    <Box sx={{width: "100%", height: "100%"}}>
+    <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
       {data?.map((email) => {
         return (
           <Email key={email.id} email={email} />
         )
       })}
-    </div>
+    </Grid>
+    </Box>
   );
 };
 
-const Email = ({ email }: {email: Email & {
-  contact: Contact;
-}}) => {
+const Email = ({ email }: {
+  email: Email & {
+    contact: Contact;
+  }
+}) => {
 
   const utils = trpc.useContext();
 
@@ -52,7 +57,7 @@ const Email = ({ email }: {email: Email & {
   const dateString = `${email.toBeSentAt?.toLocaleTimeString()}${(toBeSentToday ? '' : ` ${email.toBeSentAt?.toLocaleDateString()}`)}`;
 
   return (
-    <div className="flex-row items-center p-2">
+    <div className="flex-row items-center m-2 p-2 border" style={{width: "50em", height: "40em"}}>
       <div>Odbiorca: {email.contact.email}</div>
       <div>Tytuł: {email.subject}</div>
       <div>Treść: {email.body}</div>
