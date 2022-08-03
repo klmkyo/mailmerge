@@ -15,14 +15,14 @@ export const emailVisitRouter = createProtectedRouter()
       });
     }
   })
-  .query("get", {
-    input: z.object({ id: z.string().cuid() }),
+  .query("get-by-email-id", {
+    input: z.object({ emailId: z.string().cuid() }),
     resolve({ ctx, input }) {
       return ctx.prisma.emailVisit.findFirst({
         where: {
-          id: input.id,
           email: {
-            userId: ctx.session.user.id
+            userId: ctx.session.user.id,
+            id: input.emailId
           }
         }
       });
