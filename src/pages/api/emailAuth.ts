@@ -10,7 +10,7 @@ const emailAuth = async (req: NextApiRequest, res: NextApiResponse) => {
   const code = req.query.code as string;
 
   const { tokens } = await oauth2Client.getToken(code);
-  const { refresh_roken } = tokens;
+  const { refresh_token } = tokens;
 
   res.status(200).json({ message: "success" });
 };
