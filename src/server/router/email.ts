@@ -38,6 +38,9 @@ export const emailRouter = createProtectedRouter()
           user: {
             id: ctx.session.user.id
           }
+        },
+        include: {
+          contact: true
         }
       });
     }

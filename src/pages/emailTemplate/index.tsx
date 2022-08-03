@@ -8,7 +8,7 @@ import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import EmailTemplateCreate from "../../components/emailTemplate/EmailTemplateCreate";
 import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
 
-const CreateEmailTemplatePage: NextPage = () => {
+const EmailTemplateIndexPage: NextPage = () => {
 
   return (
     <>
@@ -25,4 +25,4 @@ const CreateEmailTemplatePage: NextPage = () => {
   );
 };
 
-export default CreateEmailTemplatePage;
+export default EmailTemplateIndexPage;
