@@ -3,7 +3,9 @@ import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FC } from "react";
 import { Email, Contact } from "@prisma/client";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, ButtonGroup, Grid } from "@mui/material";
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewListIcon from '@mui/icons-material/ViewList';
 
 const EmailList: FC = () => {
 
@@ -18,15 +20,34 @@ const EmailList: FC = () => {
   }
 
   return (
-    <Box sx={{ width: "100%", height: "100%" }}>
-      <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
-        {data?.map((email) => {
-          return (
-            <Email key={email.id} email={email} />
-          )
-        })}
-      </Grid>
-    </Box>
+    <>
+      <Box sx={{ width: "100%", display: "block", float: "right", marginBottom: "3em" }}>
+        {/* grid/list view switcher */}
+        <ButtonGroup sx={{float: "right"}}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ViewModuleIcon />}
+            onClick={() => { }}
+          />
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ViewListIcon />}
+            onClick={() => { }}
+          />
+        </ButtonGroup>
+      </Box>
+      <Box sx={{ width: "100%" }}>
+        <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+          {data?.map((email) => {
+            return (
+              <Email key={email.id} email={email} />
+            )
+          })}
+        </Grid>
+      </Box>
+    </>
   );
 };
 

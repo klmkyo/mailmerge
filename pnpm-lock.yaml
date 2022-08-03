@@ -4,6 +4,7 @@ specifiers:
   '@babel/core': '>=7.0.0 <8.0.0'
   '@emotion/react': ^11.10.0
   '@emotion/styled': ^11.10.0
+  '@mui/icons-material': ^5.8.4
   '@mui/material': ^5.9.2
   '@next-auth/prisma-adapter': ^1.0.4
   '@prisma/client': ^4.1.1
@@ -37,6 +38,7 @@ dependencies:
   '@babel/core': 7.18.9
   '@emotion/react': 11.10.0_svw63b2ljugaa2k554eh3tftza
   '@emotion/styled': 11.10.0_u46bji6jj33pkb7a2zadvpsy6a
+  '@mui/icons-material': 5.8.4_rvu5yf2t7tykbapre2q2bljukq
   '@mui/material': 5.9.2_4fwm5idrbc56q2ajnw56srdcdq
   '@next-auth/prisma-adapter': 1.0.4_vxrius2lgeegy7nuny6hi2q35y
   '@prisma/client': 4.1.1_prisma@4.1.1
@@ -504,6 +506,23 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
+    dev: false
+
+  /@mui/icons-material/5.8.4_rvu5yf2t7tykbapre2q2bljukq:
+    resolution: {integrity: sha512-9Z/vyj2szvEhGWDvb+gG875bOGm8b8rlHBKOD1+nA3PcgC3fV6W1AU6pfOorPeBfH2X4mb9Boe97vHvaSndQvA==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@mui/material': ^5.0.0
+      '@types/react': ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      '@mui/material': 5.9.2_4fwm5idrbc56q2ajnw56srdcdq
+      '@types/react': 18.0.14
+      react: 18.2.0
     dev: false
 
   /@mui/material/5.9.2_4fwm5idrbc56q2ajnw56srdcdq:
