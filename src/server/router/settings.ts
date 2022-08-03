@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createProtectedRouter } from "./protected-router";
 import { emailOAuthUrl } from "../../utils/google";
-import { upsertGmailSettings } from "../../schema/settings";
+import { upsertGmailSettings } from "../../schema/settings.schema";
 
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -15,17 +15,17 @@ export const settingsRouter = createProtectedRouter()
   })
   .mutation("upsert-gmail-auth", {
     input: upsertGmailSettings,
-    async resolve({ctx, input}){
+    async resolve({ ctx, input }) {
 
-      const {user} = ctx.session;
+      const { user } = ctx.session;
 
       return ctx.prisma.gmailSettings.upsert({
         where: {
           userId: user?.id
         },
         update: {
-          refreshToken: input?.refreshToken || undefined,
-          email: input?.email || undefined
+          refreshToken: input.refreshToken,
+          email: input.email
         },
         create: {
           email: input?.email || user.email!,
