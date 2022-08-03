@@ -15,6 +15,10 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // go to / on log out
+      return baseUrl
+    }
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
