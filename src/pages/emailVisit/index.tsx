@@ -31,7 +31,7 @@ const EmailVisitPage: NextPage = () => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="center" colSpan={2}>
+                <TableCell align="center" colSpan={3}>
                   Kontakt
                 </TableCell>
                 <TableCell align="center" colSpan={4}>
@@ -41,10 +41,11 @@ const EmailVisitPage: NextPage = () => {
               <TableRow>
                 <TableCell>Email</TableCell>
                 <TableCell align="right">Nazwa</TableCell>
+                <TableCell align="right">Wyświetl Dane</TableCell>
                 <TableCell align="right">Tytuł</TableCell>
                 <TableCell align="right">ID </TableCell>
                 <TableCell align="right">Data Otworzenia</TableCell>
-                <TableCell align="right">Wyświetl</TableCell>
+                <TableCell align="right">Wyświetl Maila</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -61,6 +62,11 @@ const EmailVisitPage: NextPage = () => {
                     {contact.email}
                   </TableCell>
                   <TableCell align="right">{contact.nickName}</TableCell>
+                  <TableCell align="right">
+                  <Button>
+                      Zobacz
+                  </Button>
+                  </TableCell>
                   <TableCell align="right">{email.subject}</TableCell>
                   <TableCell align="right">{email.id}</TableCell>
                   <TableCell align="right">{ev.visitedAt.toLocaleString()}</TableCell>
