@@ -37,7 +37,7 @@ const Home: NextPage = () => {
           />
           <TechnologyCard
             name="Otworzenia Maili"
-            link="https://trpc.io/"
+            link="/emailVisit"
           />
           <TechnologyCard
             name="Konfiguracja"
