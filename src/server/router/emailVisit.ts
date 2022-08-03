@@ -18,7 +18,12 @@ export const emailVisitRouter = createProtectedRouter()
               contact: true
             }
           }
-        }
+        },
+        orderBy: [
+          {
+            visitedAt: "desc"
+          }
+        ]
       });
     }
   })
