@@ -8,12 +8,7 @@ import { NextPage } from "next";
 const EmailVisitPage: NextPage = () => {
 
   // get all email visits
-  const { data: emailVisits, error } = trpc.useQuery(["emailVisit.get-all"]);
-  if (emailVisits) {
-    emailVisits.map(emailVisit => {
-      console.log(emailVisit)
-    })
-  }
+  const { data: emailVisits, error, isLoading } = trpc.useQuery(["emailVisit.get-all"]);
 
   return (
     <>
@@ -22,7 +17,15 @@ const EmailVisitPage: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-
+        {
+          emailVisits?.map(emailVisit => {
+            return (
+              <div key={emailVisit.id}>
+                {JSON.stringify(emailVisit)}
+              </div>
+            )
+          })
+        }
       </main>
     </>
   );
