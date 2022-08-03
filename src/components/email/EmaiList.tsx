@@ -2,7 +2,7 @@ import Head from "next/head";
 import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FC } from "react";
-import { Email } from "@prisma/client";
+import { Email, Contact } from "@prisma/client";
 
 const EmailList: FC = () => {
 
@@ -27,7 +27,9 @@ const EmailList: FC = () => {
   );
 };
 
-const Email = ({ email }: { email: Email }) => {
+const Email = ({ email }: {email: Email & {
+  contact: Contact;
+}}) => {
 
   const utils = trpc.useContext();
 
