@@ -14,6 +14,17 @@ model Example {
   id String @id @default(cuid())
 }
 
+model GmailSettings {
+  id String @id @default(cuid())
+
+  // smtp settings
+  email        String
+  refreshToken String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
 // Contact in an address book
 model Contact {
   id     String @id @default(cuid())
@@ -113,6 +124,7 @@ model User {
   Email         Email[]
   EmailTemplate EmailTemplate[]
   Contact       Contact[]
+  GmailSettings GmailSettings[]
 }
 
 model VerificationToken {
