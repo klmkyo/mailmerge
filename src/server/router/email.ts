@@ -23,6 +23,15 @@ export const emailRouter = createProtectedRouter()
   .mutation("delete", {
     input: deleteEmailSchema,
     async resolve({ ctx, input }) {
+      // first remove all the email visits
+      await ctx.prisma.emailVisit.deleteMany({
+        where: {
+          email: {
+            id: input.id,
+          }
+        }
+      });
+
       return await ctx.prisma.email.deleteMany({
         where: {
           id: input.id,

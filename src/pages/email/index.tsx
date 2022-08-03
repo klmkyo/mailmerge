@@ -20,8 +20,8 @@ const EmailIndexPage: NextPage = () => {
         <EmailList />
       </main>
 
-      <div className="fixed bottom-0 p-4 flex gap-4 justify-end w-full">
-        <Link href="/email/createDrafts">
+      <div className="fixed bottom-6 right-6">
+        <Link href="/email/createDrafts" passHref>
           <Button variant="contained">
             Przygotuj nowe maile
           </Button>

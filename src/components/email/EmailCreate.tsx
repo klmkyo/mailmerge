@@ -56,16 +56,16 @@ export function EmailCreateUnwrapped() {
       <br />
 
       <div className="fixed bottom-0 m-2 mr-8 flex gap-4 justify-end w-full">
-        {isDev && <Button variant="contained" onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</Button>}
-        <Button 
-          variant="contained"
+        {isDev && <Button variant="outlined" onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</Button>}
+        <Button
+          variant="outlined"
           onClick={() => {
-          const selectedContacts = contacts.filter(contact => contact.selected);
-          const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
-          const emails = generateEmails(selectedContacts, selectedEmailTemplates);
-          console.log({ emails });
-          mutate(emails);
-        }}>
+            const selectedContacts = contacts.filter(contact => contact.selected);
+            const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
+            const emails = generateEmails(selectedContacts, selectedEmailTemplates);
+            console.log({ emails });
+            mutate(emails);
+          }}>
           Przygotuj Maile
         </Button>
       </div>
