@@ -22,7 +22,7 @@ model GmailSettings {
   refreshToken String
 
   user   User   @relation(fields: [userId], references: [id])
-  userId String
+  userId String @unique
 }
 
 // Contact in an address book
