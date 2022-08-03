@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import { getBaseUrl } from "../pages/_app";
+import { prisma } from "../server/db/client";
 
 // replace with env
 const cID = "REPLACE_ME"
@@ -20,13 +22,12 @@ const smtpTransport = nodemailer.createTransport({
   }
 });
 
-
 const mailOptions = {
   from: "mklimek03@gmail.com",
-  to: "klimek@tuta.io",
-  subject: "Node.js Email with Secure OAuth",
+  to: "mklmkyo@gmail.com",
+  subject: "track2",
   generateTextFromHTML: true,
-  html: "<b>test</b>"
+  html: `<b>test</b><img src=\"${getBaseUrl()}/api/track/${"cl6cu95td03767sc05z6i0hzu"}\"></img>`
 };
 
 smtpTransport.sendMail(mailOptions, (error, response) => {
