@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { trpc } from "../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { useRouter } from 'next/router';
 
 
@@ -12,14 +12,6 @@ const Settings: NextPage = () => {
   const utils = trpc.useContext();
 
   const code = router.query.code as string | undefined;
-
-  // if there is a code query param, send it to the server
-  if (code) {
-    trpc
-      .useMutation(["settings.upsert-gmail-auth"])
-      .mutate({ authorizationCode: code })
-  }
-
 
   const { data: OAdata, error: OAerror } = trpc.useQuery(["settings.get-oauth-url"]);
   const { data: Edata, error: Eerror } = trpc.useQuery(["settings.get-gmail-email"]);
