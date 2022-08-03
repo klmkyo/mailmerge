@@ -62,7 +62,8 @@ model Email {
 }
 
 model EmailVisit {
-  id          String @id @default(cuid())
+  id String @id @default(cuid())
+
   emailId     String
   email       Email  @relation(fields: [emailId], references: [id])
   requestData Json?
