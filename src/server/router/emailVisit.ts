@@ -11,6 +11,9 @@ export const emailVisitRouter = createProtectedRouter()
           email: {
             userId: ctx.session.user.id
           }
+        },
+        include: {
+          email: true
         }
       });
     }
@@ -24,6 +27,9 @@ export const emailVisitRouter = createProtectedRouter()
             userId: ctx.session.user.id,
             id: input.emailId
           }
+        },
+        include: {
+          email: true
         }
       });
     }
