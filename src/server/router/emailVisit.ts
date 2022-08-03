@@ -18,7 +18,7 @@ export const emailVisitRouter = createProtectedRouter()
   .query("get-by-email-id", {
     input: z.object({ emailId: z.string().cuid() }),
     resolve({ ctx, input }) {
-      return ctx.prisma.emailVisit.findFirst({
+      return ctx.prisma.emailVisit.findMany({
         where: {
           email: {
             userId: ctx.session.user.id,
