@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
+import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { generateEmails } from "../../utils/emails";
 import { isDev } from "../../utils/isDev";
@@ -7,7 +8,13 @@ import { ContactContext, ContactContextProvider, EmailTemplateContext, EmailTemp
 
 export function EmailCreateUnwrapped() {
 
-  const { mutate, error } = trpc.useMutation(["email.create-multiple"])
+  const router = useRouter();
+
+  const { mutate, error } = trpc.useMutation(["email.create-multiple"], {
+    onSuccess() {
+      router.push("/email")
+    }
+  })
 
   const { contacts, toggleContactSelection } = useContext(ContactContext);
   const { emailTemplates, toggleEmailTemplateSelection } = useContext(EmailTemplateContext);
@@ -55,10 +62,7 @@ export function EmailCreateUnwrapped() {
           console.log({ emails });
           mutate(emails);
         }}>
-          Save Drafts
-        </button>
-        <button>
-          View Unsent Drafts
+          Przygotuj Maile
         </button>
       </div>
     </>

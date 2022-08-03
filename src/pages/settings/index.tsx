@@ -35,14 +35,20 @@ const Settings: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <p>{Cdata?.valueOf() ? "Email Connected" : "Email Not Connected"}</p>
-        {OAdata?.url && <a href={OAdata.url}>Zaktualizuj ustawienia Gmaila</a>}
+      <main className="container mx-auto flex flex-col gap-4 items-center justify-center h-screen p-4">
+        <p>{Cdata?.valueOf() ? "Połączono z Gmail!" : "Nie połączono z Gmail"}</p>
         {OAerror && OAerror.message}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input className="border" type="email" placeholder={Edata?.email} {...register("email")}></input>
-          <button className="border" type="submit">Submit</button>
-        </form>
+        {
+          Cdata &&
+          <div className="flex flex-col justify-center">
+            Nizej podany email musi byc taki sam, jak ten uzyty do konfiguracji 
+            <form onSubmit={handleSubmit(onSubmit)} className="flex justify-center">
+              <input className="border mr-2" type="email" placeholder={Edata?.email} {...register("email")}></input>
+              <button className="border" type="submit">Zaktualizuj Email</button>
+            </form>
+          </div>
+        }
+        {OAdata?.url && <a href={OAdata.url} className="border">{`Skonfiguruj${Cdata ? " ponownie" : ""} Gmaila${Cdata ? " (Jeśli występują problemy)" : ""}`}</a>}
       </main>
     </>
   );
