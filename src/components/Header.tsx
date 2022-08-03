@@ -5,7 +5,7 @@ export default function Header() {
 
   const { data: session } = useSession()
   return (
-    <div className="flex justify-between sticky top-0 p-4 bg-stone-900">
+    <div className="flex justify-between sticky top-0 p-4 bg-stone-200">
       {
         session ?
           <>
