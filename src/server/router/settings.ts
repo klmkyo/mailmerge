@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { createProtectedRouter } from "./protected-router";
-import { emailOAuthUrl } from "../../utils/google";
+import { emailOAuthUrl, oauth2Client } from "../../utils/google";
 import { upsertGmailSettings } from "../../schema/settings.schema";
+import { z } from "zod";
 
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -13,30 +14,70 @@ export const settingsRouter = createProtectedRouter()
       };
     }
   })
+  .query("get-gmail-email", {
+    resolve({ ctx }) {
+      return ctx.prisma.gmailSettings.findUnique({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        select: {
+          email: true
+        }
+      })
+    }
+  })
+  .query("is-gmail-connected", {
+    async resolve({ ctx }) {
+      return !!(await ctx.prisma.gmailSettings.findUnique({
+        where: {
+          userId: ctx.session.user.id,
+        }
+      }))
+    }
+  })
   .mutation("upsert-gmail-auth", {
     input: upsertGmailSettings,
     async resolve({ ctx, input }) {
+      try {
+        const { tokens } = await oauth2Client.getToken(input.authorizationCode);
+        const refreshToken = tokens.refresh_token;
 
-      const { user } = ctx.session;
+        if (!refreshToken) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Something went wrong, did not receive refresh token from Google" });
+        }
 
-      return ctx.prisma.gmailSettings.upsert({
-        where: {
-          userId: user?.id
-        },
-        update: {
-          refreshToken: input.refreshToken,
-          email: input.email
-        },
-        create: {
-          email: input?.email || user.email!,
-          refreshToken: input?.refreshToken,
-          user: {
-            connect: {
-              id: user.id!
+        const { user } = ctx.session;
+
+        return ctx.prisma.gmailSettings.upsert({
+          where: {
+            userId: user?.id
+          },
+          update: {
+            refreshToken
+          },
+          create: {
+            email: user.email!,
+            refreshToken,
+            user: {
+              connect: {
+                id: user.id!
+              }
             }
           }
-        }
-      })
-
+        })
+      } catch (e) {
+        console.error(e);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Something went wrong" });
+      }
+    }
+  })
+  .mutation("update-email", {
+    input: z.object({ email: z.string().email() }),
+    async resolve({ ctx, input }) {
+      const { user } = ctx.session;
+      return ctx.prisma.user.update({
+        where: { id: user.id },
+        data: { email: input.email }
+      });
     }
   });

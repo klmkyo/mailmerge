@@ -1,11 +1,39 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { trpc } from "../utils/trpc";
+import { useRouter } from 'next/router';
 
 
 const Settings: NextPage = () => {
-  const { data, error, isLoading } = trpc.useQuery(["settings.update-auth"]);
+
+  const router = useRouter();
+  const utils = trpc.useContext();
+
+  const code = router.query.code as string | undefined;
+
+  // if there is a code query param, send it to the server
+  if (code) {
+    trpc
+      .useMutation(["settings.upsert-gmail-auth"])
+      .mutate({ authorizationCode: code })
+  }
+
+
+  const { data: OAdata, error: OAerror } = trpc.useQuery(["settings.get-oauth-url"]);
+  const { data: Edata, error: Eerror } = trpc.useQuery(["settings.get-gmail-email"]);
+  const { data: Cdata, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
+
+  const { handleSubmit, register, control } = useForm<{ email: string }>();
+  const { mutate, error } = trpc.useMutation(["settings.update-email"], {
+    onSuccess: (data) => {
+      utils.invalidateQueries('settings.get-gmail-email')
+    }
+  })
+  const onSubmit = (data: { email: string }) => {
+    mutate(data)
+  }
 
   return (
     <>
@@ -16,8 +44,13 @@ const Settings: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        {data?.url && <a href={data.url}>Zaktualizuj ustawienia Gmaila</a>}
-        {error && error.message}
+        <p>{Cdata?.valueOf() ? "Email Connected" : "Email Not Connected"}</p>
+        {OAdata?.url && <a href={OAdata.url}>Zaktualizuj ustawienia Gmaila</a>}
+        {OAerror && OAerror.message}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input className="border" type="email" placeholder={Edata?.email} {...register("email")}></input>
+          <button className="border" type="submit">Submit</button>
+        </form>
       </main>
     </>
   );
