@@ -8,6 +8,7 @@ import { emailTemplateRouter } from "./emailTemplate";
 import { contactRouter } from "./contact";
 import { emailRouter } from "./email";
 import { settingsRouter } from "./settings";
+import { emailVisitRouter } from "./emailVisit";
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -16,7 +17,8 @@ export const appRouter = createRouter()
   .merge("emailTemplate.", emailTemplateRouter)
   .merge("email.", emailRouter)
   .merge("contact.", contactRouter)
-  .merge("settings.", settingsRouter);
+  .merge("settings.", settingsRouter)
+  .merge("emailVisit.", emailVisitRouter);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
