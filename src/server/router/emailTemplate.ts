@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createEmailTemplateSchema, deleteEmailTemplateSchema } from "../../schema/emailTemplate.schema";
 import { createProtectedRouter } from "./protected-router";
+import { z } from "zod";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailTemplateRouter = createProtectedRouter()
@@ -42,6 +43,19 @@ export const emailTemplateRouter = createProtectedRouter()
       return await ctx.prisma.emailTemplate.deleteMany({
         where: {
           id: input.id,
+          user: { id: ctx.session.user.id },
+        },
+      });
+    }
+  })
+  .mutation("delete-many", {
+    input: z.object({ ids: z.array(z.string().cuid()) }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.emailTemplate.deleteMany({
+        where: {
+          id: {
+            in: input.ids,
+          },
           user: { id: ctx.session.user.id },
         },
       });

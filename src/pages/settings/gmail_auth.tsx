@@ -1,7 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { trpc } from "../../utils/trpc";
 import { useRouter } from 'next/router';
 import { useState } from "react";

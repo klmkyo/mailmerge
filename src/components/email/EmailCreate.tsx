@@ -66,7 +66,7 @@ export function EmailCreateUnwrapped() {
             console.log({ emails });
             mutate(emails);
           }}>
-          Przygotuj Maile
+          Utwórz Maile
         </Button>
       </div>
     </>

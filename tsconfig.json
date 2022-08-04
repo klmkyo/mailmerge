@@ -34,6 +34,7 @@
     "src/utils/_tomfoolery.mts"
   ],
   "exclude": [
-    "node_modules"
+    "**/node_modules",
+    "**/.*/"
   ]
 }

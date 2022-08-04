@@ -24,15 +24,15 @@ const Home: NextPage = () => {
         </h1>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
           <TechnologyCard
-            name="Contacts"
+            name="Kontakty"
             link="/contact"
           />
           <TechnologyCard
-            name="Email Templates"
+            name="Szablony Maili"
             link="/emailTemplate"
           />
           <TechnologyCard
-            name="Emails"
+            name="Maile"
             link="/email"
           />
           <TechnologyCard

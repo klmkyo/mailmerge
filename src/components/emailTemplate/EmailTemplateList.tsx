@@ -1,12 +1,21 @@
 import Head from "next/head";
 import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
-import { FC } from "react";
+import { FC, useState } from "react";
 import { EmailTemplate } from "@prisma/client";
+import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 
 const EmailTemplateList: FC = () => {
 
-  const { data, isLoading, error } = trpc.useQuery(['emailTemplate.getAll']);
+  const utils = trpc.useContext();
+  const { data: emailTemplates, isLoading, error } = trpc.useQuery(['emailTemplate.getAll']);
+  const { mutate: deleteMany } = trpc.useMutation(["emailTemplate.delete-many"], {
+    onSuccess(){
+      utils.invalidateQueries('emailTemplate.getAll')
+    }
+  });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   if (isLoading) {
     return <p>Loading email templates...</p>;
@@ -16,18 +25,95 @@ const EmailTemplateList: FC = () => {
     return <p>Error: {error.message}</p>;
   }
 
+  const handleSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    if (checked) {
+      setSelectedIds([...selectedIds, name]);
+    } else {
+      setSelectedIds(selectedIds.filter(id => id !== name));
+    }
+  }
+
+  const deleteSelected = () => {
+    deleteMany({ids: selectedIds})
+  }
+
   return (
-    <div className="flex-row">
-      {data?.map((emailTemplate) => {
+    <>
+      <Box sx={{ width: "100%", display: "flex", position: "relative", justifyContent: "space-between", marginBottom: "3em" }}>
+        {/* select all */}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={selectedIds.length === (emailTemplates?.length ?? 0)}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  if (emailTemplates) {
+                    setSelectedIds(emailTemplates.map(emailTemplate => emailTemplate.id));
+                  }
+                } else {
+                  setSelectedIds([]);
+                }
+              }
+              }
+            />
+          }
+          label="Zaznacz wszystkie szablony"
+        />
+
+        <Box sx={{display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
+          <Stack direction="row" spacing={2}>
+            <Button variant="outlined" disabled={selectedIds.length === 0} onClick={()=>setConfirmDialogOpen(true)}>
+              Usuń zaznaczone szablony
+            </Button>
+          </Stack>
+        </Box>
+
+
+      </Box>
+      <Box sx={{ width: "100%" }}>
+        <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+      {emailTemplates?.map((emailTemplate) => {
         return (
-          <EmailTemplate key={emailTemplate.id} emailTemplate={emailTemplate} />
+          <EmailTemplate key={emailTemplate.id} emailTemplate={emailTemplate} handleSelect={handleSelect} checked={selectedIds.includes(emailTemplate.id)} />
         )
       })}
-    </div>
+    </Grid>
+      </Box>
+
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={()=>setConfirmDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Potwierdzenie usunięcia"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Czy na pewno chcesz usunąć {selectedIds.length} szablonów?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setConfirmDialogOpen(false)}>Nie</Button>
+          <Button onClick={()=>{
+            setConfirmDialogOpen(false);
+            deleteSelected();
+          }} autoFocus>
+            Tak
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
-const EmailTemplate = ({ emailTemplate }: { emailTemplate: EmailTemplate }) => {
+const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
+  emailTemplate: EmailTemplate
+  handleSelect: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  checked: boolean
+}) => {
 
   const utils = trpc.useContext();
 
@@ -46,11 +132,27 @@ const EmailTemplate = ({ emailTemplate }: { emailTemplate: EmailTemplate }) => {
   }
 
   return (
-    <div className="flex gap-4">
-      <span>Tytuł: {emailTemplate.subject}</span>
-      <span>Treść: {emailTemplate.body}</span>
-      <span>Tagi: {emailTemplate.tags}</span>
-      <button onClick={onDelete}>Delete</button>
+    <div className="flex flex-col items-stretch m-2 p-4 border" style={{ width: "50em", height: "40em" }}>
+
+      <header className="flex justify-between border-b pb-4">
+        {/* Subject / Recepient */}
+        <div>
+          <div className="text-3xl">{emailTemplate.subject}</div>
+        </div>
+        <div className="flex flex-col items-end">
+          <Checkbox name={emailTemplate.id} size="small" sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
+          <div>{emailTemplate.tags?.join(", ")}</div>
+        </div>
+      </header>
+
+      <div className="flex-1">
+        {emailTemplate.body}
+      </div>
+
+      <footer className="flex justify-between border-t pt-2">
+        <div>ID: {emailTemplate.id}</div>
+        <Button onClick={onDelete}>Delete</Button>
+      </footer>
     </div>
   )
 };

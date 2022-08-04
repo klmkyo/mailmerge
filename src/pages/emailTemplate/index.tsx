@@ -1,26 +1,30 @@
 // page in which you create emailTemplates
 
 import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useForm } from 'react-hook-form';
 import { NextPage } from "next";
-import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
-import EmailTemplateCreate from "../../components/emailTemplate/EmailTemplateCreate";
 import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
+import Link from "next/link";
+import { Button } from "@mui/material";
 
 const EmailTemplateIndexPage: NextPage = () => {
 
   return (
     <>
       <Head>
-        <title>Create Email Template</title>
+        <title>Szablony Maili</title>
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <EmailTemplateCreate />
-        <br />
+      <main className="h-screen w-full p-10">
         <EmailTemplateList />
       </main>
+
+      <div className="fixed bottom-6 right-6">
+        <Link href="/emailTemplate/create" passHref>
+          <Button variant="contained">
+            Przygotuj nowe szablony
+          </Button>
+        </Link>
+      </div>
     </>
   );
 };

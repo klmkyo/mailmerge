@@ -10,7 +10,3 @@ export const createMultipleEmailSchema = z.array(
 );
 
 export type CreateMultipleEmailInput = z.TypeOf<typeof createMultipleEmailSchema>
-
-export const deleteEmailSchema = z.object({
-  id: z.string().cuid(),
-})
