@@ -9,10 +9,13 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
   // if emailId somehow is an array, select first element
   const emailIdStr = Array.isArray(emailId) ? emailId[0] : emailId;
 
-  const { headers, cookies, query,  } = req;
+  const { headers, cookies, query} = req;
   const requestData = {headers, cookies, query};
 
-  saveVisit({ emailId: emailIdStr!, requestData });
+  // if visited by a customer of website, don't save visit
+  if(!cookies['next-auth.session-token']){
+    saveVisit({ emailId: emailIdStr!, requestData });
+  }
 
   res
     .status(200)

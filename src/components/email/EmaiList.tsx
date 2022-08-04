@@ -6,6 +6,8 @@ import { Email, Contact } from "@prisma/client";
 import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
+import { Letter } from 'react-letter';
+import { sanitize } from "dompurify";
 
 const EmailList: FC = () => {
 
@@ -172,8 +174,8 @@ const Email = ({ email, handleSelect, checked }: {
         </div>
       </header>
 
-      <div className="flex-1">
-        {email.body}
+      <div className="flex-1 mt-3">
+        <Letter html={sanitize(email.body)} />
       </div>
 
       <footer className="flex justify-between border-t pt-2">
