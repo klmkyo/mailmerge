@@ -9,11 +9,11 @@ export default function Header() {
       {
         session ?
           <>
-            Signed in as {session.user!.email}
+            Zalogowano jako {session.user!.email}
           </>
           :
           <>
-            Not signed in
+            Nie zalogowano
           </>
       }
 
@@ -26,11 +26,11 @@ export default function Header() {
       {
         session ?
           <>
-            <button onClick={() => signOut()}>Sign out</button>
+            <button onClick={() => signOut()}>Wyloguj się</button>
           </>
           :
           <>
-            <button onClick={() => signIn()}>Sign in</button>
+            <button onClick={() => signIn()}>Zaloguj się</button>
           </>
       }
     </div>

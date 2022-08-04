@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react"
 type TechnologyCardProps = {
   name: string;
   link: string;
+  desc?: string;
 };
 
 const Home: NextPage = () => {
@@ -26,22 +27,27 @@ const Home: NextPage = () => {
           <TechnologyCard
             name="Kontakty"
             link="/contact"
+            desc="Zarządzanie kontaktami"
           />
           <TechnologyCard
             name="Szablony Maili"
             link="/emailTemplate"
+            desc="Utwórz szablony, z których powstaną maile"
           />
           <TechnologyCard
             name="Maile"
             link="/email"
+            desc="Utwórz i wysyłaj maile"
           />
           <TechnologyCard
             name="Otworzenia Maili"
             link="/emailVisit"
+            desc="Zobacz kto otworzył Twoje maile"
           />
           <TechnologyCard
             name="Konfiguracja"
             link="/settings"
+            desc="Konfiguruj ustawienia Gmaila"
           />
         </div>
       </main>
@@ -51,7 +57,8 @@ const Home: NextPage = () => {
 
 const TechnologyCard = ({
   name,
-  link
+  link,
+  desc
 }: TechnologyCardProps) => {
   return (
     <Link
@@ -62,7 +69,7 @@ const TechnologyCard = ({
     >
       <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
         <h2 className="text-lg text-gray-700">{name}</h2>
-        {"->"}
+        <h3 className="text-sm text-gray-500">{desc}</h3>
       </section>
     </Link>
   );

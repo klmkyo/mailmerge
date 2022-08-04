@@ -8,6 +8,10 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Letter } from 'react-letter';
 import { sanitize } from "dompurify";
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-mateial/Add';
+import { isDev } from "../../utils/isDev";
 
 const EmailList: FC = () => {
 
@@ -67,10 +71,10 @@ const EmailList: FC = () => {
 
         <Box sx={{display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
           <Stack direction="row" spacing={2}>
-            <Button variant="outlined" disabled={selectedIds.length === 0}>
-              Zaplanuj wysłanie
+            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />}>
+              Zaplanuj wysłania
             </Button>
-            <Button variant="outlined" disabled={selectedIds.length === 0} onClick={()=>setConfirmDialogOpen(true)}>
+            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={()=>setConfirmDialogOpen(true)}>
               Usuń zaznaczone
             </Button>
           </Stack>
@@ -118,7 +122,9 @@ const EmailList: FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={()=>setConfirmDialogOpen(false)}>Nie</Button>
-          <Button onClick={()=>{
+          <Button 
+          startIcon={<DeleteIcon />}
+          onClick={()=>{
             setConfirmDialogOpen(false);
             deleteSelected();
           }} autoFocus>
@@ -156,10 +162,10 @@ const Email = ({ email, handleSelect, checked }: {
 
 
   const toBeSentToday = new Date().toDateString() === email.toBeSentAt?.toDateString();
-  const dateString = `${email.toBeSentAt?.toLocaleTimeString()}${(toBeSentToday ? '' : ` ${email.toBeSentAt?.toLocaleDateString()}`)}`;
+  const dateString = `Będzie wysłane ${email.toBeSentAt?.toLocaleTimeString()}${(toBeSentToday ? '' : ` ${email.toBeSentAt?.toLocaleDateString()}`)}`;
 
   return (
-    <div className="flex flex-col items-stretch m-2 p-4 border" style={{ width: "50em", height: "40em" }}>
+    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "50em", height: "40em" }}>
 
       <header className="flex justify-between border-b pb-4">
         {/* Subject / Recepient */}
@@ -168,8 +174,7 @@ const Email = ({ email, handleSelect, checked }: {
           <div><i>Do: {email.contact.email}</i></div>
         </div>
         <div className="flex flex-col items-end">
-          <Checkbox name={email.id} size="small" sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
-          <div>{email.toBeSentAt ? dateString : "Wysłanie nie zaplanowane"}</div>
+          <Checkbox name={email.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
           <div>{email.tags?.join(", ")}</div>
         </div>
       </header>
@@ -178,10 +183,16 @@ const Email = ({ email, handleSelect, checked }: {
         <Letter html={sanitize(email.body)} />
       </div>
 
-      <footer className="flex justify-between border-t pt-2">
-        <div>ID: {email.id}</div>
-        <Button onClick={onDelete}>Delete</Button>
+      <footer className="flex justify-between items-center border-t pt-2">
+        <div>
+          <Button startIcon={<ScheduleSendIcon />} >
+            {email.toBeSentAt ? "Edytuj wysłanie" : "Zaplanuj wysłanie"}
+          </Button>
+          {email.toBeSentAt && dateString}
+        </div>
+        <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
       </footer>
+      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {email.id}</div>}
     </div>
   )
 };

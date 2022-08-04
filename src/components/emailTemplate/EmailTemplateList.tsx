@@ -6,6 +6,7 @@ import { EmailTemplate } from "@prisma/client";
 import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { Letter } from 'react-letter';
 import { sanitize } from "dompurify";
+import { isDev } from "../../utils/isDev";
 
 const EmailTemplateList: FC = () => {
 
@@ -134,7 +135,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
   }
 
   return (
-    <div className="flex flex-col items-stretch m-2 p-4 border" style={{ width: "50em", height: "40em" }}>
+    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "50em", height: "40em" }}>
 
       <header className="flex justify-between border-b pb-4">
         {/* Subject / Recepient */}
@@ -142,7 +143,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
           <div className="text-3xl">{emailTemplate.subject}</div>
         </div>
         <div className="flex flex-col items-end">
-          <Checkbox name={emailTemplate.id} size="small" sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
+          <Checkbox name={emailTemplate.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
           <div>{emailTemplate.tags?.join(", ")}</div>
         </div>
       </header>
@@ -152,9 +153,10 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
       </div>
 
       <footer className="flex justify-between border-t pt-2">
-        <div>ID: {emailTemplate.id}</div>
+        <div />
         <Button onClick={onDelete}>Delete</Button>
       </footer>
+      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
     </div>
   )
 };
