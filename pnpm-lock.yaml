@@ -12,11 +12,13 @@ specifiers:
   '@trpc/next': ^9.26.2
   '@trpc/react': ^9.26.2
   '@trpc/server': ^9.26.2
+  '@types/dompurify': ^2.3.3
   '@types/node': 18.0.0
   '@types/nodemailer': ^6.4.4
   '@types/react': 18.0.14
   '@types/react-dom': 18.0.5
   autoprefixer: ^10.4.8
+  dompurify: ^2.3.10
   eslint: 8.18.0
   eslint-config-next: 12.2.3
   googleapis: ^105.0.0
@@ -28,6 +30,7 @@ specifiers:
   react: 18.2.0
   react-dom: 18.2.0
   react-hook-form: ^7.34.0
+  react-letter: ^0.3.1
   react-query: 3.39.2
   superjson: ^1.9.1
   tailwindcss: ^3.1.7
@@ -46,7 +49,7 @@ dependencies:
   '@trpc/next': 9.26.2_xhsx62thlmlnuxuaaxygpgzvfy
   '@trpc/react': 9.26.2_4zadt2mtfbx7275mbcwrjz2noe
   '@trpc/server': 9.26.2
-  '@types/nodemailer': 6.4.4
+  dompurify: 2.3.10
   googleapis: 105.0.0
   next: 12.2.3_twoewwu6sg7cdf3ao6njtbftne
   next-auth: 4.10.3_mnimnj2pdeccz5uivmdmoly3tq
@@ -54,12 +57,15 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.34.0_react@18.2.0
+  react-letter: 0.3.1_react@18.2.0
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
   superjson: 1.9.1
   zod: 3.17.10
 
 devDependencies:
+  '@types/dompurify': 2.3.3
   '@types/node': 18.0.0
+  '@types/nodemailer': 6.4.4
   '@types/react': 18.0.14
   '@types/react-dom': 18.0.5
   autoprefixer: 10.4.8_postcss@8.4.14
@@ -910,18 +916,25 @@ packages:
     resolution: {integrity: sha512-J1kP072cVYC5H2qFhiLQ/gV57s0of++9QLLKf9n8mVfx300tecKQW2eu/oFvRCDPRTTQ1prHz9zm15IzLwoRrw==}
     dev: false
 
+  /@types/dompurify/2.3.3:
+    resolution: {integrity: sha512-nnVQSgRVuZ/843oAfhA25eRSNzUFcBPk/LOiw5gm8mD9/X7CNcbRkQu/OsjCewO8+VIYfPxUnXvPEVGenw14+w==}
+    dependencies:
+      '@types/trusted-types': 2.0.2
+    dev: true
+
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
   /@types/node/18.0.0:
     resolution: {integrity: sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==}
+    dev: true
 
   /@types/nodemailer/6.4.4:
     resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
     dependencies:
       '@types/node': 18.0.0
-    dev: false
+    dev: true
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
@@ -957,6 +970,10 @@ packages:
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
+
+  /@types/trusted-types/2.0.2:
+    resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
+    dev: true
 
   /@typescript-eslint/parser/5.32.0_b5e7v2qnwxfo6hmiq56u52mz3e:
     resolution: {integrity: sha512-IxRtsehdGV9GFQ35IGm5oKKR2OGcazUoiNBxhRV160iF9FoyuXxjY+rIqs1gfnd+4eL98OjeGnMpE7RF/NBb3A==}
@@ -1493,6 +1510,10 @@ packages:
     dependencies:
       '@babel/runtime': 7.18.9
       csstype: 3.1.0
+    dev: false
+
+  /dompurify/2.3.10:
+    resolution: {integrity: sha512-o7Fg/AgC7p/XpKjf/+RC3Ok6k4St5F7Q6q6+Nnm3p2zGWioAY6dh0CbbuwOhH2UcSzKsdniE/YnE2/92JcsA+g==}
     dev: false
 
   /ecdsa-sig-formatter/1.0.11:
@@ -2431,6 +2452,10 @@ packages:
       language-subtag-registry: 0.3.22
     dev: true
 
+  /lettersanitizer/1.0.2:
+    resolution: {integrity: sha512-f035TAen0M3Oh5Nhe8hp2uA5zQwN1rIDdSfC1VNLXd1XoeIm1r/whVCB1YPQH/uN1KhRrjCJcHl0moCpXj0X8A==}
+    dev: false
+
   /levn/0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -2962,6 +2987,16 @@ packages:
 
   /react-is/18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+    dev: false
+
+  /react-letter/0.3.1_react@18.2.0:
+    resolution: {integrity: sha512-++3Dz6CENKRvsjqF1/sOjBgJzNnQJp+RbkW61DG27P31O34C9ExubqWGG6qQl7gFIRmNW+Z53sGlvH6oMwS+bg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      lettersanitizer: 1.0.2
+      react: 18.2.0
     dev: false
 
   /react-query/3.39.2_biqbaboplfbrettd7655fr4n2y:
