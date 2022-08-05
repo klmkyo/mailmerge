@@ -10,7 +10,7 @@ import { Letter } from 'react-letter';
 import { sanitize } from "dompurify";
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-mateial/Add';
+import AddIcon from '@mui/icons-material/Add';
 import { isDev } from "../../utils/isDev";
 
 const EmailList: FC = () => {
