@@ -4,7 +4,7 @@ import { trpc } from "../../utils/trpc";
 
 export const EmailTemplateContext = createContext<{
   emailTemplates: (EmailTemplate & { selected: boolean })[],
-  toggleEmailTemplateSelection: (id: string) => void,
+  toggleEmailTemplateSelection: (input: {id: string, selected?: boolean}) => void,
 }>({
   emailTemplates: [],
   toggleEmailTemplateSelection: () => { },
@@ -29,15 +29,15 @@ export const EmailTemplateProvider = ({ children }: { children: ReactNode }) => 
   return (
     <EmailTemplateContext.Provider value={{
       emailTemplates: emailTemplates ?? [],
-      toggleEmailTemplateSelection: (etid: string) => {
-        const emailTemplate = emailTemplates?.find(({ id }) => id === etid);
+      toggleEmailTemplateSelection: ({id, selected}: {id:string, selected?: boolean}) => {
+        const emailTemplate = emailTemplates?.find(({ id: etid }) => etid === id);
         if (emailTemplate) {
-          emailTemplate.selected = !emailTemplate.selected;
+          emailTemplate.selected = selected ?? !emailTemplate.selected;
           if (emailTemplate.selected) {
-            setSelectedEmailTemplateIds([...selectedEmailTemplateIds, etid]);
+            setSelectedEmailTemplateIds([...selectedEmailTemplateIds, id]);
           }
           else {
-            setSelectedEmailTemplateIds(selectedEmailTemplateIds.filter(id => id !== etid));
+            setSelectedEmailTemplateIds(selectedEmailTemplateIds.filter(etid => etid !== id));
           }
         }
       }
@@ -49,7 +49,7 @@ export const EmailTemplateProvider = ({ children }: { children: ReactNode }) => 
 
 export const ContactContext = createContext<{
   contacts: (Contact & { selected: boolean })[],
-  toggleContactSelection: (id: string) => void,
+  toggleContactSelection: (input: {id: string, selected?: boolean}) => void,
 }>({
   contacts: [],
   toggleContactSelection: () => { },
@@ -73,15 +73,15 @@ export const ContactContextProvider = ({ children }: { children: ReactNode }) =>
   return (
     <ContactContext.Provider value={{
       contacts: contacts ?? [],
-      toggleContactSelection: (contactId: String) => {
-        const contact = contacts?.find(({ id }) => id === contactId);
+      toggleContactSelection: ({id, selected}: {id:string, selected?: boolean}) => {
+        const contact = contacts?.find(({ id: cid }) => cid === id);
         if (contact) {
-          contact.selected = !contact.selected;
+          contact.selected = selected ?? !contact.selected;
           if (contact.selected) {
-            setSelectedContactIds([...selectedContactIds, contactId]);
+            setSelectedContactIds([...selectedContactIds, id]);
           }
           else {
-            setSelectedContactIds(selectedContactIds.filter(id => id !== contactId));
+            setSelectedContactIds(selectedContactIds.filter(cid => cid !== id));
           }
         }
       }

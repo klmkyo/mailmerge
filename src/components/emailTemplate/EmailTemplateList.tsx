@@ -7,6 +7,9 @@ import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dial
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
 import { isDev } from "../../utils/isDev";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import { Loading } from "../Loading";
 
 const EmailTemplateList: FC = () => {
 
@@ -21,7 +24,7 @@ const EmailTemplateList: FC = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   if (isLoading) {
-    return <p>Loading email templates...</p>;
+    return <Loading />;
   }
 
   if (error) {
@@ -66,7 +69,7 @@ const EmailTemplateList: FC = () => {
 
         <Box sx={{display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
           <Stack direction="row" spacing={2}>
-            <Button variant="outlined" disabled={selectedIds.length === 0} onClick={()=>setConfirmDialogOpen(true)}>
+            <Button variant="outlined" disabled={selectedIds.length === 0} onClick={()=>setConfirmDialogOpen(true)} startIcon={<DeleteIcon />}>
               Usuń zaznaczone szablony
             </Button>
           </Stack>

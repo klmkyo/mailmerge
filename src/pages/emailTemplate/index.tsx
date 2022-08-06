@@ -5,6 +5,7 @@ import { NextPage } from "next";
 import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
 import Link from "next/link";
 import { Button } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 
 const EmailTemplateIndexPage: NextPage = () => {
 
@@ -20,7 +21,7 @@ const EmailTemplateIndexPage: NextPage = () => {
 
       <div className="fixed bottom-6 right-6">
         <Link href="/emailTemplate/create" passHref>
-          <Button variant="contained">
+          <Button variant="contained" startIcon={<AddIcon />}>
             Przygotuj nowe szablony
           </Button>
         </Link>

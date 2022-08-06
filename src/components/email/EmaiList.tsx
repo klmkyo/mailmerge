@@ -21,6 +21,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { Loading } from "../Loading";
 
 const timeIntervals = [
   {
@@ -62,7 +63,7 @@ const EmailList: FC = () => {
   const [sendMultipleInterval, setSendMultipleInterval] = useState<number | null>(null);
 
   if (isLoading) {
-    return <p>Loading emails...</p>;
+    return <Loading />;
   }
 
   if (error) {

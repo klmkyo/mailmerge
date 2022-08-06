@@ -5,8 +5,6 @@ import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { NextPage } from "next";
 import { CreateContactSchemaInput } from "../../schema/contact.schema";
-import CreateContact from "../../components/contact/ContactCreate";
-import ContactList from "../../components/contact/ContactList";
 import { FC, MouseEvent, useState, useMemo } from "react";
 import { Contact } from "@prisma/client";
 import Table from '@mui/material/Table';
@@ -30,6 +28,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { onlyUnique } from "../../utils/onlyUnique";
 import { extractEmails } from "../../utils/emails";
 import { VariantType, useSnackbar } from 'notistack';
+import { Loading } from "../../components/Loading";
 
 
 const CreateContactPage: NextPage = () => {
@@ -56,7 +55,7 @@ const CreateContactPage: NextPage = () => {
         <title>Create Contact</title>
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+      <main className="container mx-auto flex flex-col items-center justify-center p-4 mt-20">
 
         <ContactTable />
 
@@ -91,9 +90,7 @@ const ContactTable: FC = () => {
 
   if (isLoading) {
     return (
-    <Box sx={{ width: '100%' }}>
-      <LinearProgress />
-    </Box>
+      <Loading />
     );
   }
 
