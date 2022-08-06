@@ -3,7 +3,7 @@ import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FC, useState } from "react";
 import { Email, Contact } from "@prisma/client";
-import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { TextField, Paper, Select, MenuItem, Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Letter } from 'react-letter';
@@ -12,18 +12,48 @@ import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { isDev } from "../../utils/isDev";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+
+const timeIntervals = [
+  {
+    value: 1,
+    label: 'sekund',
+  },
+  {
+    value: 60,
+    label: 'minut',
+  },
+  {
+    value: 3600,
+    label: 'godzin',
+  },
+];
+
 
 const EmailList: FC = () => {
 
   const utils = trpc.useContext();
   const { data: emails, isLoading, error } = trpc.useQuery(['email.getAll']);
   const { mutate: deleteMany } = trpc.useMutation(["email.delete-many"], {
-    onSuccess(){
+    onSuccess() {
       utils.invalidateQueries('email.getAll')
     }
   });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [sendMultipleDialogOpen, setSendMultipleDialogOpen] = useState(false);
+
+  const [sendMultipleStart, setSendMultipleStart] = useState(new Date());
+  const [sendMultipleIntervalUnit, setSendMultipleIntervalUnit] = useState(60);
+  const [sendMultipleInterval, setSendMultipleInterval] = useState<number | null>(null);
 
   if (isLoading) {
     return <p>Loading emails...</p>;
@@ -43,7 +73,7 @@ const EmailList: FC = () => {
   }
 
   const deleteSelected = () => {
-    deleteMany({ids: selectedIds})
+    deleteMany({ ids: selectedIds })
   }
 
   return (
@@ -69,12 +99,12 @@ const EmailList: FC = () => {
           label="Zaznacz wszystkie maile"
         />
 
-        <Box sx={{display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
+        <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
           <Stack direction="row" spacing={2}>
-            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />}>
+            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />} onClick={() => setSendMultipleDialogOpen(true)}>
               Zaplanuj wysłania
             </Button>
-            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={()=>setConfirmDialogOpen(true)}>
+            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={() => setConfirmDialogOpen(true)}>
               Usuń zaznaczone
             </Button>
           </Stack>
@@ -108,7 +138,7 @@ const EmailList: FC = () => {
 
       <Dialog
         open={confirmDialogOpen}
-        onClose={()=>setConfirmDialogOpen(false)}
+        onClose={() => setConfirmDialogOpen(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -121,20 +151,133 @@ const EmailList: FC = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setConfirmDialogOpen(false)}>Nie</Button>
-          <Button 
-          startIcon={<DeleteIcon />}
-          onClick={()=>{
-            setConfirmDialogOpen(false);
-            deleteSelected();
-          }} autoFocus>
+          <Button onClick={() => setConfirmDialogOpen(false)}>Nie</Button>
+          <Button
+            startIcon={<DeleteIcon />}
+            onClick={() => {
+              setConfirmDialogOpen(false);
+              deleteSelected();
+            }} autoFocus>
             Tak
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={sendMultipleDialogOpen}
+        onClose={() => setSendMultipleDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Zaplanuj wysłanie maili"}
+        </DialogTitle>
+        <DialogContent>
+
+          <DialogContentText id="alert-dialog-description">
+            Od kiedy mają być wysyłane maile?
+          </DialogContentText>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DateTimePicker
+              renderInput={(props) => <TextField {...props} />}
+              value={sendMultipleStart}
+              onChange={(newDate) => {
+                setSendMultipleStart(newDate!)
+              }}
+            />
+          </LocalizationProvider>
+
+          <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em" }}>
+            W jakim odstępie? <span className="text-sm italic text-gray-500">{`(zostaw puste aby wysłać maile natychmiastowo)`}</span>
+          </DialogContentText>
+          <div className="mt-1">
+            <TextField
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+              value={sendMultipleInterval}
+              placeholder="natychmiast"
+              onChange={(e)=>{
+                const n = e.target.value
+                if( /^\d+$/.test(n) ){
+                  try{
+                    setSendMultipleInterval( parseInt(n, 10) )
+                  }
+                  catch {
+                    console.error("nan")
+                  }
+                } else if (!n) {
+                  setSendMultipleInterval(null)
+                }
+              }}
+            />
+            <Select
+              value={sendMultipleIntervalUnit}
+              onChange={ (e) => setSendMultipleIntervalUnit( parseInt( (e.target.value as string), 10) ) }
+            >
+              {
+                timeIntervals.map((itv) => <MenuItem key={itv.value} value={itv.value}>{itv.label}</MenuItem>)
+              }
+            </Select>
+          </div>
+          
+          <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em", marginBottom: "0.5em" }}>
+            Podgląd harmonogramu:
+          </DialogContentText>
+          <EmailTimesPreview emails={emails!} interval={sendMultipleInterval! * sendMultipleIntervalUnit} start={sendMultipleStart}/>
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSendMultipleDialogOpen(false)}>Odrzuć</Button>
+          <Button
+            startIcon={<ScheduleSendIcon />}
+            onClick={() => {
+              setSendMultipleDialogOpen(false);
+            }}
+            autoFocus
+            >
+            Wysyłaj
           </Button>
         </DialogActions>
       </Dialog>
     </>
   );
 };
+
+const EmailTimesPreview = ({emails, interval, start}: 
+  {
+    emails: (Email & { contact: Contact; })[],
+    interval: number | null,
+    start: Date
+  }) => {
+  
+
+  return(
+    <TableContainer component={Paper}>
+      <Table aria-label="czasy wysłania">
+        <TableHead>
+          <TableRow>
+            <TableCell>Email</TableCell>
+            <TableCell align="right">Tytuł</TableCell>
+            <TableCell align="right">Data wysłania</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {emails.map((email, i) => (
+            <TableRow
+              key={email.id}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">{email.contact.email}</TableCell>
+              <TableCell align="right">{email.subject}</TableCell>
+              <TableCell align="right">{new Date(start.getTime() + ( (interval ?? 0)  * 1000 * i)).toLocaleString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
+}
 
 const Email = ({ email, handleSelect, checked }: {
   email: Email & {
@@ -150,6 +293,12 @@ const Email = ({ email, handleSelect, checked }: {
     onError: (error) => {
       alert(error)
     },
+    onSuccess: (data) => {
+      utils.invalidateQueries('email.getAll')
+    }
+  })
+
+  const { mutate: updateToBeSentAt } = trpc.useMutation(['email.update-toBeSentAt'], {
     onSuccess: (data) => {
       utils.invalidateQueries('email.getAll')
     }
@@ -185,10 +334,19 @@ const Email = ({ email, handleSelect, checked }: {
 
       <footer className="flex justify-between items-center border-t pt-2">
         <div>
-          <Button startIcon={<ScheduleSendIcon />} >
-            {email.toBeSentAt ? "Edytuj wysłanie" : "Zaplanuj wysłanie"}
-          </Button>
-          {email.toBeSentAt && dateString}
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                renderInput={(props) => <TextField {...props} />}
+                label={email.toBeSentAt ? "Edytuj datę wysłania" : "Zaplanuj wysłanie"}
+                value={email.toBeSentAt}
+                onChange={(newDate) => {
+                  updateToBeSentAt({
+                    id: email.id,
+                    toBeSentAt: newDate!
+                  });
+                }}
+              />
+            </LocalizationProvider>
         </div>
         <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
       </footer>

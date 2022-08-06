@@ -77,4 +77,18 @@ export const emailRouter = createProtectedRouter()
         }
       });
     }
+  })
+  .mutation("update-toBeSentAt", {
+    input: z.object({ id: z.string().cuid(), toBeSentAt: z.date() }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.email.updateMany({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        },
+        data: {
+          toBeSentAt: input.toBeSentAt,
+        },
+      });
+    }
   });
