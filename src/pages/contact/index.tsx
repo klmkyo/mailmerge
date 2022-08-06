@@ -7,20 +7,26 @@ import { NextPage } from "next";
 import { CreateContactSchemaInput } from "../../schema/contact.schema";
 import CreateContact from "../../components/contact/ContactCreate";
 import ContactList from "../../components/contact/ContactList";
-import { FC, MouseEvent, useState } from "react";
+import { FC, MouseEvent, useState, useMemo } from "react";
 import { Contact } from "@prisma/client";
 import Table from '@mui/material/Table';
+import TextField from '@mui/material/TextField';
 import TableBody from '@mui/material/TableBody';
+import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import Autocomplete from '@mui/material/Autocomplete';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { onlyUnique } from "../../utils/onlyUnique";
 
 
 const CreateContactPage: NextPage = () => {
@@ -47,6 +53,11 @@ const CreateContactPage: NextPage = () => {
 const ContactTable: FC = () => {
   const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
 
+  const [newNickName, setNewNickName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+
+  const allTags = useMemo( () => contacts?.map((c)=>c.tags).flat().filter(onlyUnique), [contacts])
+
   if (isLoading) {
     return (
     <Box sx={{ width: '100%' }}>
@@ -65,7 +76,7 @@ const ContactTable: FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
-            <TableCell align="right">Nick</TableCell>
+            <TableCell>Nick</TableCell>
             <TableCell align="right">Tagi</TableCell>
             <TableCell align="right">Akcje</TableCell>
 
@@ -73,19 +84,54 @@ const ContactTable: FC = () => {
         </TableHead>
         <TableBody>
           {contacts?.map((contact) => (
-            <ContactRow key={contact.id} contact={contact} />
+            <ContactRow key={contact.id} contact={contact} allTags={allTags!} />
           ))}
+
+          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+          <TableCell component="th" scope="row">
+            <TextField
+              value={newEmail}
+              onChange={(e)=>{setNewEmail(e.target.value)}}
+              label="Email"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+          </TableCell>
+          <TableCell component="th" scope="row">
+            <TextField
+              value={newNickName}
+              onChange={(e)=>{setNewNickName(e.target.value)}}
+              label="Nick"
+              variant="outlined"
+              size="small"
+              fullWidth
+            />
+          </TableCell>
+          <TableCell component="th" align="right" scope="row">
+            Dodaj taga
+          </TableCell>
+          {/* edit button */}
+          <TableCell component="th" align="right" scope="row">
+            +
+          </TableCell>
+        </TableRow>
+          
         </TableBody>
       </Table>
     </TableContainer>
   );
 };
 
-const ContactRow: FC<{contact: Contact}> = ({ contact }) => {
+const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTags }) => {
 
   const utils = trpc.useContext();
 
-  const { mutate, error } = trpc.useMutation(['contact.delete'], {
+  const [value, setValue] = useState<string | null>(allTags[0]);
+  const [inputValue, setInputValue] = useState('');
+
+
+  const { mutate: deleteContact, error } = trpc.useMutation(['contact.delete'], {
     onError: (error) => {
       alert(error)
     },
@@ -94,25 +140,41 @@ const ContactRow: FC<{contact: Contact}> = ({ contact }) => {
     }
   })
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const { mutate: updateContact } = trpc.useMutation(['contact.update'], {
+    onError: (error) => {
+      alert(error)
+    },
+    onSuccess: (data) => {
+      utils.invalidateQueries('contact.getAll')
+    }
+  })
 
   return(
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
     <TableCell component="th" scope="row">
       {contact.email}
     </TableCell>
-    <TableCell component="th" align="right" scope="row">
+    <TableCell component="th" scope="row">
       {contact.nickName}
     </TableCell>
     <TableCell component="th" align="right" scope="row">
-      {contact.tags}
+      <Autocomplete
+        multiple
+        id="tags-filled"
+        options={allTags}
+        freeSolo
+        renderTags={(value: readonly string[], getTagProps) =>
+          value.map((option: string, index: number) => (
+            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Tagi"
+          />
+        )}
+      />
     </TableCell>
     {/* edit button */}
     <TableCell component="th" align="right" scope="row">
@@ -125,7 +187,7 @@ const ContactRow: FC<{contact: Contact}> = ({ contact }) => {
 
       <IconButton
         aria-label="delete"
-        onClick={()=>mutate({ id: contact.id })}
+        onClick={()=>deleteContact({ id: contact.id })}
       >
         <DeleteIcon />
       </IconButton>

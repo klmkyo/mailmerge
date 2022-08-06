@@ -3,6 +3,7 @@ import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { createContactSchema, deleteContactSchema, updateContactSchema } from "../../schema/contact.schema";
 import { createProtectedRouter } from "./protected-router";
+import { onlyUnique } from "../../utils/onlyUnique";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const contactRouter = createProtectedRouter()
@@ -11,29 +12,55 @@ export const contactRouter = createProtectedRouter()
     async resolve({ ctx, input }) {
       const { email, nickName, tags } = input;
 
-      return ctx.prisma.contact.create({
-        data: {
-          email,
-          nickName,
-          tags,
-          user: {
-            connect: {
-              id: ctx.session.user.id
+      try {
+        return await ctx.prisma.contact.create({
+          data: {
+            email,
+            nickName,
+            tags: tags?.filter(onlyUnique),
+            user: {
+              connect: {
+                id: ctx.session.user.id
+              }
             }
+          },
+        });
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          // The .code property can be accessed in a type-safe manner
+          if (e.code === 'P2002') {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Kontakt o takim mailu już istnieje",
+            });
           }
-        },
-      });
+        }
+        throw e
+      }
     },
   })
   .mutation("delete", {
     input: deleteContactSchema,
     async resolve({ ctx, input }) {
-      return await ctx.prisma.contact.deleteMany({
-        where: {
-          id: input.id,
-          user: { id: ctx.session.user.id },
-        },
-      });
+      try {
+        return await ctx.prisma.contact.deleteMany({
+          where: {
+            id: input.id,
+            user: { id: ctx.session.user.id },
+          },
+        });
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          // The .code property can be accessed in a type-safe manner
+          if (e.code === 'P2003') {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Nie mozna usunąć kontaktu, do którego został wysłany email",
+            });
+          }
+        }
+        throw e
+      }
     }
   })
   .query("getAll", {
@@ -43,11 +70,14 @@ export const contactRouter = createProtectedRouter()
           user: {
             id: ctx.session.user.id
           }
+        },
+        orderBy: {
+          createdAt: "desc"
         }
       });
     }
   })
-  .mutation("update-contact", {
+  .mutation("update", {
     input: updateContactSchema,
     async resolve({ ctx, input }) {
       return await ctx.prisma.contact.updateMany({
@@ -57,6 +87,7 @@ export const contactRouter = createProtectedRouter()
         },
         data: {
           ...input,
+          tags: input.tags?.filter(onlyUnique),
         },
       });
     }
