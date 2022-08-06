@@ -1,35 +1,29 @@
-import React, { useContext, useState, useMemo, FC } from "react";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { generateEmails } from "../../utils/emails";
-import { isDev } from "../../utils/isDev";
-import { trpc } from "../../utils/trpc";
-import { ContactContext, ContactContextProvider, EmailTemplateContext, EmailTemplateProvider } from "./contexts";
-import { Contact } from "@prisma/client";
-import Table from '@mui/material/Table';
-import TextField from '@mui/material/TextField';
-import TableBody from '@mui/material/TableBody';
-import Popover from '@mui/material/Popover';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import Autocomplete from '@mui/material/Autocomplete';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Checkbox from '@mui/material/Checkbox';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import LinearProgress from '@mui/material/LinearProgress';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { onlyUnique } from "../../utils/onlyUnique";
-import { extractEmails } from "../../utils/emails";
-import { VariantType, useSnackbar } from 'notistack';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { Contact } from "@prisma/client";
+import { sanitize } from "dompurify";
+import parse from 'html-react-parser';
+import { useRouter } from "next/router";
+import { FC, useContext, useMemo } from "react";
 import { Loading } from "../../components/Loading";
+import { generateEmails } from "../../utils/emails";
+import { isDev } from "../../utils/isDev";
+import { onlyUnique } from "../../utils/onlyUnique";
+import { trpc } from "../../utils/trpc";
+import { ContactContext, ContactContextProvider, EmailTemplateContext, EmailTemplateProvider } from "./contexts";
 
+
+// TODO zaznaczanie na podstawie tagów
 
 export function EmailCreateUnwrapped() {
 
@@ -42,7 +36,10 @@ export function EmailCreateUnwrapped() {
   })
 
   const { contacts } = useContext(ContactContext);
-  const { emailTemplates, toggleEmailTemplateSelection } = useContext(EmailTemplateContext);
+  const { emailTemplates } = useContext(EmailTemplateContext);
+
+  const selectedContactsCount = useMemo( ()=> contacts.filter(c=>c.selected).length, [contacts])
+  const selectedEmailTemplatesCount = useMemo( ()=> emailTemplates.filter(e=>e.selected).length, [emailTemplates])
 
   console.log({ contacts, emailTemplates })
 
@@ -51,52 +48,93 @@ export function EmailCreateUnwrapped() {
 
       {/* Kontakty */}
 
-      Kontakty:
-      <div className="flex w-full justify-center">
+      <b><h1 className="text-xl">1. Wybierz kontakty, do których będą wysłane maile:</h1></b>
+      <div className="flex w-full justify-center mt-8">
         <ContactTable />
       </div>
       <br />
 
       {/* Szablony */}
 
-      Choose templates to use {"(a template will be randomly chosen for each receipient)"}
+      <b><h1 className="text-xl mt-20">2. Wybierz szablony, które będą wysyłane:</h1></b>
+      <p className="text-xs italic font-grey-400 mt-1 mb-10">{`(dla kazdego odbiorcy zostanie losowo wybrany jeden z zaznaczonych szablonow)`}</p>
 
-      <div className="flex w-full justify-center h-52">
-        {emailTemplates.map(template => (
-          <div key={template.id} className="flex items-center p-2">
-            <input type="checkbox" checked={template.selected} onChange={() => {
-              toggleEmailTemplateSelection(template.id);
-            }} />
-            Tytuł: {template.subject}
-            <br />
-            {/* Treść: {template.body} */}
-            <br />
-            Tagi: {template.tags}
-          </div>
-        ))}
+      <div className="flex w-full justify-center">
+        <Box sx={{ width: "100%" }}>
+          <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+            {emailTemplates?.map((emailTemplate) => {
+              return (
+                <EmailTemplate key={emailTemplate.id} emailTemplate={emailTemplate}/>
+              )
+            })}
+          </Grid>
+        </Box>
       </div>
 
       <br />
       
+      <p className="flex items-center">
+        <span className="text-xs italic font-grey-600 mt-1 mb-2 mr-2">
+          Zaznaczone kontakty: {selectedContactsCount}
+        </span>
+        {` | `}
+        <span className="text-xs italic font-grey-600 mt-1 mb-2 ml-2">
+          Zaznaczone szablony: {selectedEmailTemplatesCount}
+        </span>
+      </p>
+      <Button
+        variant="outlined"
+        size="large"
+        onClick={() => {
+          const selectedContacts = contacts.filter(contact => contact.selected);
+          const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
+          const emails = generateEmails(selectedContacts, selectedEmailTemplates);
+          console.log({ emails });
+          mutate(emails);
+        }}>
+        <b>3. Utwórz Maile</b>
+      </Button>
+      
       {/* Bottom bar */}
 
-      <div className="fixed bottom-0 m-2 mr-8 flex gap-4 justify-end w-full">
-        {isDev && <Button variant="outlined" onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</Button>}
-        <Button
-          variant="outlined"
-          onClick={() => {
-            const selectedContacts = contacts.filter(contact => contact.selected);
-            const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
-            const emails = generateEmails(selectedContacts, selectedEmailTemplates);
-            console.log({ emails });
-            mutate(emails);
-          }}>
-          Utwórz Maile
-        </Button>
-      </div>
+      {isDev && <div className="fixed bottom-0 m-2 mr-8 flex gap-4 justify-end w-full">
+        <Button variant="outlined" onClick={() => console.log({ contacts, emailTemplates })}>Log Contacts {'&'} Templates</Button>
+      </div>}
     </>
   )
 }
+
+const EmailTemplate = ({ emailTemplate }: {
+  emailTemplate: EmailTemplate
+}) => {
+
+  const { toggleEmailTemplateSelection } = useContext(EmailTemplateContext);
+
+  return (
+    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
+
+      <header className="flex justify-between border-b pb-4">
+        {/* Subject / Recepient */}
+        <div>
+          <div className="text-3xl">{emailTemplate.subject}</div>
+        </div>
+        <div className="flex flex-col items-end">
+          <Checkbox name={emailTemplate.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={(e)=>toggleEmailTemplateSelection({id: emailTemplate.id, selected: e.target.checked})} />
+          <div>{emailTemplate.tags?.join(", ")}</div>
+        </div>
+      </header>
+
+      <div className="flex-1 mt-3 unset">
+        {parse(sanitize(emailTemplate.body))}
+      </div>
+
+      <footer className="flex justify-between border-t pt-2">
+        <div />
+      </footer>
+      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
+    </div>
+  )
+};
 
 const ContactTable: FC = () => {
   const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
@@ -122,7 +160,7 @@ const ContactTable: FC = () => {
             <TableCell>Wysłane Maile</TableCell>
             <TableCell>Nick</TableCell>
             <TableCell>Tagi</TableCell>
-            <TableCell align="right">Zaznacz</TableCell>
+            <TableCell align="right">Zaznacz Wszystko</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -141,28 +179,7 @@ const ContactRow: FC<{contact: Contact & {
   };
 }}> = ({ contact }) => {
 
-  const utils = trpc.useContext();
-  const { enqueueSnackbar } = useSnackbar();
   const { toggleContactSelection } = useContext(ContactContext);
-
-  const { mutate: deleteContact, error } = trpc.useMutation(['contact.delete'], {
-    onError: (error) => {
-      alert(error)
-    },
-    onSuccess: (data) => {
-      utils.invalidateQueries('contact.getAll');
-    }
-  })
-
-  const { mutate: updateContact } = trpc.useMutation(['contact.update'], {
-    onError: (error) => {
-      alert(error)
-    },
-    onSuccess: (data) => {
-      utils.invalidateQueries('contact.getAll')
-      enqueueSnackbar(`Zaktualizowano ${contact.email}!`);
-    }
-  })
 
   return(
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
@@ -176,11 +193,13 @@ const ContactRow: FC<{contact: Contact & {
       {contact.nickName}
     </TableCell>
     <TableCell component="th" scope="row">
+      <div className="flex gap-2">
       {
-        contact.tags.map((tag) => (
-          <Chip variant="outlined" label={tag} key={index} />
+        contact.tags.map((tag, i) => (
+          <Chip variant="outlined" label={tag} key={i} />
         ))
       }
+      </div>
     </TableCell>
     <TableCell component="th" align="right" scope="row">
 

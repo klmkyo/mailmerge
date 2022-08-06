@@ -7,7 +7,7 @@ import EmailCreate from "../../components/email/EmailCreate";
 const CreateMailPage: NextPage = () => {
 
   return (
-    <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+    <main className="w-full flex flex-col items-center justify-center p-10">
       <Head>
         <title>Create Mail</title>
       </Head>
