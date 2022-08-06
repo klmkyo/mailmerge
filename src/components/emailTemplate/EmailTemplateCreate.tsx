@@ -4,7 +4,7 @@ import Head from "next/head";
 import { trpc } from "../../utils/trpc";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { CreateContactSchemaInput } from "../../schema/contact.schema";
-import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, TextField, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { Box, Button, ButtonGroup, Grid, Checkbox, FormLabel ,RadioGroup, Radio, FormControlLabel, FormControl, Stack, TextField, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { FC, useRef, useState } from "react";
 import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import { Editor } from '@tinymce/tinymce-react';
@@ -22,6 +22,7 @@ const EmailTemplateCreate: FC = () => {
 
   const [url, setUrl] = useState('');
   const [filename, setFilename] = useState('');
+  const [position, setPosition] = useState('end');
 
   const { mutate, error } = trpc.useMutation(["emailTemplate.create"], {
     onSuccess: () => {
@@ -51,7 +52,7 @@ const EmailTemplateCreate: FC = () => {
       <Editor
         apiKey="akd0k9vvpz6khox3asb2e431rwtfjgc7wxt1ovdudkb2qo53"
         onInit={(evt, editor) => editorRef.current = editor}
-        initialValue=""
+        initialValue={`<div dir="ltr"></div>`}
         init={{
         height: 500,
         menubar: true,
@@ -63,7 +64,8 @@ const EmailTemplateCreate: FC = () => {
         toolbar: 'undo redo | casechange blocks | bold italic backcolor | ' +
            'alignleft aligncenter alignright alignjustify | ' +
            'bullist numlist checklist outdent indent | removeformat | a11ycheck code table help',
-        newline_behavior: 'linebreak'
+        newline_behavior: 'linebreak',
+        
         }}
     />
     <br />
@@ -110,13 +112,32 @@ const EmailTemplateCreate: FC = () => {
             onChange={(e)=>setFilename(e.target.value)}
             fullWidth
           />
+
+          <FormControl>
+      <FormLabel style={{marginTop: "1.5em"}}>Wstaw:</FormLabel>
+      <RadioGroup
+        row
+        name="row-radio-buttons-group"
+        value={position}
+        onChange={(e)=>setPosition(e.target.value)}
+      >
+        <FormControlLabel value="end" control={<Radio />} label="Na końcu maila" />
+        <FormControlLabel value="cursor" control={<Radio />} label="Przy kursorze" />
+      </RadioGroup>
+    </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={()=>setGdriveDialogOpen(false)}>Anuluj</Button>
           <Button
           onClick={()=>{
             setGdriveDialogOpen(false);
-            editorRef.current?.insertContent(createGdriveChip(url!.split("?")[0], filename));
+            
+            if(position==="end"){
+              // yikes
+              editorRef.current?.setContent(editorRef.current?.getContent() + createGdriveChip(url!.split("?")[0], filename))
+            } else {
+              editorRef.current?.insertContent(createGdriveChip(url!.split("?")[0], filename),);
+            }
             setUrl('');
             setFilename('');
           }}
