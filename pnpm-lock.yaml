@@ -29,6 +29,7 @@ specifiers:
   next: 12.2.3
   next-auth: ^4.10.3
   nodemailer: ^6.7.7
+  notistack: ^2.0.5
   postcss: ^8.4.14
   prisma: ^4.1.1
   react: 18.2.0
@@ -63,6 +64,7 @@ dependencies:
   next: 12.2.3_twoewwu6sg7cdf3ao6njtbftne
   next-auth: 4.10.3_mnimnj2pdeccz5uivmdmoly3tq
   nodemailer: 6.7.7
+  notistack: 2.0.5_ygbk7drgebzalnbhhtqdcojmwa
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.34.0_react@18.2.0
@@ -2849,6 +2851,29 @@ packages:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /notistack/2.0.5_ygbk7drgebzalnbhhtqdcojmwa:
+    resolution: {integrity: sha512-Ig2T1Muqkc1PaSQcEDrK7diKv6cBxw02Iq6uv074ySfgq524TV5lK41diAb6OSsaiWfp3aRt+T3+0MF8m2EcJQ==}
+    peerDependencies:
+      '@emotion/react': ^11.4.1
+      '@emotion/styled': ^11.3.0
+      '@mui/material': ^5.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/react':
+        optional: true
+      '@emotion/styled':
+        optional: true
+    dependencies:
+      '@emotion/react': 11.10.0_f6wrvyapejopncap33lcoziolq
+      '@emotion/styled': 11.10.0_iwvhemwyj7s2dxd2dz6cr2lapa
+      '@mui/material': 5.9.3_4fwm5idrbc56q2ajnw56srdcdq
+      clsx: 1.2.1
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /oauth/0.9.15:
     resolution: {integrity: sha512-a5ERWK1kh38ExDEfoO6qUHJb32rd7aYmPHuyCu3Fta/cnICvYmgd2uhuKXvPD+PXB+gCEYYEaQdIRAjCOwAKNA==}

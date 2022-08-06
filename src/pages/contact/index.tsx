@@ -24,12 +24,30 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import LinearProgress from '@mui/material/LinearProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { onlyUnique } from "../../utils/onlyUnique";
+import { extractEmails } from "../../utils/emails";
+import { VariantType, useSnackbar } from 'notistack';
 
 
 const CreateContactPage: NextPage = () => {
+
+  const [newEmails, setNewEmails] = useState("");
+
+  const { mutate: updateContact } = trpc.useMutation(['contact.create'], {
+    onError: (error) => {
+      alert(error)
+    },
+    onSuccess: (data) => {
+      utils.invalidateQueries('contact.getAll')
+    }
+  })
+
+  const newEmailArr = useMemo(()=>extractEmails(newEmails) ?? [], [newEmails])
+
+  console.log(newEmailArr)
 
   return (
     <>
@@ -39,11 +57,26 @@ const CreateContactPage: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
 
-        <CreateContact />
-
-        <br />
-
         <ContactTable />
+
+        <div className="mt-8 gap-2 flex flex-col items-right">
+        <TextField
+          multiline
+          value={newEmails}
+          onChange={(e)=>{setNewEmails(e.target.value)}}
+          label="Email (mozna podac wiecej niz jeden)"
+          variant="outlined"
+          size="small"
+          style={{width: "30em"}}
+            />
+          <Button disabled={newEmailArr.length < 1} variant="outlined" startIcon={<AddIcon />}>
+            {newEmailArr.length < 2 ? "Dodaj Maila" : `Dodaj ${newEmailArr.length} Maili`}
+          </Button>
+        </div>
+        
+        <span>
+        {}
+        </span>
 
       </main>
     </>
@@ -52,9 +85,6 @@ const CreateContactPage: NextPage = () => {
 
 const ContactTable: FC = () => {
   const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
-
-  const [newNickName, setNewNickName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
 
   const allTags = useMemo( () => contacts?.map((c)=>c.tags).flat().filter(onlyUnique), [contacts])
 
@@ -77,46 +107,14 @@ const ContactTable: FC = () => {
           <TableRow>
             <TableCell>Email</TableCell>
             <TableCell>Nick</TableCell>
-            <TableCell align="right">Tagi</TableCell>
+            <TableCell>Tagi</TableCell>
             <TableCell align="right">Akcje</TableCell>
-
           </TableRow>
         </TableHead>
         <TableBody>
           {contacts?.map((contact) => (
             <ContactRow key={contact.id} contact={contact} allTags={allTags!} />
           ))}
-
-          <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-          <TableCell component="th" scope="row">
-            <TextField
-              value={newEmail}
-              onChange={(e)=>{setNewEmail(e.target.value)}}
-              label="Email"
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-          </TableCell>
-          <TableCell component="th" scope="row">
-            <TextField
-              value={newNickName}
-              onChange={(e)=>{setNewNickName(e.target.value)}}
-              label="Nick"
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-          </TableCell>
-          <TableCell component="th" align="right" scope="row">
-            Dodaj taga
-          </TableCell>
-          {/* edit button */}
-          <TableCell component="th" align="right" scope="row">
-            +
-          </TableCell>
-        </TableRow>
-          
         </TableBody>
       </Table>
     </TableContainer>
@@ -126,17 +124,17 @@ const ContactTable: FC = () => {
 const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTags }) => {
 
   const utils = trpc.useContext();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [value, setValue] = useState<string | null>(allTags[0]);
-  const [inputValue, setInputValue] = useState('');
-
+  const [tags, setTags] = useState<string[]>(contact.tags);
+  const [nickName, setNickName] = useState(contact.nickName);
 
   const { mutate: deleteContact, error } = trpc.useMutation(['contact.delete'], {
     onError: (error) => {
       alert(error)
     },
     onSuccess: (data) => {
-      utils.invalidateQueries('contact.getAll')
+      utils.invalidateQueries('contact.getAll');
     }
   })
 
@@ -146,6 +144,7 @@ const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTag
     },
     onSuccess: (data) => {
       utils.invalidateQueries('contact.getAll')
+      enqueueSnackbar(`Zaktualizowano ${contact.email}!`);
     }
   })
 
@@ -155,19 +154,54 @@ const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTag
       {contact.email}
     </TableCell>
     <TableCell component="th" scope="row">
-      {contact.nickName}
+      <TextField
+        value={nickName}
+        onChange={(e)=>{setNickName(e.target.value)}}
+        label="Nick"
+        variant="outlined"
+        fullWidth
+        onBlur={()=>{
+          if(contact.nickName != nickName){
+            updateContact({
+              id: contact.id,
+              nickName
+            })
+          }
+        }}
+      />
     </TableCell>
-    <TableCell component="th" align="right" scope="row">
+    <TableCell component="th" scope="row">
       <Autocomplete
         multiple
         id="tags-filled"
         options={allTags}
         freeSolo
+        value={tags}
+        onChange={(event: any, newValue: string[]) => {
+          setTags(newValue);
+        }}
         renderTags={(value: readonly string[], getTagProps) =>
           value.map((option: string, index: number) => (
-            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+            <Chip variant="outlined" label={option} {...getTagProps({ index })} key={index} />
           ))
         }
+        onBlur={()=>{
+          if(tags != contact.tags){
+            updateContact({
+              id: contact.id,
+              tags
+            })
+          }
+        }}
+        onKeyPress={(e) => {
+          console.log(e.key)
+          if (e.key === "Enter") {
+            updateContact({
+              id: contact.id,
+              tags
+            })
+          }
+        }}
         renderInput={(params) => (
           <TextField
             {...params}

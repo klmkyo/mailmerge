@@ -11,6 +11,7 @@ import Header from "../components/Header";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../styles/theme';
 import CssBaseline from '@mui/material/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 
 const MyApp: AppType = ({
   Component,
@@ -18,11 +19,13 @@ const MyApp: AppType = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Header />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </SnackbarProvider>
     </SessionProvider>
   );
 };

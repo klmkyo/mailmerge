@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { optional } from "zod";
 
 export const createContactSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -8,8 +8,8 @@ export const createContactSchema = z.object({
 
 export const updateContactSchema = z.object({
   id: z.string().cuid(),
-  nickName: z.string().max(256, "Nickname is too long").optional(),
-  tags: z.array(z.string().max(256, "Tag is too long")).optional(),
+  nickName: z.string().max(256, "Nickname is too long").optional().nullable(),
+  tags: z.array(z.string().max(256, "Tag is too long")).optional().nullable(),
 })
 
 export type CreateContactSchemaInput = z.TypeOf<typeof createContactSchema>
