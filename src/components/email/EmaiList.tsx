@@ -47,6 +47,12 @@ const EmailList: FC = () => {
       utils.invalidateQueries('email.getAll')
     }
   });
+  const { mutate: updateToBeSentAt } = trpc.useMutation(['email.update-toBeSentAt'], {
+    onSuccess: (data) => {
+      utils.invalidateQueries('email.getAll')
+    }
+  })
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [sendMultipleDialogOpen, setSendMultipleDialogOpen] = useState(false);
@@ -233,6 +239,15 @@ const EmailList: FC = () => {
             startIcon={<ScheduleSendIcon />}
             onClick={() => {
               setSendMultipleDialogOpen(false);
+              const start = sendMultipleStart;
+              const interval = (sendMultipleInterval ?? 0) * sendMultipleIntervalUnit;
+              emails!.map((email, i) => {
+                const toBeSentAt = new Date(start.getTime() + ( (interval ?? 0)  * 1000 * i))
+                updateToBeSentAt({
+                  id: email.id,
+                  toBeSentAt
+                })
+              })
             }}
             autoFocus
             >

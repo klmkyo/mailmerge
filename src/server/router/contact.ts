@@ -1,5 +1,7 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
-import { createContactSchema, deleteContactSchema } from "../../schema/contact.schema";
+import { createContactSchema, deleteContactSchema, updateContactSchema } from "../../schema/contact.schema";
 import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -42,6 +44,20 @@ export const contactRouter = createProtectedRouter()
             id: ctx.session.user.id
           }
         }
+      });
+    }
+  })
+  .mutation("update-contact", {
+    input: updateContactSchema,
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.contact.updateMany({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        },
+        data: {
+          ...input,
+        },
       });
     }
   })

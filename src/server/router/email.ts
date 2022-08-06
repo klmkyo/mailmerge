@@ -5,6 +5,20 @@ import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailRouter = createProtectedRouter()
+  .query("getAll", {
+    resolve({ ctx }) {
+      return ctx.prisma.email.findMany({
+        where: {
+          user: {
+            id: ctx.session.user.id
+          }
+        },
+        include: {
+          contact: true
+        }
+      });
+    }
+  })
   .mutation("create-multiple", {
     input: createMultipleEmailSchema,
     async resolve({ ctx, input }) {
@@ -61,20 +75,6 @@ export const emailRouter = createProtectedRouter()
           },
           user: { id: ctx.session.user.id },
         },
-      });
-    }
-  })
-  .query("getAll", {
-    resolve({ ctx }) {
-      return ctx.prisma.email.findMany({
-        where: {
-          user: {
-            id: ctx.session.user.id
-          }
-        },
-        include: {
-          contact: true
-        }
       });
     }
   })
