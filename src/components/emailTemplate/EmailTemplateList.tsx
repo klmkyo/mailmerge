@@ -4,8 +4,8 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { FC, useState } from "react";
 import { EmailTemplate } from "@prisma/client";
 import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
-import { Letter } from 'react-letter';
 import { sanitize } from "dompurify";
+import parse from 'html-react-parser';
 import { isDev } from "../../utils/isDev";
 
 const EmailTemplateList: FC = () => {
@@ -135,7 +135,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
   }
 
   return (
-    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "50em", height: "40em" }}>
+    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
 
       <header className="flex justify-between border-b pb-4">
         {/* Subject / Recepient */}
@@ -148,8 +148,8 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
         </div>
       </header>
 
-      <div className="flex-1 mt-3">
-        <Letter html={sanitize(emailTemplate.body)} />
+      <div className="flex-1 mt-3 unset">
+        {parse(sanitize(emailTemplate.body))}
       </div>
 
       <footer className="flex justify-between border-t pt-2">

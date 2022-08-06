@@ -25,6 +25,7 @@
     "@trpc/server": "^9.26.2",
     "dompurify": "^2.3.10",
     "googleapis": "^105.0.0",
+    "html-react-parser": "^3.0.1",
     "next": "12.2.3",
     "next-auth": "^4.10.3",
     "nodemailer": "^6.7.7",
