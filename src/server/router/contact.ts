@@ -71,6 +71,13 @@ export const contactRouter = createProtectedRouter()
             id: ctx.session.user.id
           }
         },
+        include: {
+          _count: {
+            select: {
+              Email: true,
+            }
+          }
+        },
         orderBy: {
           createdAt: "desc"
         }

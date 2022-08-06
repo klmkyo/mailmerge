@@ -35,8 +35,9 @@ import { VariantType, useSnackbar } from 'notistack';
 const CreateContactPage: NextPage = () => {
 
   const [newEmails, setNewEmails] = useState("");
+  const utils = trpc.useContext();
 
-  const { mutate: updateContact } = trpc.useMutation(['contact.create'], {
+  const { mutate: createContact } = trpc.useMutation(['contact.create'], {
     onError: (error) => {
       alert(error)
     },
@@ -69,14 +70,14 @@ const CreateContactPage: NextPage = () => {
           size="small"
           style={{width: "30em"}}
             />
-          <Button disabled={newEmailArr.length < 1} variant="outlined" startIcon={<AddIcon />}>
+          <Button disabled={newEmailArr.length < 1} variant="outlined" startIcon={<AddIcon />} onClick={()=>{
+            newEmailArr.forEach(email=>{
+              createContact({email})
+            })
+          }}>
             {newEmailArr.length < 2 ? "Dodaj Maila" : `Dodaj ${newEmailArr.length} Maili`}
           </Button>
         </div>
-        
-        <span>
-        {}
-        </span>
 
       </main>
     </>
@@ -106,6 +107,7 @@ const ContactTable: FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
+            <TableCell>Wysłane Maile</TableCell>
             <TableCell>Nick</TableCell>
             <TableCell>Tagi</TableCell>
             <TableCell align="right">Akcje</TableCell>
@@ -121,7 +123,11 @@ const ContactTable: FC = () => {
   );
 };
 
-const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTags }) => {
+const ContactRow: FC<{contact: Contact & {
+  _count: {
+      Email: number;
+  };
+}, allTags: string[]}> = ({ contact, allTags }) => {
 
   const utils = trpc.useContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -152,6 +158,9 @@ const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTag
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
     <TableCell component="th" scope="row">
       {contact.email}
+    </TableCell>
+    <TableCell component="th" scope="row">
+      {contact._count.Email}
     </TableCell>
     <TableCell component="th" scope="row">
       <TextField
@@ -212,12 +221,6 @@ const ContactRow: FC<{contact: Contact, allTags: string[]}> = ({ contact, allTag
     </TableCell>
     {/* edit button */}
     <TableCell component="th" align="right" scope="row">
-
-      <IconButton
-        aria-label="edit"
-      >
-        <EditIcon />
-      </IconButton>
 
       <IconButton
         aria-label="delete"
