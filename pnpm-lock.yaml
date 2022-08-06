@@ -8,6 +8,7 @@ specifiers:
   '@mui/material': ^5.9.3
   '@next-auth/prisma-adapter': ^1.0.4
   '@prisma/client': ^4.1.1
+  '@tinymce/tinymce-react': ^4.2.0
   '@trpc/client': ^9.26.2
   '@trpc/next': ^9.26.2
   '@trpc/react': ^9.26.2
@@ -34,6 +35,7 @@ specifiers:
   react-query: 3.39.2
   superjson: ^1.9.1
   tailwindcss: ^3.1.7
+  tinymce: ^6.1.2
   typescript: 4.7.4
   zod: ^3.17.10
 
@@ -45,6 +47,7 @@ dependencies:
   '@mui/material': 5.9.3_4fwm5idrbc56q2ajnw56srdcdq
   '@next-auth/prisma-adapter': 1.0.4_ve2jqagp43ow5legp4pwgpeijy
   '@prisma/client': 4.1.1_prisma@4.1.1
+  '@tinymce/tinymce-react': 4.2.0_biqbaboplfbrettd7655fr4n2y
   '@trpc/client': 9.26.2_@trpc+server@9.26.2
   '@trpc/next': 9.26.2_xhsx62thlmlnuxuaaxygpgzvfy
   '@trpc/react': 9.26.2_4zadt2mtfbx7275mbcwrjz2noe
@@ -60,6 +63,7 @@ dependencies:
   react-letter: 0.3.1_react@18.2.0
   react-query: 3.39.2_biqbaboplfbrettd7655fr4n2y
   superjson: 1.9.1
+  tinymce: 6.1.2
   zod: 3.17.10
 
 devDependencies:
@@ -862,6 +866,18 @@ packages:
     resolution: {integrity: sha512-6JrF+fdUK2zbGpJIlN7G3v966PQjyx/dPt1T9km2wj+EUBqgrxCk3uX4Kct16MIm9gGxfKRcfax2hVf5jvlTzA==}
     dependencies:
       tslib: 2.4.0
+    dev: false
+
+  /@tinymce/tinymce-react/4.2.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-Oyi/hDvARR29oqUwTgYXDnMV9E/c7C8V+iK+gUj9tndVXsfSJRYVOw3MTK9CCC9f7alN/S4CYaPpIaA3f4VZzw==}
+    peerDependencies:
+      react: ^18.0.0 || ^17.0.1 || ^16.7.0
+      react-dom: ^18.0.0 || ^17.0.1 || ^16.7.0
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tinymce: 6.1.2
     dev: false
 
   /@trpc/client/9.26.2_@trpc+server@9.26.2:
@@ -3304,6 +3320,10 @@ packages:
   /text-table/0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
+
+  /tinymce/6.1.2:
+    resolution: {integrity: sha512-tl4KbEKdPzyPTatJkblN2AqzRj9jaRGyATnwaSnsLFGKb4AI6B+4e0Gc8dUDXuqAjgSnHokhzamrQJLbSn4CmQ==}
+    dev: false
 
   /to-fast-properties/2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
