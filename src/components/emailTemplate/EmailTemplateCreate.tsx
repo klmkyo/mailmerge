@@ -83,6 +83,8 @@ const EmailTemplateCreate: FC = () => {
           onInit={(evt, editor) => editorRef.current = editor}
           initialValue={`<div dir="ltr"></div>`}
           init={{
+            language: 'pl',
+            branding: false,
             height: 500,
             menubar: true,
             plugins: [
