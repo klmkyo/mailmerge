@@ -14,7 +14,7 @@ import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined
 import { useSnackbar } from 'notistack';
 import { useRouter } from "next/router";
 
-const Action = snackbarId => {
+const Action = () => {
 
   const router = useRouter();
 

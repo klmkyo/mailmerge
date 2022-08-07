@@ -34,10 +34,10 @@ export const EmailTemplateProvider = ({ children }: { children: ReactNode }) => 
         if (emailTemplate) {
           emailTemplate.selected = selected ?? !emailTemplate.selected;
           if (emailTemplate.selected) {
-            setSelectedEmailTemplateIds([...selectedEmailTemplateIds, id]);
+            setSelectedEmailTemplateIds((sids) => [...sids, id]);
           }
           else {
-            setSelectedEmailTemplateIds(selectedEmailTemplateIds.filter(etid => etid !== id));
+            setSelectedEmailTemplateIds((sids) => sids.filter(etid => etid !== id));
           }
         }
       }
@@ -48,7 +48,12 @@ export const EmailTemplateProvider = ({ children }: { children: ReactNode }) => 
 };
 
 export const ContactContext = createContext<{
-  contacts: (Contact & { selected: boolean })[],
+  contacts: (Contact & { 
+    selected: boolean,
+    _count: {
+        Email: number
+    }
+  })[],
   toggleContactSelection: (input: {id: string, selected?: boolean}) => void,
 }>({
   contacts: [],
@@ -78,10 +83,10 @@ export const ContactContextProvider = ({ children }: { children: ReactNode }) =>
         if (contact) {
           contact.selected = selected ?? !contact.selected;
           if (contact.selected) {
-            setSelectedContactIds([...selectedContactIds, id]);
+            setSelectedContactIds((sids) => [...sids, id] );
           }
           else {
-            setSelectedContactIds(selectedContactIds.filter(cid => cid !== id));
+            setSelectedContactIds((sids) => sids.filter(cid => cid !== id));
           }
         }
       }

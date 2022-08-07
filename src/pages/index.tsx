@@ -64,10 +64,8 @@ const TechnologyCard = ({
     <Link
       className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
       href={link}
-      target="_blank"
-      rel="noreferrer"
     >
-      <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
+      <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105 cursor-pointer">
         <h2 className="text-lg text-gray-700">{name}</h2>
         <h3 className="text-sm text-gray-500">{desc}</h3>
       </section>

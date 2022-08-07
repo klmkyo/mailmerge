@@ -10,11 +10,12 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Contact, EmailTemplate } from "@prisma/client";
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
 import { useRouter } from "next/router";
-import { FC, useContext, useMemo } from "react";
+import { FC, useContext, useMemo, useState } from "react";
 import { Loading } from "../../components/Loading";
 import { generateEmails } from "../../utils/emails";
 import { isDev } from "../../utils/isDev";
@@ -40,8 +41,6 @@ export function EmailCreateUnwrapped() {
 
   const selectedContactsCount = useMemo( ()=> contacts.filter(c=>c.selected).length, [contacts])
   const selectedEmailTemplatesCount = useMemo( ()=> emailTemplates.filter(e=>e.selected).length, [emailTemplates])
-
-  console.log({ contacts, emailTemplates })
 
   return (
     <>
@@ -85,6 +84,7 @@ export function EmailCreateUnwrapped() {
       <Button
         variant="outlined"
         size="large"
+        disabled={selectedContactsCount === 0 || selectedEmailTemplatesCount === 0}
         onClick={() => {
           const selectedContacts = contacts.filter(contact => contact.selected);
           const selectedEmailTemplates = emailTemplates.filter(template => template.selected);
@@ -137,19 +137,21 @@ const EmailTemplate = ({ emailTemplate }: {
 };
 
 const ContactTable: FC = () => {
-  const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
+  const { contacts, toggleContactSelection } = useContext(ContactContext);
 
   const allTags = useMemo( () => contacts?.map((c)=>c.tags).flat().filter(onlyUnique), [contacts])
 
-  if (isLoading) {
-    return (
-      <Loading />
-    );
+  const selectedContacts = contacts?.filter(c=>c.selected);
+
+  const [checked, setChecked] = useState(false);
+
+  const shouldBeChecked = selectedContacts.length === (contacts?.length ?? 0)
+  if(shouldBeChecked !== checked){
+    setChecked(shouldBeChecked)
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+
+  console.log({contacts, selectedContacts})
 
   return (
     <TableContainer component={Paper}>
@@ -160,7 +162,23 @@ const ContactTable: FC = () => {
             <TableCell>Wysłane Maile</TableCell>
             <TableCell>Nick</TableCell>
             <TableCell>Tagi</TableCell>
-            <TableCell align="right">Zaznacz Wszystko</TableCell>
+            <TableCell align="right">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={checked}
+                  onChange={(event) => {
+                    contacts.forEach(c=>{
+                      console.log(c.id, event.target.checked)
+                      toggleContactSelection({id: c.id, selected: event.target.checked})
+                    })
+                  }
+                  }
+                />
+              }
+              label="Zaznacz wszystkie kontaky"
+            />
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -174,12 +192,15 @@ const ContactTable: FC = () => {
 };
 
 const ContactRow: FC<{contact: Contact & {
+  selected: boolean,
   _count: {
-      Email: number;
-  };
+      Email: number
+  }
 }}> = ({ contact }) => {
 
   const { toggleContactSelection } = useContext(ContactContext);
+
+  console.log(`${contact.email}: ${contact.selected}`)
 
   return(
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
@@ -203,8 +224,9 @@ const ContactRow: FC<{contact: Contact & {
     </TableCell>
     <TableCell component="th" align="right" scope="row">
 
-      <Checkbox onChange={(e)=>toggleContactSelection({id: contact.id, selected: e.target.checked})} />
-
+      <Checkbox checked={contact.selected} onChange={(e)=>{
+        toggleContactSelection({id: contact.id, selected: e.target.checked});
+      }} />
     </TableCell>
   </TableRow>
   )
