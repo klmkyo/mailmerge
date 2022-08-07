@@ -54,7 +54,7 @@ export const contactRouter = createProtectedRouter()
           if (e.code === 'P2003') {
             throw new TRPCError({
               code: "FORBIDDEN",
-              message: "Nie mozna usunąć kontaktu, do którego został wysłany email",
+              message: "Nie można usunąć kontaktu, do którego został wysłany email",
             });
           }
         }
