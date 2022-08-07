@@ -7,10 +7,10 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 
-
 const Settings: NextPage = () => {
 
   const router = useRouter();
+
   const utils = trpc.useContext();
 
   const code = router.query.code as string | undefined;

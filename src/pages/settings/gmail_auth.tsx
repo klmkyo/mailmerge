@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useState } from "react";
 import { Loading } from "../../components/Loading";
 import { trpc } from "../../utils/trpc";
+import { useSnackbar } from 'notistack';
 
 
 const GmailAuth: NextPage = () => {
@@ -10,6 +11,7 @@ const GmailAuth: NextPage = () => {
   const [authed, setAuthed] = useState(false);
 
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
 
   const code = router.query.code as string | undefined;
 
@@ -17,7 +19,8 @@ const GmailAuth: NextPage = () => {
 
   const { mutate: OAmutate } = trpc.useMutation(["settings.upsert-gmail-auth"], {
     onSuccess: () => {
-      router.push("/settings");
+      enqueueSnackbar("Skonfigurowano Gmaila!", { variant: 'success', preventDuplicate: true });
+      router.push( { pathname: '/', query: { success: true } } );
     }
   })
 
