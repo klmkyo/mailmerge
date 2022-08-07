@@ -10,7 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Contact } from "@prisma/client";
+import { Contact, EmailTemplate } from "@prisma/client";
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
 import { useRouter } from "next/router";
@@ -165,7 +165,7 @@ const ContactTable: FC = () => {
         </TableHead>
         <TableBody>
           {contacts?.map((contact) => (
-            <ContactRow key={contact.id} contact={contact} allTags={allTags!} />
+            <ContactRow key={contact.id} contact={contact} />
           ))}
         </TableBody>
       </Table>
