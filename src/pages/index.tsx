@@ -66,7 +66,7 @@ const TechnologyCard = ({
       className="mt-3 text-sm underline decoration-dotted underline-offset-2"
       href={link}
     >
-      <Card elevation={1} variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
+      <Card variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
         <CardActionArea className="p-6">
           <h2 className="text-lg">{name}</h2>
           <h3 className="text-sm">{desc}</h3>

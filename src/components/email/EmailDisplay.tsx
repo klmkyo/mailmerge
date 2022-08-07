@@ -370,7 +370,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const wasSent = !!email.sentAt;
 
   return (
-    <Paper elevation={1} variant="outlined" square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "50em", height: "40em" }}>
+    <Paper elevation={3} square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "50em", height: "40em" }}>
 
       <header className="flex justify-between pb-4">
         {/* Subject / Recepient */}

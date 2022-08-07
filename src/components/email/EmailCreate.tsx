@@ -112,7 +112,7 @@ const EmailTemplate = ({ emailTemplate }: {
   const { toggleEmailTemplateSelection } = useContext(EmailTemplateContext);
 
   return (
-    <Paper elevation={1} variant="outlined" square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
+    <Paper elevation={3} square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
 
       <header className="flex justify-between pb-4">
         {/* Subject / Recepient */}
