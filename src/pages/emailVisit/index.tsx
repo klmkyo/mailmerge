@@ -11,13 +11,33 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import { sanitize } from "dompurify";
+import { Letter } from 'react-letter';
+import { isDev } from "../../utils/isDev";
+import { useState } from "react";
+import moment from 'moment';
+import 'moment/locale/pl'
+import { Contact, Email } from "@prisma/client";
+import { inferQueryOutput } from '../../utils/trpc';
 
-
+type EVEmail = inferQueryOutput<"emailVisit.get-all">[number]["email"]
 
 const EmailVisitPage: NextPage = () => {
 
   // get all email visits
   const { data: emailVisits, error, isLoading } = trpc.useQuery(["emailVisit.get-all"]);
+
+  const [queryDialogOpen, setQueryDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+
+  const [currentQuery, setCurrentQuery] = useState<Object | null>(null);
+  const [currentEmail, setCurrentEmail] = useState<EVEmail | null>(null);
 
   return (
     <>
@@ -62,16 +82,22 @@ const EmailVisitPage: NextPage = () => {
                   </TableCell>
                   <TableCell align="right">{contact.nickName}</TableCell>
                   <TableCell align="right">
-                  <Button>
-                      Zobacz
+                  <Button onClick={()=>{
+                    setCurrentQuery(ev.requestData);
+                    setQueryDialogOpen(true);
+                  }}>
+                    Dane
                   </Button>
                   </TableCell>
                   <TableCell align="right">{email.subject}</TableCell>
                   <TableCell align="right">{email.id}</TableCell>
                   <TableCell align="right">{ev.visitedAt.toLocaleString()}</TableCell>
                   <TableCell align="right">
-                    <Button>
-                      Zobacz
+                    <Button onClick={()=>{
+                      setCurrentEmail(email);
+                      setEmailDialogOpen(true);
+                    }}>
+                      Mail
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -82,8 +108,63 @@ const EmailVisitPage: NextPage = () => {
           </Table>
         </TableContainer>
       </main>
+
+      {/* Query Dialog */}
+      <Dialog onClose={()=>setQueryDialogOpen(false)} open={queryDialogOpen}>
+      <DialogTitle>Query</DialogTitle>
+        {JSON.stringify(currentQuery)}
+      </Dialog>
+
+      {/* Email Dialog */}
+      <Dialog maxWidth="xl" onClose={()=>setEmailDialogOpen(false)} open={emailDialogOpen}>
+        <EmailCard email={currentEmail!} onClose={()=>setEmailDialogOpen(false)} />
+      </Dialog>
     </>
   );
+};
+
+const EmailCard = ({ email, onClose }: {
+  email: EVEmail,
+  onClose: () => void
+}) => {
+  return (
+    <Box className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "50em", height: "40em" }}>
+
+      <header className="flex justify-between pb-4">
+        {/* Subject / Recepient */}
+        <div>
+          <div className="text-3xl">{email.subject}</div>
+          <div><i>Do: {email.contact.email}</i></div>
+        </div>
+        <div className="flex flex-col items-end">
+          <IconButton
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+          <div>{email.tags?.join(", ")}</div>
+        </div>
+      </header>
+      <Divider />
+
+      <div className="flex-1 mt-3">
+        <Letter html={sanitize(email.body)} />
+      </div>
+
+      <Divider />
+      <footer className="flex justify-between items-center pt-3.5">
+        <div>
+          <div>
+            {`Wysłano: ${email.sentAt!.toLocaleString()}`}
+            <span className="text-gray-600 italic ml-2">
+              {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
+            </span>
+          </div>
+        </div>
+      </footer>
+      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {email.id}</div>}
+    </Box>
+  )
 };
 
 export default EmailVisitPage;

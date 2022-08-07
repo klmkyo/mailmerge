@@ -12,6 +12,8 @@ type TechnologyCardProps = {
   highlight?: boolean;
 };
 
+// TODO infer return types not from prisma, but trpc
+
 const Home: NextPage = () => {
 
   const { data: Cdata } = trpc.useQuery(["settings.is-gmail-connected"]);
