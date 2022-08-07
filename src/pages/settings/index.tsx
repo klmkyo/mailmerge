@@ -3,6 +3,9 @@ import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
 import { trpc } from "../../utils/trpc";
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 
 
 const Settings: NextPage = () => {
@@ -18,8 +21,6 @@ const Settings: NextPage = () => {
 
   const { data: Cdata, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
 
-  const { handleSubmit, register, control } = useForm<{ email: string }>();
-
   return (
     <>
       <Head>
@@ -28,10 +29,22 @@ const Settings: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto flex flex-col gap-4 items-center justify-center h-screen p-4">
-        <p>{Cdata?.valueOf() ? `Połączono z ${Edata.email}!` : "Nie połączono z Gmail"}</p>
+      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+        <div className="text-xl">Możesz tutaj podpiąć dowolny adres Gmail, z którego będą wysyłane maile</div>
+        <Box className="italic" sx={{ color: 'text.secondary' }}>{"(może to być adres inny od tego w górnym lewym rogu strony)"}</Box>
+
+        <Divider className="w-80 m-4" />
+
+        <p className="mb-2">{Cdata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
         {OAerror && OAerror.message}
-        {OAdata?.url && <a href={OAdata.url} className="border">{`Skonfiguruj${Cdata ? " ponownie" : ""} Gmaila${Cdata ? " (Jeśli występują problemy)" : ""}`}</a>}
+        {
+          OAdata?.url && 
+          <a href={OAdata.url}>
+            <Button variant="outlined">
+              {`Skonfiguruj${Cdata ? " ponownie" : ""} Gmaila`}
+            </Button>
+          </a>
+        }
       </main>
     </>
   );

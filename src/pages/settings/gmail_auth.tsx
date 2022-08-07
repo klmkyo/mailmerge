@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from 'next/router';
 import { useState } from "react";
+import { Loading } from "../../components/Loading";
 import { trpc } from "../../utils/trpc";
 
 
@@ -27,9 +28,7 @@ const GmailAuth: NextPage = () => {
   }
 
   return (
-    <>
-    Przetwarzanie...
-    </>
+    <Loading />
   );
 };
 
