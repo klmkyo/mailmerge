@@ -74,6 +74,7 @@ const CreateContactPage: NextPage = () => {
             newEmailArr.forEach(email=>{
               createContact({email})
             })
+            setNewEmails("");
           }}>
             {newEmailArr.length < 2 ? "Dodaj Maila" : `Dodaj ${newEmailArr.length} Maili`}
           </Button>

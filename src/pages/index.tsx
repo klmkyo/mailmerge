@@ -88,7 +88,7 @@ const TechnologyCard = ({
       href={link}
     >
       <Card variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
-        <CardActionArea className="p-6">
+        <CardActionArea style={{padding: "1.5rem"}}>
           <h2 className={`text-lg ${highlight && "text-purple-500"}`}>{name}</h2>
           <h3 className="text-sm">{desc}</h3>
         </CardActionArea>

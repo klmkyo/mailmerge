@@ -33,7 +33,7 @@ const Settings: NextPage = () => {
         <div className="text-xl">Możesz tutaj podpiąć dowolny adres Gmail, z którego będą wysyłane maile</div>
         <Box className="italic" sx={{ color: 'text.secondary' }}>{"(może to być adres inny od tego w górnym lewym rogu strony)"}</Box>
 
-        <Divider className="w-80 m-4" />
+        <Divider className="w-80" style={{margin: "1rem"}} />
 
         <p className="mb-2">{Cdata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
         {OAerror && OAerror.message}
