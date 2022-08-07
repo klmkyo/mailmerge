@@ -21,14 +21,21 @@ import { sanitize } from "dompurify";
 import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { useState } from "react";
+import { useTheme } from "@mui/material";
 import moment from 'moment';
 import 'moment/locale/pl'
-import { Contact, Email } from "@prisma/client";
 import { inferQueryOutput } from '../../utils/trpc';
+import dynamic from "next/dynamic"
+
+const ReactJson = dynamic(() => import('react-json-view'), {ssr: false})
+
+
 
 type EVEmail = inferQueryOutput<"emailVisit.get-all">[number]["email"]
 
 const EmailVisitPage: NextPage = () => {
+
+  const theme = useTheme();
 
   // get all email visits
   const { data: emailVisits, error, isLoading } = trpc.useQuery(["emailVisit.get-all"]);
@@ -110,9 +117,19 @@ const EmailVisitPage: NextPage = () => {
       </main>
 
       {/* Query Dialog */}
-      <Dialog onClose={()=>setQueryDialogOpen(false)} open={queryDialogOpen}>
-      <DialogTitle>Query</DialogTitle>
-        {JSON.stringify(currentQuery)}
+      <Dialog maxWidth="xl" onClose={()=>setQueryDialogOpen(false)} open={queryDialogOpen}>
+        <DialogTitle style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          Dane
+
+          <IconButton
+            onClick={()=>setQueryDialogOpen(false)}
+          >
+            <CloseIcon />
+          </IconButton>
+
+        </DialogTitle>
+
+        <ReactJson style={{padding: "1rem"}} theme={theme.palette.mode === "dark" ? "monokai" : "rjv-default"} src={currentQuery!} />
       </Dialog>
 
       {/* Email Dialog */}
