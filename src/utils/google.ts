@@ -8,7 +8,9 @@ export const oauth2Client = new google.auth.OAuth2(
 );
 
 const scopes = [
-  "https://mail.google.com/"
+  "https://mail.google.com/",
+  "openid",
+  "email"
 ];
 
 export const emailOAuthUrl = oauth2Client.generateAuthUrl({

@@ -12,6 +12,8 @@ const GmailAuth: NextPage = () => {
 
   const code = router.query.code as string | undefined;
 
+  console.log(router.query);
+
   const { mutate: OAmutate } = trpc.useMutation(["settings.upsert-gmail-auth"], {
     onSuccess: () => {
       router.push("/settings");

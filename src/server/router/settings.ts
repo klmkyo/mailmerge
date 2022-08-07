@@ -3,7 +3,7 @@ import { z } from "zod";
 import { upsertGmailSettings } from "../../schema/settings.schema";
 import { emailOAuthUrl, oauth2Client } from "../../utils/google";
 import { createProtectedRouter } from "./protected-router";
-
+import { google } from "googleapis";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const settingsRouter = createProtectedRouter()
@@ -39,8 +39,14 @@ export const settingsRouter = createProtectedRouter()
     input: upsertGmailSettings,
     async resolve({ ctx, input }) {
       try {
-        const { tokens } = await oauth2Client.getToken(input.authorizationCode);
-        const refreshToken = tokens.refresh_token;
+        const res = await oauth2Client.getToken(input.authorizationCode);
+
+        /* It's a method that checks if the token is valid. */
+        const refreshToken = res.tokens.refresh_token;
+
+        console.log(res.tokens);
+
+        const userInfo = await oauth2Client.getTokenInfo(res.tokens.access_token!);
 
         if (!refreshToken) {
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Something went wrong, did not receive refresh token from Google" });
@@ -53,10 +59,11 @@ export const settingsRouter = createProtectedRouter()
             userId: user?.id
           },
           update: {
+            email: userInfo.email!,
             refreshToken
           },
           create: {
-            email: user.email!,
+            email: userInfo.email!,
             refreshToken,
             user: {
               connect: {
@@ -71,13 +78,3 @@ export const settingsRouter = createProtectedRouter()
       }
     }
   })
-  .mutation("update-email", {
-    input: z.object({ email: z.string().email() }),
-    async resolve({ ctx, input }) {
-      const { user } = ctx.session;
-      return ctx.prisma.gmailSettings.update({
-        where: { userId: user.id },
-        data: { email: input.email }
-      });
-    }
-  });
