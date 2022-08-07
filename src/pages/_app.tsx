@@ -1,6 +1,6 @@
 // src/pages/_app.tsx
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
 import { loggerLink } from '@trpc/client/links/loggerLink';
 import { withTRPC } from "@trpc/next";
@@ -12,20 +12,45 @@ import Header from "../components/Header";
 import type { AppRouter } from "../server/router";
 import "../styles/globals.css";
 import theme from '../styles/theme';
+import {createContext, useState, useMemo} from "react";
+
+export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    [],
+  );
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode],
+  );
+
   return (
     <SessionProvider session={session}>
-      <SnackbarProvider>
+      <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Header />
-          <Component {...pageProps} />
+          <SnackbarProvider>
+            <CssBaseline />
+            <Header />
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </ThemeProvider>
-      </SnackbarProvider>
+      </ColorModeContext.Provider>
     </SessionProvider>
   );
 };

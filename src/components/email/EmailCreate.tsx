@@ -10,6 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Contact, EmailTemplate } from "@prisma/client";
 import { sanitize } from "dompurify";
@@ -111,9 +112,9 @@ const EmailTemplate = ({ emailTemplate }: {
   const { toggleEmailTemplateSelection } = useContext(EmailTemplateContext);
 
   return (
-    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
+    <Paper elevation={1} variant="outlined" square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "min(50em, 100%)", height: "40em" }}>
 
-      <header className="flex justify-between border-b pb-4">
+      <header className="flex justify-between pb-4">
         {/* Subject / Recepient */}
         <div>
           <div className="text-3xl">{emailTemplate.subject}</div>
@@ -123,16 +124,19 @@ const EmailTemplate = ({ emailTemplate }: {
           <div>{emailTemplate.tags?.join(", ")}</div>
         </div>
       </header>
+      <Divider />
+
 
       <div className="flex-1 mt-3 unset">
         {parse(sanitize(emailTemplate.body))}
       </div>
 
-      <footer className="flex justify-between border-t pt-2">
+      <Divider />
+      <footer className="flex justify-between pt-2">
         <div />
       </footer>
       {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
-    </div>
+    </Paper>
   )
 };
 

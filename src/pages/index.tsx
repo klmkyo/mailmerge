@@ -1,3 +1,4 @@
+import { Card, CardActionArea, Paper } from "@mui/material";
 import type { GetServerSideProps, NextPage } from "next";
 import { getSession } from "next-auth/react";
 import Head from "next/head";
@@ -20,7 +21,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold">
           Mail<span className="text-purple-300">Merge</span>
         </h1>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
@@ -62,13 +63,15 @@ const TechnologyCard = ({
 }: TechnologyCardProps) => {
   return (
     <Link
-      className="mt-3 text-sm underline text-violet-500 decoration-dotted underline-offset-2"
+      className="mt-3 text-sm underline decoration-dotted underline-offset-2"
       href={link}
     >
-      <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105 cursor-pointer">
-        <h2 className="text-lg text-gray-700">{name}</h2>
-        <h3 className="text-sm text-gray-500">{desc}</h3>
-      </section>
+      <Card elevation={1} variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
+        <CardActionArea className="p-6">
+          <h2 className="text-lg">{name}</h2>
+          <h3 className="text-sm">{desc}</h3>
+        </CardActionArea>
+      </Card>
     </Link>
   );
 };

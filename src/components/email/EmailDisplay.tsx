@@ -2,7 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import { Box, Button, ButtonGroup, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Grid, MenuItem, Paper, Select, Stack, TextField } from "@mui/material";
+import { Box, Paper, Divider, Button, ButtonGroup, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Grid, MenuItem, Select, Stack, TextField } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -370,9 +370,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const wasSent = !!email.sentAt;
 
   return (
-    <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "50em", height: "40em" }}>
+    <Paper elevation={1} variant="outlined" square className="flex flex-col items-stretch m-2 p-4 relative" style={{ width: "50em", height: "40em" }}>
 
-      <header className="flex justify-between border-b pb-4">
+      <header className="flex justify-between pb-4">
         {/* Subject / Recepient */}
         <div>
           <div className="text-3xl">{email.subject}</div>
@@ -383,12 +383,14 @@ const EmailCard = ({ email, handleSelect, checked }: {
           <div>{email.tags?.join(", ")}</div>
         </div>
       </header>
+      <Divider />
 
       <div className="flex-1 mt-3">
         <Letter html={sanitize(email.body)} />
       </div>
 
-      <footer className="flex justify-between items-center border-t pt-2">
+      <Divider />
+      <footer className="flex justify-between items-center pt-3.5">
         <div>
           {wasSent ? 
             <div>
@@ -421,7 +423,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
         {!wasSent && <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>}
       </footer>
       {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {email.id}</div>}
-    </div>
+    </Paper>
   )
 };
 

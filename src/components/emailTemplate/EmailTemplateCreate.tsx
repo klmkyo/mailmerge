@@ -1,6 +1,6 @@
 // page in which you create emailTemplates
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from "@mui/material";
+import { Button, useTheme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from "@mui/material";
 import { Editor } from '@tinymce/tinymce-react';
 import { FC, useRef, useState } from "react";
 import { useForm } from 'react-hook-form';
@@ -41,6 +41,9 @@ const EmailTemplateCreate: FC = () => {
   const [url, setUrl] = useState('');
   const [filename, setFilename] = useState('');
   const [position, setPosition] = useState('end');
+
+  const theme = useTheme();
+
 
   const { mutate, error } = trpc.useMutation(["emailTemplate.create"], {
     onSuccess: () => {
@@ -84,6 +87,7 @@ const EmailTemplateCreate: FC = () => {
           initialValue={`<div dir="ltr"></div>`}
           init={{
             language: 'pl',
+            ...(theme.palette.mode === "dark" && {skin: "oxide-dark", content_css: "dark"}),
             branding: false,
             height: 500,
             menubar: true,
