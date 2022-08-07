@@ -1,17 +1,17 @@
 // src/pages/_app.tsx
-import { withTRPC } from "@trpc/next";
-import type { AppRouter } from "../server/router";
-import type { AppType } from "next/dist/shared/lib/utils";
-import { loggerLink } from '@trpc/client/links/loggerLink'
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
-import superjson from "superjson";
-import { SessionProvider } from "next-auth/react";
-import "../styles/globals.css";
-import Header from "../components/Header";
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../styles/theme';
 import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
+import { loggerLink } from '@trpc/client/links/loggerLink';
+import { withTRPC } from "@trpc/next";
+import { SessionProvider } from "next-auth/react";
+import type { AppType } from "next/dist/shared/lib/utils";
 import { SnackbarProvider } from 'notistack';
+import superjson from "superjson";
+import Header from "../components/Header";
+import type { AppRouter } from "../server/router";
+import "../styles/globals.css";
+import theme from '../styles/theme';
 
 const MyApp: AppType = ({
   Component,

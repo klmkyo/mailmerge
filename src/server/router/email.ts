@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";

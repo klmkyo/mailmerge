@@ -1,13 +1,11 @@
 // page in which you create emailTemplates
 
-import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useForm } from 'react-hook-form';
-import { NextPage } from "next";
-import EmailList from "../../components/email/EmaiList";
-import Link from "next/link";
-import { Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import { Button } from "@mui/material";
+import { NextPage } from "next";
+import Head from "next/head";
+import Link from "next/link";
+import EmailList from "../../components/email/EmaiList";
 
 const EmailIndexPage: NextPage = () => {
 

@@ -1,7 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
+import { getSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import { getSession } from "next-auth/react"
 
 type TechnologyCardProps = {
   name: string;

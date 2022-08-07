@@ -1,4 +1,4 @@
-import z, { optional } from "zod";
+import z from "zod";
 
 export const createContactSchema = z.object({
   email: z.string().email("Invalid email address"),

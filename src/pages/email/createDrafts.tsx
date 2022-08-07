@@ -1,7 +1,7 @@
 // page in which you create emailTemplates
 
-import Head from "next/head";
 import { NextPage } from "next";
+import Head from "next/head";
 import EmailCreate from "../../components/email/EmailCreate";
 
 const CreateMailPage: NextPage = () => {

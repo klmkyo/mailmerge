@@ -1,34 +1,28 @@
 // page in which you create emailTemplates
 
-import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useFieldArray, useForm } from 'react-hook-form';
-import { NextPage } from "next";
-import { CreateContactSchemaInput } from "../../schema/contact.schema";
-import { FC, MouseEvent, useState, useMemo } from "react";
-import { Contact } from "@prisma/client";
-import Table from '@mui/material/Table';
-import TextField from '@mui/material/TextField';
-import TableBody from '@mui/material/TableBody';
-import Popover from '@mui/material/Popover';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Autocomplete from '@mui/material/Autocomplete';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import AddIcon from '@mui/icons-material/Add';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import LinearProgress from '@mui/material/LinearProgress';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { onlyUnique } from "../../utils/onlyUnique";
-import { extractEmails } from "../../utils/emails";
-import { VariantType, useSnackbar } from 'notistack';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import { Contact } from "@prisma/client";
+import { NextPage } from "next";
+import Head from "next/head";
+import { useSnackbar } from 'notistack';
+import { FC, useMemo, useState } from "react";
 import { Loading } from "../../components/Loading";
+import { extractEmails } from "../../utils/emails";
+import { onlyUnique } from "../../utils/onlyUnique";
+import { trpc } from "../../utils/trpc";
 
 
 const CreateContactPage: NextPage = () => {

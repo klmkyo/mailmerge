@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
-import { trpc } from "../../utils/trpc";
 import { useRouter } from 'next/router';
 import { useState } from "react";
+import { trpc } from "../../utils/trpc";
 
 
 const GmailAuth: NextPage = () => {

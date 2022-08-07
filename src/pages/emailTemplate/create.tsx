@@ -1,7 +1,5 @@
-import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useForm } from 'react-hook-form';
 import { NextPage } from "next";
+import Head from "next/head";
 import EmailTemplateCreate from "../../components/emailTemplate/EmailTemplateCreate";
 
 const EmailTemplateCreatePage: NextPage = () => {

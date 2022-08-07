@@ -1,14 +1,11 @@
-import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useFieldArray, useForm } from 'react-hook-form';
-import { FC, useState } from "react";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Grid, Stack } from "@mui/material";
 import { EmailTemplate } from "@prisma/client";
-import { Box, Button, ButtonGroup, Grid, Checkbox, FormControlLabel, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
+import { FC, useState } from "react";
 import { isDev } from "../../utils/isDev";
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import { trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
 
 const EmailTemplateList: FC = () => {

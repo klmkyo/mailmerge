@@ -1,11 +1,11 @@
 // page in which you create emailTemplates
 
-import Head from "next/head";
-import { NextPage } from "next";
-import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
-import Link from "next/link";
-import { Button } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import { Button } from "@mui/material";
+import { NextPage } from "next";
+import Head from "next/head";
+import Link from "next/link";
+import EmailTemplateList from "../../components/emailTemplate/EmailTemplateList";
 
 const EmailTemplateIndexPage: NextPage = () => {
 

@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession as getServerSession } from "next-auth";
-import { authOptions as nextAuthOptions } from "./auth/[...nextauth]";
 import { prisma } from "../../server/db/client";
 import { oauth2Client } from "../../utils/google";
+import { authOptions as nextAuthOptions } from "./auth/[...nextauth]";
 
 const emailAuth = async (req: NextApiRequest, res: NextApiResponse) => {
 

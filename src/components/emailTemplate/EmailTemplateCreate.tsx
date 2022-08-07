@@ -1,16 +1,14 @@
 // page in which you create emailTemplates
 
-import Head from "next/head";
-import { trpc } from "../../utils/trpc";
-import { useFieldArray, useForm } from 'react-hook-form';
-import { CreateContactSchemaInput } from "../../schema/contact.schema";
-import { Box, Button, ButtonGroup, Grid, Checkbox, FormLabel, RadioGroup, Radio, FormControlLabel, FormControl, Stack, TextField, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
-import { FC, useRef, useState } from "react";
-import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from "@mui/material";
 import { Editor } from '@tinymce/tinymce-react';
+import { FC, useRef, useState } from "react";
+import { useForm } from 'react-hook-form';
 import { Editor as TinyMCEEditor } from 'tinymce';
-import { isDev } from "../../utils/isDev";
+import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import { createGdriveChip } from "../../utils/gdriveChip";
+import { isDev } from "../../utils/isDev";
+import { trpc } from "../../utils/trpc";
 
 
 const EmailTemplateCreate: FC = () => {

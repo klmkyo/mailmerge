@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { createEmailTemplateSchema, deleteEmailTemplateSchema } from "../../schema/emailTemplate.schema";
 import { createProtectedRouter } from "./protected-router";
-import { z } from "zod";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailTemplateRouter = createProtectedRouter()

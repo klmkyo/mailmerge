@@ -1,14 +1,14 @@
 // src/server/router/index.ts
-import { createRouter } from "./context";
 import superjson from "superjson";
+import { createRouter } from "./context";
 
-import { exampleRouter } from "./example";
-import { protectedExampleRouter } from "./protected-example-router";
-import { emailTemplateRouter } from "./emailTemplate";
 import { contactRouter } from "./contact";
 import { emailRouter } from "./email";
-import { settingsRouter } from "./settings";
+import { emailTemplateRouter } from "./emailTemplate";
 import { emailVisitRouter } from "./emailVisit";
+import { exampleRouter } from "./example";
+import { protectedExampleRouter } from "./protected-example-router";
+import { settingsRouter } from "./settings";
 
 export const appRouter = createRouter()
   .transformer(superjson)

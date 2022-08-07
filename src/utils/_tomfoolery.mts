@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/smtp-transport";
 // import { getBaseUrl } from "../pages/_app";
-import { prisma } from "../server/db/client";
 
 const getBaseUrl = () => "https://localhost:3000";
 

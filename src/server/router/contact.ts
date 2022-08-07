@@ -1,9 +1,8 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { createContactSchema, deleteContactSchema, updateContactSchema } from "../../schema/contact.schema";
-import { createProtectedRouter } from "./protected-router";
 import { onlyUnique } from "../../utils/onlyUnique";
+import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const contactRouter = createProtectedRouter()
