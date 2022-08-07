@@ -2,7 +2,7 @@ import { Box, CircularProgress } from "@mui/material"
 
 export const Loading = () => {
   return(
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
       <CircularProgress />
     </Box>
   )

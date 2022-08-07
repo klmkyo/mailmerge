@@ -72,7 +72,7 @@ export function EmailCreateUnwrapped() {
       </div>
 
       <br />
-      
+
       <p className="flex items-center">
         <span className="text-xs italic font-grey-600 mt-1 mb-2 mr-2">
           Zaznaczone kontakty: {selectedContactsCount}
@@ -94,7 +94,7 @@ export function EmailCreateUnwrapped() {
         }}>
         <b>3. Utwórz Maile</b>
       </Button>
-      
+
       {/* Bottom bar */}
 
       {isDev && <div className="fixed bottom-0 m-2 mr-8 flex gap-4 justify-end w-full">

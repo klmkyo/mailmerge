@@ -30,6 +30,8 @@ const CreateContactPage: NextPage = () => {
   const [newEmails, setNewEmails] = useState("");
   const utils = trpc.useContext();
 
+  const { data: contacts } = trpc.useQuery(['contact.getAll']);
+
   const { mutate: createContact } = trpc.useMutation(['contact.create'], {
     onError: (error) => {
       alert(error)
@@ -50,6 +52,11 @@ const CreateContactPage: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center p-4 mt-20">
+
+        {/* ilość kontaktów */}
+        <div className="flex flex-col items-center justify-center mb-20">
+          <h1 className="text-xl">Ilość kontaktów: <b>{contacts?.length}</b></h1>
+        </div>
 
         <ContactTable />
 

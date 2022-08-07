@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import EmailList from "../../components/email/EmaiList";
+import EmailDisplay from "../../components/email/EmailDisplay";
 
 const EmailIndexPage: NextPage = () => {
 
@@ -16,7 +16,7 @@ const EmailIndexPage: NextPage = () => {
       </Head>
 
       <main className="h-screen w-full p-10">
-        <EmailList />
+        <EmailDisplay />
       </main>
 
       <div className="fixed bottom-6 right-6">

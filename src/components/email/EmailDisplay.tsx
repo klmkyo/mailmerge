@@ -19,6 +19,11 @@ import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import moment from 'moment';
+import 'moment/locale/pl'
+
 
 const timeIntervals = [
   {
@@ -36,10 +41,10 @@ const timeIntervals = [
 ];
 
 
-const EmailList: FC = () => {
+const EmailDisplay: FC = () => {
 
   const utils = trpc.useContext();
-  const { data: emails, isLoading, error } = trpc.useQuery(['email.getAll']);
+
   const { mutate: deleteMany } = trpc.useMutation(["email.delete-many"], {
     onSuccess() {
       utils.invalidateQueries('email.getAll')
@@ -51,7 +56,20 @@ const EmailList: FC = () => {
     }
   })
 
+  const [gridView, setGridView] = useState<"grid" | "list">("grid");
+  const [filter, setFilter] = useState<"sent" | "unsent">("unsent");
+
+  const { data: emailsUnfiltered, isLoading, error } = trpc.useQuery(['email.getAll']);
+  // filter emails
+  const emails = emailsUnfiltered?.filter(email => {
+    if (filter === 'sent') {
+      return email.sentAt;
+    }
+    return email.sentAt === null;
+  });
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [sendMultipleDialogOpen, setSendMultipleDialogOpen] = useState(false);
 
@@ -84,60 +102,87 @@ const EmailList: FC = () => {
     <>
       <Box sx={{ width: "100%", display: "flex", position: "relative", justifyContent: "space-between", marginBottom: "3em" }}>
         {/* select all */}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={selectedIds.length === (emails?.length ?? 0)}
-              onChange={(event) => {
-                if (event.target.checked) {
-                  if (emails) {
-                    setSelectedIds(emails.map(email => email.id));
+        <div className="flex gap-6">
+          {/* sent/unsent filter */}
+          <ToggleButtonGroup exclusive value={filter} onChange={(e,v) => setFilter(v ?? filter)}>
+            <ToggleButton value="unsent">Nie wysłane</ToggleButton>
+            <ToggleButton value="sent">Wysłane</ToggleButton>
+          </ToggleButtonGroup>
+          {filter === "unsent" &&
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedIds.length === (emails?.length ?? 0)}
+                  onChange={(event) => {
+                    if (event.target.checked) {
+                      if (emails) {
+                        setSelectedIds(emails.map(email => email.id));
+                      }
+                    } else {
+                      setSelectedIds([]);
+                    }
                   }
-                } else {
-                  setSelectedIds([]);
-                }
+                  }
+                />
               }
-              }
+              label="Zaznacz wszystkie maile"
             />
           }
-          label="Zaznacz wszystkie maile"
-        />
+        </div>
+        
+        {filter === 'unsent' &&
+          <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+            <Stack direction="row" spacing={2}>
+              <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />} onClick={() => setSendMultipleDialogOpen(true)}>
+                Zaplanuj wysłania
+              </Button>
+              <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={() => setConfirmDialogOpen(true)}>
+                Usuń zaznaczone
+              </Button>
+            </Stack>
+          </Box>
+        }
 
-        <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
-          <Stack direction="row" spacing={2}>
-            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />} onClick={() => setSendMultipleDialogOpen(true)}>
-              Zaplanuj wysłania
-            </Button>
-            <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={() => setConfirmDialogOpen(true)}>
-              Usuń zaznaczone
-            </Button>
-          </Stack>
-        </Box>
+        <div>
+          {/* grid/list view switcher */}
+          <ToggleButtonGroup
+            value={gridView}
+            exclusive
+            onChange={ (e, v)=>setGridView(v ?? gridView)}
+          >
+            <ToggleButton value="grid">
+              <ViewModuleIcon />
+            </ToggleButton>
 
-        {/* grid/list view switcher */}
-        <ButtonGroup sx={{ float: "right" }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<ViewModuleIcon />}
-            onClick={() => { }}
-          />
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<ViewListIcon />}
-            onClick={() => { }}
-          />
-        </ButtonGroup>
+            <ToggleButton value="list">
+              <ViewListIcon />
+            </ToggleButton>
+
+          </ToggleButtonGroup>
+        </div>
       </Box>
+
       <Box sx={{ width: "100%" }}>
-        <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
-          {emails?.map((email) => {
-            return (
-              <Email key={email.id} email={email} handleSelect={handleSelect} checked={selectedIds.includes(email.id)} />
-            )
-          })}
-        </Grid>
+
+        {
+          gridView === "grid" ?
+          // Table
+          (
+            <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+              {emails?.map((email) => {
+                return (
+                  <EmailCard key={email.id} email={email} handleSelect={handleSelect} checked={selectedIds.includes(email.id)} />
+                )
+              })}
+            </Grid>
+          )
+              :
+          // List
+          (
+            <p>List</p>
+          )
+        }
+
       </Box>
 
       <Dialog
@@ -224,7 +269,7 @@ const EmailList: FC = () => {
               }
             </Select>
           </div>
-          
+
           <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em", marginBottom: "0.5em" }}>
             Podgląd harmonogramu:
           </DialogContentText>
@@ -257,13 +302,13 @@ const EmailList: FC = () => {
   );
 };
 
-const EmailTimesPreview = ({emails, interval, start}: 
+const EmailTimesPreview = ({emails, interval, start}:
   {
     emails: (Email & { contact: Contact; })[],
     interval: number | null,
     start: Date
   }) => {
-  
+
 
   return(
     <TableContainer component={Paper}>
@@ -292,7 +337,7 @@ const EmailTimesPreview = ({emails, interval, start}:
   )
 }
 
-const Email = ({ email, handleSelect, checked }: {
+const EmailCard = ({ email, handleSelect, checked }: {
   email: Email & {
     contact: Contact;
   },
@@ -322,9 +367,7 @@ const Email = ({ email, handleSelect, checked }: {
     mutate({ id: email.id })
   }
 
-
-  const toBeSentToday = new Date().toDateString() === email.toBeSentAt?.toDateString();
-  const dateString = `Będzie wysłane ${email.toBeSentAt?.toLocaleTimeString()}${(toBeSentToday ? '' : ` ${email.toBeSentAt?.toLocaleDateString()}`)}`;
+  const wasSent = !!email.sentAt;
 
   return (
     <div className="flex flex-col items-stretch m-2 p-4 border relative" style={{ width: "50em", height: "40em" }}>
@@ -336,7 +379,7 @@ const Email = ({ email, handleSelect, checked }: {
           <div><i>Do: {email.contact.email}</i></div>
         </div>
         <div className="flex flex-col items-end">
-          <Checkbox name={email.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />
+          {!wasSent && <Checkbox name={email.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />}
           <div>{email.tags?.join(", ")}</div>
         </div>
       </header>
@@ -347,25 +390,39 @@ const Email = ({ email, handleSelect, checked }: {
 
       <footer className="flex justify-between items-center border-t pt-2">
         <div>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DateTimePicker
-                renderInput={(props) => <TextField {...props} />}
-                label={email.toBeSentAt ? "Edytuj datę wysłania" : "Zaplanuj wysłanie"}
-                value={email.toBeSentAt}
-                onChange={(newDate) => {
-                  updateToBeSentAt({
-                    id: email.id,
-                    toBeSentAt: newDate!
-                  });
-                }}
-              />
-            </LocalizationProvider>
+          {wasSent ? 
+            <div>
+              {`Wysłano: ${email.sentAt!.toLocaleString()}`}
+              <span className="text-gray-600 italic ml-2">
+                {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
+              </span>
+            </div>
+            :
+            <div className="flex gap-3 items-center">
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} />}
+                  label={email.toBeSentAt ? "Edytuj datę wysłania" : "Zaplanuj wysłanie"}
+                  value={email.toBeSentAt}
+                  onChange={(newDate) => {
+                    updateToBeSentAt({
+                      id: email.id,
+                      toBeSentAt: newDate!
+                    });
+                  }}
+                />
+              </LocalizationProvider>
+              <span className="text-gray-600 italic">
+                {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
+              </span>
+            </div>
+          }
         </div>
-        <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
+        {!wasSent && <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>}
       </footer>
       {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {email.id}</div>}
     </div>
   )
 };
 
-export default EmailList;
+export default EmailDisplay;

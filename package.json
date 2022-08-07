@@ -13,7 +13,9 @@
   "dependencies": {
     "@babel/core": "^7.18.10",
     "@emotion/react": "^11.10.0",
+    "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@mui/base": "5.0.0-alpha.92",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.9.3",
     "@mui/x-date-pickers": "5.0.0-beta.4",
@@ -28,6 +30,7 @@
     "dompurify": "^2.3.10",
     "googleapis": "^105.0.0",
     "html-react-parser": "^3.0.1",
+    "moment": "^2.29.4",
     "next": "12.2.3",
     "next-auth": "^4.10.3",
     "nodemailer": "^6.7.7",

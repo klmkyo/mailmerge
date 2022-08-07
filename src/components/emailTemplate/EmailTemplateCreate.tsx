@@ -9,15 +9,35 @@ import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import { createGdriveChip } from "../../utils/gdriveChip";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
+import AddToDriveIcon from '@mui/icons-material/AddToDrive';
+import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
+import { useSnackbar } from 'notistack';
+import { useRouter } from "next/router";
+
+const Action = snackbarId => {
+
+  const router = useRouter();
+
+  return(
+    <>
+      <Button onClick={() => { router.push("/emailTemplate"); }}>
+        Zobacz szablony
+      </Button>
+    </>
+  )
+};
 
 
 const EmailTemplateCreate: FC = () => {
 
   const utils = trpc.useContext();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { handleSubmit, register } = useForm<Omit<CreateEmailTemplateInput, "body">>();
   const [gdriveDialogOpen, setGdriveDialogOpen] = useState(false);
 
+  const [subject, setSubject] = useState("");
+
+  // modal state
   const [url, setUrl] = useState('');
   const [filename, setFilename] = useState('');
   const [position, setPosition] = useState('end');
@@ -25,14 +45,24 @@ const EmailTemplateCreate: FC = () => {
   const { mutate, error } = trpc.useMutation(["emailTemplate.create"], {
     onSuccess: () => {
       utils.invalidateQueries(["emailTemplate.getAll"]);
+      enqueueSnackbar("Utworzono szablon!", { action: Action })
     }
   })
 
-  const onSubmit = (data: Omit<CreateEmailTemplateInput, "body">) => {
-    mutate({...data, body: editorRef.current?.getContent()!})
+  const editorRef = useRef<TinyMCEEditor | null>(null);
+
+  const createTemplate = () => {
+    const body = editorRef.current?.getContent();
+    if (!body || !subject) {
+      alert("Temat oraz treść nie mogą być puste");
+      return;
+    }
+    mutate({
+      subject,
+      body
+    })
   }
 
-  const editorRef = useRef<TinyMCEEditor | null>(null);
   const log = () => {
     if (editorRef.current) {
       console.log(editorRef.current.getContent());
@@ -41,10 +71,13 @@ const EmailTemplateCreate: FC = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col">
         {error && <p>{error.message}</p>}
-        <input className="border" type="subject" placeholder="subject" {...register("subject")}></input>
-        <br />
+        <TextField label="Tytuł Maila" value={subject} onChange={(e)=>setSubject(e.target.value)} style={{width: "30em", marginBottom: "2em"}} />
+        
+        <span className="text-xl mb-1">
+          Treść Maila:
+        </span>
         <Editor
           apiKey="akd0k9vvpz6khox3asb2e431rwtfjgc7wxt1ovdudkb2qo53"
           onInit={(evt, editor) => editorRef.current = editor}
@@ -65,13 +98,20 @@ const EmailTemplateCreate: FC = () => {
           }}
         />
         <br />
-        <button className="border" type="submit">Submit</button>
-      </form>
+
+        <div className="flex flex-row-reverse gap-2">
+          <Button disabled={!subject} startIcon={<MarkEmailReadOutlinedIcon />} className="border" variant="outlined" onClick={createTemplate}>
+            Utwórz szablon
+          </Button>
+          <Button startIcon={<AddToDriveIcon />} className="border" onClick={() => setGdriveDialogOpen(true)}>
+            Dodaj linki z dysku googla
+          </Button>
+        </div>
+
+      </div>
       <br />
       <br />
       {isDev && <button className="border" onClick={log}>Log editor content</button>}
-      <br />
-      <button className="border" onClick={() => setGdriveDialogOpen(true)}>Dodaj linki z dysku googla</button>
 
       <Dialog
         open={gdriveDialogOpen}

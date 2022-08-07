@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";
@@ -37,6 +38,22 @@ export const emailRouter = createProtectedRouter()
   .mutation("delete", {
     input: z.object({ id: z.string().cuid() }),
     async resolve({ ctx, input }) {
+
+      // check if the email has already been sent
+      const email = await ctx.prisma.email.findFirst({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        }
+      });
+
+      if(email?.sentAt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Nie można usunąć wiadomości, która została już wysłana",
+        })
+      }
+
       // first remove all the email visits
       await ctx.prisma.emailVisit.deleteMany({
         where: {
@@ -80,6 +97,22 @@ export const emailRouter = createProtectedRouter()
   .mutation("update-toBeSentAt", {
     input: z.object({ id: z.string().cuid(), toBeSentAt: z.date() }),
     async resolve({ ctx, input }) {
+
+      // check if the email has already been sent
+      const email = await ctx.prisma.email.findFirst({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
+        }
+      });
+
+      if(email?.sentAt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Email został już wysłany",
+        })
+      }
+
       return await ctx.prisma.email.updateMany({
         where: {
           id: input.id,
