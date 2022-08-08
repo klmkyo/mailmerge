@@ -1,9 +1,9 @@
-import { IconButton, Paper, useTheme, Box} from "@mui/material"
-import { signIn, signOut, useSession } from "next-auth/react"
-import Link from "next/link"
-import { useRouter } from "next/router"
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { Box, IconButton, Paper, useTheme } from "@mui/material";
+import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useContext } from "react";
 import { ColorModeContext } from "../pages/_app";
 import { trpc } from "../utils/trpc";

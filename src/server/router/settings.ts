@@ -1,9 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import { upsertGmailSettings } from "../../schema/settings.schema";
 import { emailOAuthUrl, oauth2Client } from "../../utils/google";
 import { createProtectedRouter } from "./protected-router";
-import { google } from "googleapis";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const settingsRouter = createProtectedRouter()

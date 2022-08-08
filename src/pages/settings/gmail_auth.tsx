@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import { useState } from "react";
 import { Loading } from "../../components/Loading";
 import { trpc } from "../../utils/trpc";
-import { useSnackbar } from 'notistack';
 
 
 const GmailAuth: NextPage = () => {

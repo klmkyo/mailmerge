@@ -1,15 +1,15 @@
-import { Card, CardActionArea, Paper } from "@mui/material";
+import { Card, CardActionArea } from "@mui/material";
 import type { GetServerSideProps, NextPage } from "next";
 import { getSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
-import PersonIcon from '@mui/icons-material/Person';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import EmailIcon from '@mui/icons-material/Email';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ReactNode } from "react";
 
 type TechnologyCardProps = {

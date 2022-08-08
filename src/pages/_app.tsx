@@ -1,18 +1,17 @@
 // src/pages/_app.tsx
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
 import { loggerLink } from '@trpc/client/links/loggerLink';
 import { withTRPC } from "@trpc/next";
 import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/dist/shared/lib/utils";
 import { SnackbarProvider } from 'notistack';
+import { createContext, useMemo, useState } from "react";
 import superjson from "superjson";
 import Header from "../components/Header";
 import type { AppRouter } from "../server/router";
 import "../styles/globals.css";
-import {createContext, useState, useMemo} from "react";
-import { red } from '@mui/material/colors';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 

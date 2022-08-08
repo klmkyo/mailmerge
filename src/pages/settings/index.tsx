@@ -1,15 +1,15 @@
+import BuildIcon from '@mui/icons-material/Build';
+import EmailIcon from '@mui/icons-material/Email';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { trpc } from "../../utils/trpc";
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
-import EmailIcon from '@mui/icons-material/Email';
-import BuildIcon from '@mui/icons-material/Build';
-import LoadingButton from '@mui/lab/LoadingButton'
 import { useSnackbar } from 'notistack';
 import { Loading } from "../../components/Loading";
+import { trpc } from "../../utils/trpc";
 
 const Settings: NextPage = () => {
 

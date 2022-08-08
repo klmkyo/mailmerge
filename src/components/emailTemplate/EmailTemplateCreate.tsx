@@ -1,18 +1,16 @@
 // page in which you create emailTemplates
 
-import { Button, useTheme, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from "@mui/material";
+import AddToDriveIcon from '@mui/icons-material/AddToDrive';
+import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, useTheme } from "@mui/material";
 import { Editor } from '@tinymce/tinymce-react';
+import { useRouter } from "next/router";
+import { useSnackbar } from 'notistack';
 import { FC, useRef, useState } from "react";
-import { useForm } from 'react-hook-form';
 import { Editor as TinyMCEEditor } from 'tinymce';
-import { CreateEmailTemplateInput } from "../../schema/emailTemplate.schema";
 import { createGdriveChip } from "../../utils/gdriveChip";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
-import AddToDriveIcon from '@mui/icons-material/AddToDrive';
-import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
-import { useSnackbar } from 'notistack';
-import { useRouter } from "next/router";
 
 const Action = () => {
 

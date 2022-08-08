@@ -1,11 +1,10 @@
 import { TRPCError } from "@trpc/server";
+import nodemailer from "nodemailer";
+import { MailOptions } from "nodemailer/lib/smtp-transport";
 import { z } from "zod";
 import { DEPLOY_URL } from "../../pages/_app";
 import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";
-import nodemailer from "nodemailer";
-import { MailOptions } from "nodemailer/lib/smtp-transport";
-import { isDev } from "../../utils/isDev";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
