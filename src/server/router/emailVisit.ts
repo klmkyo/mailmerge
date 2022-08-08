@@ -4,8 +4,8 @@ import { createProtectedRouter } from "./protected-router";
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailVisitRouter = createProtectedRouter()
   .query("get-all", {
-    resolve({ ctx }) {
-      return ctx.prisma.emailVisit.findMany({
+    async resolve({ ctx }) {
+      return await ctx.prisma.emailVisit.findMany({
         where: {
           email: {
             userId: ctx.session.user.id

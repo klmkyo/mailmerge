@@ -42,6 +42,7 @@ export const contactRouter = createProtectedRouter()
     input: deleteContactSchema,
     async resolve({ ctx, input }) {
       try {
+        // delete actual contact
         return await ctx.prisma.contact.deleteMany({
           where: {
             id: input.id,
