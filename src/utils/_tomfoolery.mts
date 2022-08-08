@@ -27,7 +27,7 @@ const mailOptions: MailOptions = {
   from: "mklmkyo@gmail.com",
   to: "mklimek03@gmail.com",
   subject: "track2",
-  html: `<b>test</b><img src=\"${getBaseUrl()}/api/track/${"cl6cu95td03767sc05z6i0hzu"}\"></img>`,
+  html: `<b>test</b><img src=\"${getBaseUrl()}/api/img/${"cl6cu95td03767sc05z6i0hzu"}\"></img>`,
   auth: {
     refreshToken: ""
   }
