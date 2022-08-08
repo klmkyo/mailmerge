@@ -59,6 +59,7 @@ model Email {
   updatedAt DateTime @default(now())
 
   toBeSentAt DateTime?
+  toBeSentTo String
   sentAt     DateTime?
   // in case contact is deleted, we should keep the email
   sentTo     String?
