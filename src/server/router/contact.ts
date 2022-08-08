@@ -1,5 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { createContactSchema, deleteContactSchema, updateContactSchema } from "../../schema/contact.schema";
 import { onlyUnique } from "../../utils/onlyUnique";
 import { createProtectedRouter } from "./protected-router";
@@ -82,6 +83,26 @@ export const contactRouter = createProtectedRouter()
         },
         orderBy: {
           createdAt: "desc"
+        }
+      });
+    }
+  })
+  .query("get", {
+    input: z.object({ id: z.string().cuid() }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.contact.findFirst({
+        where: {
+          id: input.id,
+          user: {
+            id: ctx.session.user.id
+          }
+        },
+        include: {
+          _count: {
+            select: {
+              Email: true,
+            }
+          }
         }
       });
     }

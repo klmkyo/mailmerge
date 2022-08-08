@@ -25,6 +25,16 @@ import { onlyUnique } from "../../utils/onlyUnique";
 import { trpc } from "../../utils/trpc";
 
 
+function compare( a, b ) {
+  if ( a.createdAt < b.createdAt ){
+    return -1;
+  }
+  if ( a.createdAt > b.createdAt ){
+    return 1;
+  }
+  return 0;
+}
+
 const CreateContactPage: NextPage = () => {
 
   const [newEmails, setNewEmails] = useState("");
@@ -100,7 +110,7 @@ const ContactTable: FC = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }}>
+      <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
@@ -111,7 +121,7 @@ const ContactTable: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {contacts?.map((contact) => (
+          {contacts?.sort(compare).map((contact) => (
             <ContactRow key={contact.id} contact={contact} allTags={allTags!} />
           ))}
         </TableBody>
@@ -133,10 +143,19 @@ const ContactRow: FC<{contact: Contact & {
   const [nickName, setNickName] = useState(contact.nickName);
 
   const { mutate: deleteContact, error } = trpc.useMutation(['contact.delete'], {
-    onError: (error) => {
-      alert(error)
+    onMutate: async (data) => {
+      const previousData = utils.getQueryData(['contact.getAll'])
+
+      utils.setQueryData(['contact.getAll'], old => old.filter(x=>x.id!=data.id))
+
+      return {previousData}
+
     },
-    onSuccess: (data) => {
+    onError: (err, newData, context) => {
+      utils.setQueryData(['contact.getAll'], context.previousData)
+      alert(err)
+    },
+    onSettled: (data) => {
       utils.invalidateQueries('contact.getAll');
     }
   })
@@ -146,7 +165,6 @@ const ContactRow: FC<{contact: Contact & {
       alert(error)
     },
     onSuccess: (data) => {
-      utils.invalidateQueries('contact.getAll')
       enqueueSnackbar(`Zaktualizowano ${contact.email}!`);
     }
   })
@@ -165,7 +183,7 @@ const ContactRow: FC<{contact: Contact & {
         onChange={(e)=>{setNickName(e.target.value)}}
         label="Nick"
         variant="outlined"
-        fullWidth
+        size="small"
         onBlur={()=>{
           if(contact.nickName != nickName){
             updateContact({
@@ -188,7 +206,7 @@ const ContactRow: FC<{contact: Contact & {
         }}
         renderTags={(value: readonly string[], getTagProps) =>
           value.map((option: string, index: number) => (
-            <Chip variant="outlined" label={option} {...getTagProps({ index })} key={index} />
+            <Chip variant="outlined" label={option} {...getTagProps({ index })} key={index} size="small" />
           ))
         }
         onBlur={()=>{
@@ -212,6 +230,7 @@ const ContactRow: FC<{contact: Contact & {
           <TextField
             {...params}
             label="Tagi"
+            size="small"
           />
         )}
       />
