@@ -146,7 +146,7 @@ export const emailRouter = createProtectedRouter()
       });
 
       // force check for unsent emails
-      // return await client.mutation('public.send-unsent-emails');
+      return await client.mutation('public.send-unsent-emails');
     }
   })
   .mutation("send-test-mail", {

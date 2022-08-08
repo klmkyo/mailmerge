@@ -22,6 +22,7 @@ import { FC, useState } from "react";
 import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
+import { useSnackbar } from 'notistack';
 import { Loading } from "../Loading";
 
 
@@ -349,6 +350,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
 }) => {
 
   const utils = trpc.useContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
+  const [sendDate, setSendDate] = useState<Date | null>(email.toBeSentAt);
 
   const { mutate, error } = trpc.useMutation(['email.delete'], {
     onError: (error) => {
@@ -360,8 +364,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
   })
 
   const { mutate: updateToBeSentAt } = trpc.useMutation(['email.update-toBeSentAt'], {
-    onSuccess: (data) => {
+    onSuccess: (err, updated) => {
       utils.invalidateQueries('email.getAll')
+      enqueueSnackbar(`Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`, { variant: 'success', preventDuplicate: true });
     }
   })
 
@@ -408,12 +413,18 @@ const EmailCard = ({ email, handleSelect, checked }: {
                 <DateTimePicker
                   renderInput={(props) => <TextField {...props} />}
                   label={email.toBeSentAt ? "Edytuj datę wysłania" : "Zaplanuj wysłanie"}
-                  value={email.toBeSentAt}
+                  value={sendDate}
                   onChange={(newDate) => {
+                    setSendDate(newDate)
+                  }}
+                  open={timePickerOpen}
+                  onOpen={() => setTimePickerOpen(true)}
+                  onClose={()=>{
                     updateToBeSentAt({
                       id: email.id,
-                      toBeSentAt: newDate!
+                      toBeSentAt: sendDate!
                     });
+                    setTimePickerOpen(false);
                   }}
                 />
               </LocalizationProvider>
