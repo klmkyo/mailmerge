@@ -179,7 +179,7 @@ const EmailDisplay: FC = () => {
               :
           // List
           (
-            <p>List</p>
+            <p>Widok listy nie jest jeszcze gotowy</p>
           )
         }
 
