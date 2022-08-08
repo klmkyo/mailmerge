@@ -20,7 +20,7 @@ const GmailAuth: NextPage = () => {
   const { mutate: OAmutate } = trpc.useMutation(["settings.upsert-gmail-auth"], {
     onSuccess: () => {
       enqueueSnackbar("Skonfigurowano Gmaila!", { variant: 'success', preventDuplicate: true });
-      router.push( { pathname: '/', query: { success: true } } );
+      router.push( { pathname: '/settings', query: { success: true } } );
     }
   })
 

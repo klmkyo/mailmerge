@@ -178,4 +178,20 @@ export const emailRouter = createProtectedRouter()
         })
       }
     }
+  })
+  .mutation("send-unsent-emails", {
+    async resolve ({ctx}) {
+      // copiloted
+      const unsentEmails = await ctx.prisma.email.findMany({
+        where: {
+          toBeSentAt: {
+            lte: new Date(),
+          },
+          user: {
+            id: ctx.session.user.id,
+          },
+          sentAt: null,
+        },
+      });
+    }
   });

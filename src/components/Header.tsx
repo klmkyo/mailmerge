@@ -40,7 +40,7 @@ export default function Header() {
         pathname === "/" || 
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link href={"/"}>
-            <a className="text-2xl leading-normal font-extrabold drop-shadow-xl">
+            <a className="text-3xl leading-normal font-extrabold drop-shadow-xl">
               Mail<span className="text-purple-400">Merge</span>
             </a>
           </Link>

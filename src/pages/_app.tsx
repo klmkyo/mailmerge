@@ -11,8 +11,8 @@ import superjson from "superjson";
 import Header from "../components/Header";
 import type { AppRouter } from "../server/router";
 import "../styles/globals.css";
-import theme from '../styles/theme';
 import {createContext, useState, useMemo} from "react";
+import { red } from '@mui/material/colors';
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -34,6 +34,12 @@ const MyApp: AppType = ({
     () =>
       createTheme({
         palette: {
+          primary: {
+            main: '#954be3',
+          },
+          secondary: {
+            main: '#bb84f5',
+          },
           mode,
         },
       }),

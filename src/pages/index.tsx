@@ -5,11 +5,19 @@ import Head from "next/head";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
+import PersonIcon from '@mui/icons-material/Person';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import EmailIcon from '@mui/icons-material/Email';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { ReactNode } from "react";
+
 type TechnologyCardProps = {
   name: string;
   link: string;
   desc?: string;
   highlight?: boolean;
+  icon?: ReactNode;
 };
 
 // TODO infer return types not from prisma, but trpc
@@ -50,27 +58,32 @@ const Home: NextPage = () => {
             name="Kontakty"
             link="/contact"
             desc="Zarządzanie kontaktami"
+            icon={<PersonIcon color="secondary" />}
           />
           <TechnologyCard
             name="Szablony Maili"
             link="/emailTemplate"
             desc="Utwórz szablony, z których powstaną maile"
+            icon={<DraftsIcon color="secondary" />}
           />
           <TechnologyCard
             name="Maile"
             link="/email"
             desc="Utwórz i wysyłaj maile"
+            icon={<EmailIcon color="secondary" />}
           />
           <TechnologyCard
             name="Otworzenia Maili"
             link="/emailVisit"
             desc="Zobacz kto otworzył Twoje maile"
+            icon={<VisibilityIcon color="secondary" />}
           />
           <TechnologyCard
             name="Konfiguracja"
             link="/settings"
             desc="Konfiguruj ustawienia Gmaila"
             highlight={!isConnected}
+            icon={<SettingsIcon color="secondary" />}
           />
         </div>
       </main>
@@ -82,7 +95,8 @@ const TechnologyCard = ({
   name,
   link,
   desc,
-  highlight = false
+  highlight = false,
+  icon
 }: TechnologyCardProps) => {
   return (
     <Link
@@ -91,7 +105,10 @@ const TechnologyCard = ({
     >
       <Card variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
         <CardActionArea style={{padding: "1.5rem"}}>
-          <h2 className={`text-lg ${highlight && "text-purple-500"}`}>{name}</h2>
+          <h2 className={`flex items-center justify-center gap-1.5 text-lg ${highlight && "text-purple-500"}`}>
+            {icon} 
+            {name}
+          </h2>
           <h3 className="text-sm">{desc}</h3>
         </CardActionArea>
       </Card>
