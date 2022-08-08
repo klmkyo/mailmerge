@@ -18,22 +18,35 @@ import { Contact } from "@prisma/client";
 import { NextPage } from "next";
 import Head from "next/head";
 import { useSnackbar } from 'notistack';
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Loading } from "../../components/Loading";
 import { extractEmails } from "../../utils/emails";
 import { onlyUnique } from "../../utils/onlyUnique";
 import { trpc } from "../../utils/trpc";
+import create from 'zustand'
 
+// get alltags initially by using current method, then use global state bear to mangae them from children
 
 function compare( a, b ) {
-  if ( a.createdAt < b.createdAt ){
+  if ( a.email < b.email ){
     return -1;
   }
-  if ( a.createdAt > b.createdAt ){
+  if ( a.email > b.email ){
     return 1;
   }
   return 0;
 }
+
+interface AllTagsState {
+  allTags: string[],
+  addTag: (tag: string) => void,
+}
+
+const useAllTags = create<AllTagsState>((set) => ({
+  allTags: [],
+  addTag: (tag: string) => set((state) => ({allTags: [...state.allTags, tag].filter(onlyUnique)}))
+}))
+
 
 const CreateContactPage: NextPage = () => {
 
@@ -96,7 +109,11 @@ const CreateContactPage: NextPage = () => {
 const ContactTable: FC = () => {
   const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
 
-  const allTags = useMemo( () => contacts?.map((c)=>c.tags).flat().filter(onlyUnique), [contacts])
+  const {allTags, addTag} = useAllTags()
+
+  useEffect(()=>{
+    contacts?.map((c)=>c.tags).flat().filter(onlyUnique).forEach((tag)=>addTag(tag))
+  }, [contacts, addTag])
 
   if (isLoading) {
     return (
@@ -122,7 +139,7 @@ const ContactTable: FC = () => {
         </TableHead>
         <TableBody>
           {contacts?.sort(compare).map((contact) => (
-            <ContactRow key={contact.id} contact={contact} allTags={allTags!} />
+            <ContactRow key={contact.id} contact={contact} />
           ))}
         </TableBody>
       </Table>
@@ -134,7 +151,9 @@ const ContactRow: FC<{contact: Contact & {
   _count: {
       Email: number;
   };
-}, allTags: string[]}> = ({ contact, allTags }) => {
+}}> = ({ contact }) => {
+
+  const {allTags, addTag} = useAllTags()
 
   const utils = trpc.useContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -142,18 +161,17 @@ const ContactRow: FC<{contact: Contact & {
   const [tags, setTags] = useState<string[]>(contact.tags);
   const [nickName, setNickName] = useState(contact.nickName);
 
-  const { mutate: deleteContact, error } = trpc.useMutation(['contact.delete'], {
+  const { mutate: deleteContact } = trpc.useMutation(['contact.delete'], {
     onMutate: async (data) => {
-      const previousData = utils.getQueryData(['contact.getAll'])
+      const previousContacts = utils.getQueryData(['contact.getAll'])
 
       utils.setQueryData(['contact.getAll'], old => old.filter(x=>x.id!=data.id))
 
-      return {previousData}
-
+      return { previousContacts }
     },
-    onError: (err, newData, context) => {
-      utils.setQueryData(['contact.getAll'], context.previousData)
-      alert(err)
+    onError: (err, newContacts, context) => {
+      utils.setQueryData(['contact.getAll'], context!.previousContacts)
+      enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSettled: (data) => {
       utils.invalidateQueries('contact.getAll');
@@ -161,11 +179,35 @@ const ContactRow: FC<{contact: Contact & {
   })
 
   const { mutate: updateContact } = trpc.useMutation(['contact.update'], {
-    onError: (error) => {
-      alert(error)
+    onMutate: async (data) => {
+      const previousContacts = utils.getQueryData(['contact.getAll']);
+
+      utils.setQueryData(['contact.getAll'], (oldContacts) => {
+
+        const contactIndex = oldContacts.findIndex(x=>x.id==data.id);
+
+        console.log(`Updated Contact ${contactIndex}`)
+        let newContacts = oldContacts;
+        newContacts[contactIndex] = {
+          ...newContacts[contactIndex],
+          ...data
+        }
+
+        return newContacts;
+      })
+
+      return {previousContacts}
+
+    },
+    onError: (err, newContacts, context) => {
+      utils.setQueryData(['contact.getAll'], context!.previousContacts)
+      enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSuccess: (data) => {
       enqueueSnackbar(`Zaktualizowano ${contact.email}!`);
+    },
+    onSettled: (data) => {
+      utils.invalidateQueries('contact.getAll');
     }
   })
 
@@ -201,31 +243,23 @@ const ContactRow: FC<{contact: Contact & {
         options={allTags}
         freeSolo
         value={tags}
-        onChange={(event: any, newValue: string[]) => {
-          setTags(newValue);
+        onChange={(event: any, newTags: string[]) => {
+          setTags(newTags);
+
+          if(JSON.stringify(newTags) != JSON.stringify(contact.tags)){
+            updateContact({
+              id: contact.id,
+              newTags
+            })
+            // add new tags to allTags
+            newTags.filter(x => !allTags.includes(x)).forEach((tag)=>addTag(tag))
+          }
         }}
         renderTags={(value: readonly string[], getTagProps) =>
           value.map((option: string, index: number) => (
             <Chip variant="outlined" label={option} {...getTagProps({ index })} key={index} size="small" />
           ))
         }
-        onBlur={()=>{
-          if(tags != contact.tags){
-            updateContact({
-              id: contact.id,
-              tags
-            })
-          }
-        }}
-        onKeyPress={(e) => {
-          console.log(e.key)
-          if (e.key === "Enter") {
-            updateContact({
-              id: contact.id,
-              tags
-            })
-          }
-        }}
         renderInput={(params) => (
           <TextField
             {...params}

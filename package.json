@@ -45,7 +45,8 @@
     "react-query": "3.39.2",
     "superjson": "^1.9.1",
     "tinymce": "^6.1.2",
-    "zod": "^3.17.10"
+    "zod": "^3.17.10",
+    "zustand": "^4.0.0"
   },
   "devDependencies": {
     "@types/dompurify": "^2.3.3",
