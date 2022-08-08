@@ -65,7 +65,7 @@ const CreateContactPage: NextPage = () => {
           multiline
           value={newEmails}
           onChange={(e)=>{setNewEmails(e.target.value)}}
-          label="Email (można podać więcej niz jeden)"
+          label="Email (można podać kilka)"
           variant="outlined"
           size="small"
           style={{width: "30em"}}
