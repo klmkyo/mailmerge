@@ -1,7 +1,24 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { DEPLOY_URL } from "../../pages/_app";
 import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";
+import nodemailer from "nodemailer";
+import { MailOptions } from "nodemailer/lib/smtp-transport";
+import { isDev } from "../../utils/isDev";
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
+const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN!;
+
+const smtpTransport = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    type: "OAuth2",
+    clientId: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+  }
+});
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailRouter = createProtectedRouter()
@@ -126,7 +143,37 @@ export const emailRouter = createProtectedRouter()
   })
   .mutation("send-test-mail", {
     async resolve ({ctx}) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return true;
+
+      const {refreshToken, email} = await ctx.prisma.gmailSettings.findFirstOrThrow({
+        where: {
+          user: {
+            id: ctx.session.user.id,
+          },
+        },
+      })
+
+      const mailOptions: MailOptions = {
+        from: email,
+        to: email,
+        subject: "Testowy Email - MailMerge",
+        html: `Chyba działa co nie
+        
+        Test załączników:
+        <img src="${DEPLOY_URL}"/bruh.gif></img>`,
+        auth: {
+          user: email,
+          refreshToken: refreshToken
+        }
+      };
+      
+      try{
+        await smtpTransport.sendMail(mailOptions);
+        return true
+      } catch(e) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Nie udało się wysłać testowego emaila",
+        })
+      }
     }
   });

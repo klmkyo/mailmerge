@@ -55,6 +55,8 @@ const MyApp: AppType = ({
   );
 };
 
+export const DEPLOY_URL = "https://mailmerge.vercel.app";
+
 export const getBaseUrl = () => {
   if (typeof window !== "undefined") {
     return "";
