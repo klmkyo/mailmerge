@@ -6,19 +6,17 @@ import { contactRouter } from "./contact";
 import { emailRouter } from "./email";
 import { emailTemplateRouter } from "./emailTemplate";
 import { emailVisitRouter } from "./emailVisit";
-import { exampleRouter } from "./example";
-import { protectedExampleRouter } from "./protected-example-router";
 import { settingsRouter } from "./settings";
+import { publicRouter } from "./public";
 
 export const appRouter = createRouter()
   .transformer(superjson)
-  .merge("example.", exampleRouter)
-  .merge("question.", protectedExampleRouter)
   .merge("emailTemplate.", emailTemplateRouter)
   .merge("email.", emailRouter)
   .merge("contact.", contactRouter)
   .merge("settings.", settingsRouter)
-  .merge("emailVisit.", emailVisitRouter);
+  .merge("emailVisit.", emailVisitRouter)
+  .merge("public.", publicRouter);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

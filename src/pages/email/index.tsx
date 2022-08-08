@@ -15,7 +15,7 @@ const EmailIndexPage: NextPage = () => {
 
   const utils = trpc.useContext();
 
-  const { mutate: sendUnsentMails, isLoading } = trpc.useMutation(["email.send-unsent-emails"], {
+  const { mutate: sendUnsentMails, isLoading } = trpc.useMutation(["public.send-unsent-emails"], {
     onSuccess: (data) => {
       utils.invalidateQueries('email.getAll')
     }
