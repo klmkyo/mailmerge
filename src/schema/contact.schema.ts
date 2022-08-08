@@ -10,10 +10,16 @@ export const updateContactSchema = z.object({
   id: z.string().cuid(),
   nickName: z.string().max(256, "Nickname is too long").optional().nullable(),
   tags: z.array(z.string().max(256, "Tag is too long")).optional().nullable(),
+  hidden: z.boolean().optional().nullable(),
 })
+
 
 export type CreateContactSchemaInput = z.TypeOf<typeof createContactSchema>
 
 export const deleteContactSchema = z.object({
+  id: z.string().cuid()
+});
+
+export const hideContactSchema = z.object({
   id: z.string().cuid()
 });

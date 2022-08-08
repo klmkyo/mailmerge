@@ -52,10 +52,12 @@ export const contactRouter = createProtectedRouter()
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {
           // The .code property can be accessed in a type-safe manner
+
+          // P2003 - foreign key constraint violation
           if (e.code === 'P2003') {
             throw new TRPCError({
               code: "FORBIDDEN",
-              message: "Nie można usunąć kontaktu, do którego został wysłany email",
+              message: "Nie można usunąć kontaktu, do którego został wysłany email. Spróbuj go schować.",
             });
           }
         }

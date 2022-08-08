@@ -34,6 +34,9 @@ model Contact {
   email     String @unique
   nickName  String?
   tags      String[]
+
+  hidden Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   Email     Email[]
