@@ -51,6 +51,9 @@ export function EmailCreateUnwrapped() {
       <div className="flex w-full justify-center mt-8">
         <ContactTable />
       </div>
+        <span className="text-xl mt-6">
+          Zaznaczone kontakty: {selectedContactsCount}
+        </span>
       <br />
 
       {/* Szablony */}
@@ -144,7 +147,29 @@ const ContactTable: FC = () => {
 
   const allTags = useMemo( () => contacts?.map((c)=>c.tags).flat().filter(onlyUnique), [contacts])
 
+  // an object containing tag: select_count pairs
+  const tagCountMap = useMemo( () => {
+    const tempTagCountMap: {[tag: string]: number} = {}
+    contacts.forEach( (contact) => {
+      contact.tags.forEach( tag => {
+        tempTagCountMap[tag] = (tempTagCountMap[tag] || 0) + 1
+      })
+    })
+    return tempTagCountMap;
+  }, [contacts])
+
   const selectedContacts = contacts?.filter(c=>c.selected);
+
+  // an object containing tag: select_count pairs, but for selected tags
+  const selectedTagCountMap = useMemo( () => {
+    const tempTagCountMap: {[tag: string]: number} = {}
+    selectedContacts.forEach( (contact) => {
+      contact.tags.forEach( tag => {
+        tempTagCountMap[tag] = (tempTagCountMap[tag] || 0) + 1
+      })
+    })
+    return tempTagCountMap;
+  } , [selectedContacts])
 
   const [checked, setChecked] = useState(false);
 
@@ -153,18 +178,40 @@ const ContactTable: FC = () => {
     setChecked(shouldBeChecked)
   }
 
-
   console.log({contacts, selectedContacts})
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }}>
+    <TableContainer component={Paper} sx={{ maxHeight: "70vh" }}>
+      <Table sx={{ minWidth: 650 }} size="small" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
             <TableCell>Wysłane Maile</TableCell>
             <TableCell>Nick</TableCell>
-            <TableCell>Tagi</TableCell>
+            <TableCell>
+              <div className="inline-flex gap-5 items-center">
+                Zaznacz Tagi:
+                  <div className="inline-flex gap-2 overflow-scroll">
+                  {
+                    allTags.map((tag, i) => {
+                      // check if all contacts with this tag are selected
+                      const tagSelected = selectedTagCountMap[tag] == tagCountMap[tag];
+
+                      return (
+                        // if some are selected, show the count
+                      <Chip label={selectedTagCountMap[tag] ? `${tag}: ${selectedTagCountMap[tag]}` : tag} key={i}
+                       variant={tagSelected ? "filled" : "outlined"}
+                       onClick={()=>{
+                          contacts.filter(c=>c.tags.includes(tag)).forEach(c => {
+                            toggleContactSelection({id: c.id, selected: !tagSelected})
+                          })
+                        }} 
+                      />)
+                    })
+                  }
+                </div>
+              </div>
+            </TableCell>
             <TableCell align="right">
             <FormControlLabel
               control={
@@ -172,7 +219,6 @@ const ContactTable: FC = () => {
                   checked={checked}
                   onChange={(event) => {
                     contacts.forEach(c=>{
-                      console.log(c.id, event.target.checked)
                       toggleContactSelection({id: c.id, selected: event.target.checked})
                     })
                   }
@@ -203,8 +249,6 @@ const ContactRow: FC<{contact: Contact & {
 
   const { toggleContactSelection } = useContext(ContactContext);
 
-  console.log(`${contact.email}: ${contact.selected}`)
-
   return(
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
     <TableCell component="th" scope="row">
@@ -217,7 +261,7 @@ const ContactRow: FC<{contact: Contact & {
       {contact.nickName}
     </TableCell>
     <TableCell component="th" scope="row">
-      <div className="flex gap-2">
+      <div className="inline-flex gap-2">
       {
         contact.tags.map((tag, i) => (
           <Chip variant="outlined" label={tag} key={i} />
