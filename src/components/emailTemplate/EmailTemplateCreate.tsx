@@ -75,7 +75,7 @@ const EmailTemplateCreate: FC = () => {
       <div className="flex flex-col">
         {error && <p>{error.message}</p>}
         <TextField label="Tytuł Maila" value={subject} onChange={(e)=>setSubject(e.target.value)} style={{width: "30em", marginBottom: "2em"}} />
-        
+
         <span className="text-xl mb-1">
           Treść Maila:
         </span>
@@ -108,6 +108,7 @@ const EmailTemplateCreate: FC = () => {
             Utwórz szablon
           </Button>
           <Button startIcon={<AddToDriveIcon />} className="border" onClick={() => setGdriveDialogOpen(true)}>
+            {/* TODO https://developers.google.com/drive/picker/guides/overview */}
             Dodaj linki z dysku googla
           </Button>
         </div>
