@@ -55,8 +55,8 @@ export function EmailCreateUnwrapped() {
 
       {/* Szablony */}
 
-      <b><h1 className="text-xl mt-20">2. Wybierz szablony, które będą wysyłane:</h1></b>
-      <p className="text-xs italic font-grey-400 mt-1 mb-10">{`(dla kazdego odbiorcy zostanie losowo wybrany jeden z zaznaczonych szablonow)`}</p>
+      <b><h1 className="text-xl mt-20">2. Wybierz szablon{" (lub szablony)"}, który będzie wysyłany:</h1></b>
+      <p className="text-xs italic font-grey-400 mt-1 mb-10">{`(jeśli wybierzesz klilka, to dla każdego odbiorcy zostanie losowo wybrany jeden z zaznaczonych szablonow)`}</p>
 
       <div className="flex w-full justify-center">
         <Box sx={{ width: "100%" }}>

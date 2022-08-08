@@ -22,7 +22,7 @@ const EmailTemplateIndexPage: NextPage = () => {
       <div className="fixed bottom-6 right-6">
         <Link href="/emailTemplate/create" passHref>
           <Button variant="contained" startIcon={<AddIcon />}>
-            Przygotuj nowe szablony
+            Przygotuj nowy szablon
           </Button>
         </Link>
       </div>

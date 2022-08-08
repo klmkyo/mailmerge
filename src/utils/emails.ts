@@ -12,6 +12,7 @@ export const generateEmails = (contacts: Contact[], emailTemplates: EmailTemplat
       body: template.body,
       tags: template.tags,
       contactId: contact.id,
+      toBeSentTo: contact.email,
     };
   });
   return emails;

@@ -42,21 +42,10 @@ export const emailRouter = createProtectedRouter()
     async resolve({ ctx, input }) {
 
       const mails = await Promise.all(input.map( async (mail) => {
-        // get email of contact
-        // there has to be a better way to do this
-        const { email } = await ctx.prisma.contact.findUniqueOrThrow({
-          where: {
-            id: mail.contactId
-          },
-          select: {
-            email: true
-          }
-        });
-
         return {
           ...mail,
           userId: ctx.session.user.id!,
-          toBeSentTo: email
+          toBeSentTo: mail.toBeSentTo
         }
       }));
 
