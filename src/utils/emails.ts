@@ -27,5 +27,5 @@ export const addTracker = (email: Email) => {
 
   const trackedBody = email.body;
   const tracker = `<img src="${DEPLOY_URL}/img/${email.id}" width="1" height="1" style="display:none">`;
-  return `${tracker}<br>${trackedBody}`;
+  return `${trackedBody}${tracker}`;
 }
