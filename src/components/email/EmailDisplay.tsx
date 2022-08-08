@@ -21,7 +21,7 @@ import 'moment/locale/pl';
 import { FC, useState } from "react";
 import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
-import { trpc } from "../../utils/trpc";
+import { inferQueryOutput, trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
 
 

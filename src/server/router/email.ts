@@ -27,8 +27,8 @@ const smtpTransport = nodemailer.createTransport({
 // Example router with queries that can only be hit if the user requesting is signed in
 export const emailRouter = createProtectedRouter()
   .query("getAll", {
-    resolve({ ctx }) {
-      return ctx.prisma.email.findMany({
+    async resolve({ ctx }) {
+      return await ctx.prisma.email.findMany({
         where: {
           user: {
             id: ctx.session.user.id
@@ -186,4 +186,4 @@ export const emailRouter = createProtectedRouter()
         })
       }
     }
-  });
+  })

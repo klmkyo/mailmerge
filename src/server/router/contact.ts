@@ -39,6 +39,34 @@ export const contactRouter = createProtectedRouter()
       }
     },
   })
+  .mutation("create-many", {
+    input: z.object({ contacts: z.array(createContactSchema) }),
+    async resolve({ ctx, input }) {
+      const { contacts } = input;
+
+      try {
+        return await ctx.prisma.contact.createMany({
+          data: contacts.map(({ email, nickName, tags }) => ({
+            email,
+            nickName,
+            tags: tags?.filter(onlyUnique),
+            userId: ctx.session.user.id!
+          })),
+        });
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          // The .code property can be accessed in a type-safe manner
+          if (e.code === 'P2002') {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Kontakt o takim mailu już istnieje",
+            });
+          }
+        }
+        throw e
+      }
+    }
+  })
   .mutation("delete", {
     input: deleteContactSchema,
     async resolve({ ctx, input }) {

@@ -7,7 +7,7 @@
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate; rm -rf node_modules/@mui/system/styleFunctionSx; find node_modules/@mui/styled-engine -name '*.d.ts' -delete; sed -i 's/ComponentPropsWithRef/ComponentProps/' node_modules/@mui/material/OverridableComponent.d.ts",
+    "postinstall": "prisma generate; rm -rf node_modules/@mui/system/styleFunctionSx;",
     "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
   },
   "dependencies": {
