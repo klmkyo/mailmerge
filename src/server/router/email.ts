@@ -8,10 +8,6 @@ import { createProtectedRouter } from "./protected-router";
 import { createTRPCClient } from '@trpc/client';
 import { AppRouter as _AppRouter } from ".";
 
-const client = createTRPCClient<_AppRouter>({
-  url: `${getBaseUrl()}/api/trpc`,
-});
-
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 
@@ -117,7 +113,7 @@ export const emailRouter = createProtectedRouter()
     }
   })
   .mutation("update-toBeSentAt", {
-    input: z.object({ id: z.string().cuid(), toBeSentAt: z.date() }),
+    input: z.object({ id: z.string().cuid(), toBeSentAt: z.date().nullable() }),
     async resolve({ ctx, input }) {
 
       // check if the email has already been sent
@@ -135,7 +131,7 @@ export const emailRouter = createProtectedRouter()
         })
       }
 
-      await ctx.prisma.email.updateMany({
+      return await ctx.prisma.email.updateMany({
         where: {
           id: input.id,
           user: { id: ctx.session.user.id },
@@ -146,7 +142,9 @@ export const emailRouter = createProtectedRouter()
       });
 
       // force check for unsent emails
-      return await client.mutation('public.send-unsent-emails');
+      // return await createTRPCClient<_AppRouter>({
+      //   url: `${getBaseUrl()}/api/trpc`,
+      // }).mutation('public.send-unsent-emails');
     }
   })
   .mutation("send-test-mail", {

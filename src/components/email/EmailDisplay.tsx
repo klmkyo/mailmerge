@@ -366,7 +366,11 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const { mutate: updateToBeSentAt } = trpc.useMutation(['email.update-toBeSentAt'], {
     onSuccess: (err, updated) => {
       utils.invalidateQueries('email.getAll')
-      enqueueSnackbar(`Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`, { variant: 'success', preventDuplicate: true });
+      const msg = updated.toBeSentAt ?
+       `Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`
+       :
+       "Usunięto datę wysłania"
+      enqueueSnackbar(msg, { variant: 'success', preventDuplicate: true });
     }
   })
 
@@ -416,6 +420,13 @@ const EmailCard = ({ email, handleSelect, checked }: {
                   value={sendDate}
                   onChange={(newDate) => {
                     setSendDate(newDate)
+                    // if empty, submit
+                    if(!newDate){
+                      updateToBeSentAt({
+                        id: email.id,
+                        toBeSentAt: null
+                      });
+                    }
                   }}
                   open={timePickerOpen}
                   onOpen={() => setTimePickerOpen(true)}
