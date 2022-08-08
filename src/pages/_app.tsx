@@ -33,12 +33,25 @@ const MyApp: AppType = ({
     () =>
       createTheme({
         palette: {
-          primary: {
-            main: '#954be3',
-          },
-          secondary: {
-            main: '#bb84f5',
-          },
+          ...(mode === 'light'
+          ? {
+              // palette values for light mode
+            primary: {
+              main: '#954be3',
+            },
+            secondary: {
+              main: '#c796fa',
+            },
+            }
+          : {
+              // palette values for dark mode
+              primary: {
+                main: '#954be3',
+              },
+              secondary: {
+                main: '#bb84f5',
+              },
+            }),
           mode,
         },
       }),

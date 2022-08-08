@@ -201,6 +201,7 @@ const ContactTable: FC = () => {
                         // if some are selected, show the count
                       <Chip label={selectedTagCountMap[tag] ? `${tag}: ${selectedTagCountMap[tag]}` : tag} key={i}
                        variant={tagSelected ? "filled" : "outlined"}
+                       color={tagSelected ? "secondary" : undefined}
                        onClick={()=>{
                           contacts.filter(c=>c.tags.includes(tag)).forEach(c => {
                             toggleContactSelection({id: c.id, selected: !tagSelected})

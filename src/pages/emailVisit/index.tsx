@@ -46,7 +46,7 @@ const EmailVisitPage: NextPage = () => {
   const [currentQuery, setCurrentQuery] = useState<Object | null>(null);
   const [currentEmail, setCurrentEmail] = useState<EVEmail | null>(null);
 
-  if(emailVisits.length === 0) return (
+  if(emailVisits ? emailVisits.length === 0 : true) return (
     <div className=" text-3xl flex justify-center items-center w-full h-screen">
       Wygląda na to że nikt nie otworzył jeszcze twoich maili! lol
     </div>
