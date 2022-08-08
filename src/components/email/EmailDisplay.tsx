@@ -129,7 +129,7 @@ const EmailDisplay: FC = () => {
             />
           }
         </div>
-        
+
         {filter === 'unsent' &&
           <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
             <Stack direction="row" spacing={2}>
@@ -392,7 +392,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
       <Divider />
       <footer className="flex justify-between items-center pt-3.5">
         <div>
-          {wasSent ? 
+          {wasSent ?
             <div>
               {`Wysłano: ${email.sentAt!.toLocaleString()}`}
               <span className="text-gray-600 italic ml-2">

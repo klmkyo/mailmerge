@@ -1,25 +1,31 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from 'next/router';
-import { useForm } from "react-hook-form";
 import { trpc } from "../../utils/trpc";
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import EmailIcon from '@mui/icons-material/Email';
+import BuildIcon from '@mui/icons-material/Build';
+import LoadingButton from '@mui/lab/LoadingButton'
+import { useSnackbar } from 'notistack';
 
 const Settings: NextPage = () => {
 
   const router = useRouter();
-
+  const { enqueueSnackbar } = useSnackbar();
   const utils = trpc.useContext();
-
   const code = router.query.code as string | undefined;
 
   const { data: OAdata, error: OAerror } = trpc.useQuery(["settings.get-oauth-url"]);
-
   const { data: Edata, error: Eerror } = trpc.useQuery(["settings.get-gmail-email"]);
-
   const { data: Cdata, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
+
+  const { mutate: sendTestMail, error: TMerror, isLoading } = trpc.useMutation(["email.send-test-mail"], {
+    onSuccess() {
+      enqueueSnackbar("Wysłano maila! Sprawdź swoją skrzynkę", { variant: 'success', preventDuplicate: true })
+    }
+  })
 
   return (
     <>
@@ -35,16 +41,26 @@ const Settings: NextPage = () => {
 
         <Divider className="w-80" style={{margin: "1rem"}} />
 
-        <p className="mb-2">{Cdata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
-        {OAerror && OAerror.message}
-        {
-          OAdata?.url && 
-          <a href={OAdata.url}>
-            <Button variant="outlined">
-              {`Skonfiguruj${Cdata ? " ponownie" : ""} Gmaila`}
-            </Button>
-          </a>
-        }
+        <div className="flex flex-col items-center gap-3">
+          <p>{Cdata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
+          {OAerror && OAerror.message}
+          {
+            OAdata?.url &&
+            <a href={OAdata.url}>
+              <Button variant="outlined" startIcon={<BuildIcon />}>
+                {`Skonfiguruj${Cdata ? " ponownie" : ""} Gmaila`}
+              </Button>
+            </a>
+          }
+          {Cerror && Cerror.message}
+          {TMerror && TMerror.message}
+          {
+            Cdata?.valueOf() &&
+            <LoadingButton variant="outlined" startIcon={<EmailIcon />} onClick={()=>sendTestMail()} loading={isLoading} loadingPosition="start">
+              Wyślij testowego maila {"(do siebie)"}
+            </LoadingButton>
+          }
+        </div>
       </main>
     </>
   );

@@ -123,4 +123,10 @@ export const emailRouter = createProtectedRouter()
         },
       });
     }
+  })
+  .mutation("send-test-mail", {
+    async resolve ({ctx}) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return true;
+    }
   });

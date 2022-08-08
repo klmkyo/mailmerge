@@ -156,7 +156,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
       <Divider />
       <footer className="flex justify-between pt-2">
         <div />
-        <Button onClick={onDelete}>Delete</Button>
+        <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
       </footer>
       {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
     </Paper>
