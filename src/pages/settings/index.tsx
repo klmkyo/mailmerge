@@ -9,6 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import BuildIcon from '@mui/icons-material/Build';
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useSnackbar } from 'notistack';
+import { Loading } from "../../components/Loading";
 
 const Settings: NextPage = () => {
 
@@ -19,13 +20,17 @@ const Settings: NextPage = () => {
 
   const { data: OAdata, error: OAerror } = trpc.useQuery(["settings.get-oauth-url"]);
   const { data: Edata, error: Eerror } = trpc.useQuery(["settings.get-gmail-email"]);
-  const { data: Cdata, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
+  const { data: Cdata, isLoading, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
 
-  const { mutate: sendTestMail, error: TMerror, isLoading } = trpc.useMutation(["email.send-test-mail"], {
+  const { mutate: sendTestMail, error: TMerror, isLoading: isEmailSending } = trpc.useMutation(["email.send-test-mail"], {
     onSuccess() {
       enqueueSnackbar("Wysłano maila! Sprawdź swoją skrzynkę", { variant: 'success', preventDuplicate: true })
     }
   })
+
+  if(isLoading){
+    return <Loading />
+  }
 
   return (
     <>
@@ -42,7 +47,8 @@ const Settings: NextPage = () => {
         <Divider className="w-80" style={{margin: "1rem"}} />
 
         <div className="flex flex-col items-center gap-3">
-          <p>{Cdata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
+          {Eerror && Eerror.message}
+          <p>{Edata?.valueOf() ? `Połączono z ${Edata!.email}!` : "Nie połączono z Gmail"}</p>
           {OAerror && OAerror.message}
           {
             OAdata?.url &&
@@ -56,7 +62,7 @@ const Settings: NextPage = () => {
           {TMerror && TMerror.message}
           {
             Cdata?.valueOf() &&
-            <LoadingButton variant="outlined" startIcon={<EmailIcon />} onClick={()=>sendTestMail()} loading={isLoading} loadingPosition="start">
+            <LoadingButton variant="outlined" startIcon={<EmailIcon />} onClick={()=>sendTestMail()} loading={isEmailSending} loadingPosition="start">
               Wyślij testowego maila {"(do siebie)"}
             </LoadingButton>
           }
