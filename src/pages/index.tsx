@@ -75,7 +75,7 @@ const Home: NextPage = () => {
           <TechnologyCard
             name="Otworzenia Maili"
             link="/emailVisit"
-            desc="Zobacz kto otworzył Twoje maile"
+            desc="Zobacz, kto otworzył Twoje maile"
             icon={<VisibilityIcon color="secondary" />}
           />
           <TechnologyCard
