@@ -157,9 +157,10 @@ export const emailRouter = createProtectedRouter()
         to: email,
         subject: "Testowy Email - MailMerge",
         html: `Chyba działa co nie
-        
+        <br>
         Test załączników:
-        <img src="${DEPLOY_URL}"/bruh.gif></img>`,
+        <br>
+        <img src="${DEPLOY_URL}/bruh.gif"></img>`,
         auth: {
           user: email,
           refreshToken: refreshToken
