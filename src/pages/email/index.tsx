@@ -33,7 +33,7 @@ const EmailIndexPage: NextPage = () => {
 
       <div className="flex gap-4 fixed bottom-6 right-6">
         {
-          isDev &&
+          ( true || isDev ) &&
           <LoadingButton loading={isLoading} loadingPosition="start" variant="outlined" startIcon={<UpdateIcon />} onClick={()=>sendUnsentMails()}>
             Wymuś sprawdzenie kolejki
           </LoadingButton>
