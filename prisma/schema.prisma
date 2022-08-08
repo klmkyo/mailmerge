@@ -31,7 +31,7 @@ model Contact {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  email     String @unique
+  email     String
   nickName  String?
   tags      String[]
 
@@ -40,6 +40,8 @@ model Contact {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   Email     Email[]
+
+  @@unique([email, userId])
 }
 
 model Email {
