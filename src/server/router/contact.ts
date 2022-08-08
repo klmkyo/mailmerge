@@ -40,10 +40,8 @@ export const contactRouter = createProtectedRouter()
     },
   })
   .mutation("create-many", {
-    input: z.object({ contacts: z.array(createContactSchema) }),
-    async resolve({ ctx, input }) {
-      const { contacts } = input;
-
+    input: z.array(createContactSchema),
+    async resolve({ ctx, input: contacts }) {
       try {
         return await ctx.prisma.contact.createMany({
           data: contacts.map(({ email, nickName, tags }) => ({
@@ -59,7 +57,7 @@ export const contactRouter = createProtectedRouter()
           if (e.code === 'P2002') {
             throw new TRPCError({
               code: "CONFLICT",
-              message: "Kontakt o takim mailu już istnieje",
+              message: `Kontakt o takim mailu już istnieje (${e.message})`,
             });
           }
         }

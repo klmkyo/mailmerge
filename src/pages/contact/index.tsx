@@ -55,12 +55,13 @@ const CreateContactPage: NextPage = () => {
 
   const { data: contacts } = trpc.useQuery(['contact.getAll']);
 
-  const { mutate: createContact } = trpc.useMutation(['contact.create'], {
+  const { mutate: createContacts } = trpc.useMutation(['contact.create-many'], {
     onError: (error) => {
       alert(error)
     },
-    onSuccess: (data) => {
-      utils.invalidateQueries('contact.getAll')
+    onSuccess: () => {
+      utils.invalidateQueries('contact.getAll');
+      setNewEmails("");
     }
   })
 
@@ -92,10 +93,7 @@ const CreateContactPage: NextPage = () => {
           style={{width: "30em"}}
             />
           <Button disabled={newEmailArr.length < 1} variant="outlined" startIcon={<AddIcon />} onClick={()=>{
-            newEmailArr.forEach(email=>{
-              createContact({email})
-            })
-            setNewEmails("");
+            createContacts( newEmailArr.map( (email) => ({email}) ) )
           }}>
             {newEmailArr.length < 2 ? "Dodaj Maila" : `Dodaj ${newEmailArr.length} Maili`}
           </Button>
