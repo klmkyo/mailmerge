@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createEmailTemplateSchema, deleteEmailTemplateSchema } from "../../schema/emailTemplate.schema";
+import { createEmailTemplateSchema, deleteEmailTemplateSchema, updateEmailTemplateSchema } from "../../schema/emailTemplate.schema";
 import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
@@ -10,20 +10,6 @@ export const emailTemplateRouter = createProtectedRouter()
     async resolve({ ctx, input }) {
       const { subject, body } = input;
 
-      // check if an identical emailTemplate is not in the database
-      const existingEmailTemplate = await ctx.prisma.emailTemplate.findFirst({
-        where: {
-          subject,
-          body,
-          user: { id: ctx.session.user.id },
-        },
-      });
-
-      if (existingEmailTemplate) {
-        throw new TRPCError({ code: "CONFLICT", message: "Email Template already exists" });
-      };
-
-      // TODO user relation, cause for some reason vscode is not complaining
       return await ctx.prisma.emailTemplate.create({
         data: {
           subject,
@@ -36,6 +22,26 @@ export const emailTemplateRouter = createProtectedRouter()
         },
       });
     },
+  })
+  .mutation("update", {
+    input: updateEmailTemplateSchema,
+    async resolve({ ctx, input }) {
+      const { id, subject, body, tags } = input;
+
+      return await ctx.prisma.emailTemplate.updateMany({
+        where: {
+          id,
+          user: {
+            id: ctx.session.user.id
+          }
+        },
+        data: {
+          subject,
+          body,
+          tags
+        },
+      });
+    }
   })
   .mutation("delete", {
     input: deleteEmailTemplateSchema,
@@ -68,6 +74,17 @@ export const emailTemplateRouter = createProtectedRouter()
           user: {
             id: ctx.session.user.id
           }
+        },
+      });
+    }
+  })
+  .query("get", {
+    input: z.object({ id: z.string().cuid() }),
+    resolve({ ctx, input }) {
+      return ctx.prisma.emailTemplate.findFirst({
+        where: {
+          id: input.id,
+          user: { id: ctx.session.user.id },
         },
       });
     }

@@ -7,6 +7,8 @@ import { FC, useState } from "react";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
+import EditIcon from '@mui/icons-material/Edit';
+import { useRouter } from 'next/router';
 
 const EmailTemplateList: FC = () => {
 
@@ -119,6 +121,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
 }) => {
 
   const utils = trpc.useContext();
+  const router = useRouter();
 
   const { mutate, error } = trpc.useMutation(['emailTemplate.delete'], {
     onError: (error) => {
@@ -156,7 +159,10 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
       <Divider />
       <footer className="flex justify-between pt-2">
         <div />
-        <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
+        <div className="flex gap-2">
+          <Button startIcon={<EditIcon />} onClick={()=>{router.push(`/emailTemplate/edit/${emailTemplate.id}`)}} >Edytuj</Button>
+          <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
+        </div>
       </footer>
       {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
     </Paper>
