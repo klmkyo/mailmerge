@@ -6,9 +6,9 @@ import { DEPLOY_URL, getBaseUrl } from "../../pages/_app";
 import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";
 import { createTRPCClient } from '@trpc/client';
-import { AppRouter } from ".";
+import { AppRouter as _AppRouter } from ".";
 
-const client = createTRPCClient<AppRouter>({
+const client = createTRPCClient<_AppRouter>({
   url: `${getBaseUrl()}/api/trpc`,
 });
 
@@ -146,7 +146,7 @@ export const emailRouter = createProtectedRouter()
       });
 
       // force check for unsent emails
-      return await client.mutation('public.send-unsent-emails');
+      // return await client.mutation('public.send-unsent-emails');
     }
   })
   .mutation("send-test-mail", {

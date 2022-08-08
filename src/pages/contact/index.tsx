@@ -27,11 +27,11 @@ import create from 'zustand'
 
 // get alltags initially by using current method, then use global state bear to mangae them from children
 
-function compare( a, b ) {
-  if ( a.email < b.email ){
+function compare( a: string, b: string ) {
+  if ( a < b ){
     return -1;
   }
-  if ( a.email > b.email ){
+  if ( a > b ){
     return 1;
   }
   return 0;
@@ -138,7 +138,7 @@ const ContactTable: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {contacts?.sort(compare).map((contact) => (
+          {contacts?.sort((a,b) => compare(a.email, b.email)).map((contact) => (
             <ContactRow key={contact.id} contact={contact} />
           ))}
         </TableBody>
@@ -161,16 +161,17 @@ const ContactRow: FC<{contact: Contact & {
   const [tags, setTags] = useState<string[]>(contact.tags);
   const [nickName, setNickName] = useState(contact.nickName);
 
+  // nightmare nightmare nightmare
   const { mutate: deleteContact } = trpc.useMutation(['contact.delete'], {
     onMutate: async (data) => {
       const previousContacts = utils.getQueryData(['contact.getAll'])
 
-      utils.setQueryData(['contact.getAll'], old => old.filter(x=>x.id!=data.id))
+      utils.setQueryData(['contact.getAll'], old => old!.filter(x=>x.id!=data.id))
 
       return { previousContacts }
     },
     onError: (err, newContacts, context) => {
-      utils.setQueryData(['contact.getAll'], context!.previousContacts)
+      utils.setQueryData(['contact.getAll'], context!.previousContacts!)
       enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSettled: (data) => {
@@ -184,23 +185,23 @@ const ContactRow: FC<{contact: Contact & {
 
       utils.setQueryData(['contact.getAll'], (oldContacts) => {
 
-        const contactIndex = oldContacts.findIndex(x=>x.id==data.id);
+        const contactIndex = oldContacts!.findIndex(x=>x.id==data.id)!;
 
         console.log(`Updated Contact ${contactIndex}`)
-        let newContacts = oldContacts;
-        newContacts[contactIndex] = {
-          ...newContacts[contactIndex],
+        let newContacts = oldContacts!;
+        newContacts![contactIndex!]! = {
+          ...newContacts![contactIndex!]!,
           ...data
-        }
+        };
 
-        return newContacts;
+        return newContacts!;
       })
 
       return {previousContacts}
 
     },
     onError: (err, newContacts, context) => {
-      utils.setQueryData(['contact.getAll'], context!.previousContacts)
+      utils.setQueryData(['contact.getAll'], context!.previousContacts!)
       enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSuccess: (data) => {
@@ -249,7 +250,7 @@ const ContactRow: FC<{contact: Contact & {
           if(JSON.stringify(newTags) != JSON.stringify(contact.tags)){
             updateContact({
               id: contact.id,
-              newTags
+              tags: newTags
             })
             // add new tags to allTags
             newTags.filter(x => !allTags.includes(x)).forEach((tag)=>addTag(tag))

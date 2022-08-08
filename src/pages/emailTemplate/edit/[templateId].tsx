@@ -33,10 +33,13 @@ const EmailTemplateCreate: FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [gdriveDialogOpen, setGdriveDialogOpen] = useState(false);
 
-  const { templateId } = router.query
+  const templateId = router.query.templateId as string;
 
   const {data: emailTemplate, isLoading} = trpc.useQuery(["emailTemplate.get", {id: templateId}], {
     onSuccess: (data) => {
+      if(!data){
+        throw new Error("No emailTemplate found");
+      }
       setSubject(data.subject)
       editorRef.current?.setContent(data.body)
     }
