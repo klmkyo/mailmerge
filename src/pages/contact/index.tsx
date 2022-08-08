@@ -56,7 +56,7 @@ const CreateContactPage: NextPage = () => {
           <h1 className="text-xl">Ilość kontaktów: <b>{contacts?.length}</b></h1>
         </div>
 
-        {contacts.length !== 0 && <ContactTable />}
+        {contacts?.length !== 0 && <ContactTable />}
 
         <div className="mt-8 gap-2 flex flex-col items-right">
         <TextField

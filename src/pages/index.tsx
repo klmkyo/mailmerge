@@ -37,8 +37,9 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold">
+        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold relative">
           Mail<span className="text-purple-300">Merge</span>
+          <div className="text-sm text-purple-300 italic absolute bottom-0 right-0">ALPHA</div>
         </h1>
 
         {
