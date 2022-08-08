@@ -46,6 +46,12 @@ const EmailVisitPage: NextPage = () => {
   const [currentQuery, setCurrentQuery] = useState<Object | null>(null);
   const [currentEmail, setCurrentEmail] = useState<EVEmail | null>(null);
 
+  if(emailVisits.length === 0) return (
+    <div className=" text-3xl flex justify-center items-center w-full h-screen">
+      Wygląda na to że nikt nie otworzył jeszcze twoich maili! lol
+    </div>
+  );
+
   return (
     <>
       <Head>
@@ -54,7 +60,7 @@ const EmailVisitPage: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{ minWidth: 650 }} size="small">
             <TableHead>
               <TableRow>
                 <TableCell align="center" colSpan={3}>
@@ -89,7 +95,7 @@ const EmailVisitPage: NextPage = () => {
                   </TableCell>
                   <TableCell align="right">{contact.nickName}</TableCell>
                   <TableCell align="right">
-                  <Button onClick={()=>{
+                  <Button size="small" onClick={()=>{
                     setCurrentQuery(ev.requestData);
                     setQueryDialogOpen(true);
                   }}>
@@ -100,7 +106,7 @@ const EmailVisitPage: NextPage = () => {
                   <TableCell align="right">{email.id}</TableCell>
                   <TableCell align="right">{ev.visitedAt.toLocaleString()}</TableCell>
                   <TableCell align="right">
-                    <Button onClick={()=>{
+                    <Button size="small" onClick={()=>{
                       setCurrentEmail(email);
                       setEmailDialogOpen(true);
                     }}>
