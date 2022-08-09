@@ -4,13 +4,13 @@ import { getSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
-
+import { useSnackbar } from 'notistack';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 type TechnologyCardProps = {
   name: string;
@@ -27,6 +27,15 @@ const Home: NextPage = () => {
   const { data: Cdata } = trpc.useQuery(["settings.is-gmail-connected"]);
 
   const isConnected = Cdata?.valueOf() ?? true;
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    // yell at user if the window width is below 1600px
+    if(window && window.innerWidth < 1600){
+      enqueueSnackbar(`Wykryto wąski ekran, jakby co to póki co strona jest przystosowana tylko pod duże ekrany`, {preventDuplicate: true});
+    }
+  }, [])
 
   return (
     <>
