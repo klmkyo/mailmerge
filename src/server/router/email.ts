@@ -7,7 +7,6 @@ import { createMultipleEmailSchema } from "../../schema/email.schema";
 import { createProtectedRouter } from "./protected-router";
 import { createTRPCClient } from '@trpc/client';
 import { AppRouter as _AppRouter } from ".";
-import { sendUnsentEmails } from "./public";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -132,7 +131,7 @@ export const emailRouter = createProtectedRouter()
         })
       }
 
-      await ctx.prisma.email.updateMany({
+      return await ctx.prisma.email.updateMany({
         where: {
           id: input.id,
           user: { id: ctx.session.user.id },
@@ -141,8 +140,6 @@ export const emailRouter = createProtectedRouter()
           toBeSentAt: input.toBeSentAt,
         },
       });
-      
-      return await sendUnsentEmails(ctx);
     }
   })
   .mutation("send-test-mail", {

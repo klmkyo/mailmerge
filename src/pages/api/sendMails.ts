@@ -1,16 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createTRPCClient } from '@trpc/client';
-import { AppRouter } from "../../server/router";
-import { getBaseUrl } from "../_app";
 
 const sendMails = async (req: NextApiRequest, res: NextApiResponse) => {
 
-  const client = createTRPCClient<AppRouter>({
-    url: `${getBaseUrl()}/api/trpc`,
-  });
-
   try{
-    await client.mutation('public.send-unsent-emails');
+    // await client.mutation('public.send-unsent-emails');
+    // bounce that back to email server
     res.status(200).json({ message: "success" });
   } catch (e) {
     console.error(e)

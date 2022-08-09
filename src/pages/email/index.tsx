@@ -15,12 +15,6 @@ const EmailIndexPage: NextPage = () => {
 
   const utils = trpc.useContext();
 
-  const { mutate: sendUnsentMails, isLoading } = trpc.useMutation(["public.send-unsent-emails"], {
-    onSuccess: (data) => {
-      utils.invalidateQueries('email.getAll')
-    }
-  });
-
   return (
     <>
       <Head>
@@ -32,13 +26,6 @@ const EmailIndexPage: NextPage = () => {
       </main>
 
       <div className="flex gap-4 fixed bottom-6 right-6">
-        {
-          // TODO remove true
-          ( isDev ) &&
-          <LoadingButton loading={isLoading} loadingPosition="start" variant="outlined" startIcon={<UpdateIcon />} onClick={()=>sendUnsentMails()}>
-            Wymuś sprawdzenie kolejki
-          </LoadingButton>
-        }
         <Link href="/email/createDrafts" passHref>
           <Button variant="contained" startIcon={<AddIcon />}>
             Utwórz nowe maile
