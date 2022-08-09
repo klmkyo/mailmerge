@@ -164,7 +164,7 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
           <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
         </div>
       </footer>
-      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {emailTemplate.id}</div>}
+      <div className="absolute bottom-0.5 right-1 text-xs text-gray-300 italic">ID: {emailTemplate.id}</div>
     </Paper>
   )
 };

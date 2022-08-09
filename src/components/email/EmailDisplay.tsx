@@ -447,7 +447,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
         </div>
         {!wasSent && <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>}
       </footer>
-      {isDev && <div className="absolute bottom-0.5 right-1 text-xs text-gray-400 italic">ID: {email.id}</div>}
+      <div className="absolute bottom-0.5 right-1 text-xs text-gray-300 italic">ID: {email.id}</div>
     </Paper>
   )
 };
