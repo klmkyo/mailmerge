@@ -92,13 +92,35 @@ export const contactRouter = createProtectedRouter()
       }
     }
   })
+  .query("getAllAndHidden", {
+    async resolve({ ctx }) {
+      return await ctx.prisma.contact.findMany({
+        where: {
+          user: {
+            id: ctx.session.user.id
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              Email: true,
+            }
+          }
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      });
+    }
+  })
   .query("getAll", {
     async resolve({ ctx }) {
       return await ctx.prisma.contact.findMany({
         where: {
           user: {
             id: ctx.session.user.id
-          }
+          },
+          hidden: false
         },
         include: {
           _count: {

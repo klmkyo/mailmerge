@@ -9,6 +9,9 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
@@ -22,18 +25,16 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Loading } from "../../components/Loading";
 import { extractEmails } from "../../utils/emails";
 import { onlyUnique } from "../../utils/onlyUnique";
-import { trpc } from "../../utils/trpc";
+import { inferQueryOutput, trpc } from "../../utils/trpc";
 import create from 'zustand'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { DialogTitle } from '@mui/material';
 
 // get alltags initially by using current method, then use global state bear to mangae them from children
 
 function compare( a: string, b: string ) {
-  if ( a < b ){
-    return -1;
-  }
-  if ( a > b ){
-    return 1;
-  }
+  if ( a < b ){ return -1; }
+  if ( a > b ){ return 1;  }
   return 0;
 }
 
@@ -53,19 +54,34 @@ const CreateContactPage: NextPage = () => {
   const [newEmails, setNewEmails] = useState("");
   const utils = trpc.useContext();
 
-  const { data: contacts } = trpc.useQuery(['contact.getAll']);
+  const [hiddenDialogOpen, setHiddenDialogOpen] = useState(false);
+
+  const { data: contactsUnfiltered, isLoading, error } = trpc.useQuery(['contact.getAllAndHidden']);
+
+  const contacts = useMemo(() => 
+  contactsUnfiltered?.filter(c => !c.hidden) ?? [], [contactsUnfiltered]);
 
   const { mutate: createContacts } = trpc.useMutation(['contact.create-many'], {
     onError: (error) => {
       alert(error)
     },
     onSuccess: () => {
-      utils.invalidateQueries('contact.getAll');
+      utils.invalidateQueries('contact.getAllAndHidden');
       setNewEmails("");
     }
   })
 
   const newEmailArr = useMemo(()=>extractEmails(newEmails) ?? [], [newEmails])
+
+  if (isLoading) {
+    return (
+      <Loading />
+    );
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <>
@@ -80,9 +96,23 @@ const CreateContactPage: NextPage = () => {
           <h1 className="text-xl">Ilość kontaktów: <b>{contacts?.length}</b></h1>
         </div>
 
-        {contacts?.length !== 0 && <ContactTable />}
+        {contacts?.length !== 0 && (
+          <>
+          {/* TODO virtualize this dude */}
+            <ContactTable contacts={contacts} />
+            <div className="w-full">
+            <Button
+              startIcon={<VisibilityOffIcon />}
+              variant="outlined"
+              style={{float: "right", margin: "1rem 0 0 0"}}
+              onClick={()=>setHiddenDialogOpen(true)}>
+              Pokaż ukryte kontakty
+            </Button>
+            </div>
+          </>
+        )}
 
-        <div className="mt-8 gap-2 flex flex-col items-right">
+        <div className="mt-6 gap-2 flex flex-col items-right">
         <TextField
           multiline
           value={newEmails}
@@ -100,12 +130,19 @@ const CreateContactPage: NextPage = () => {
         </div>
 
       </main>
+      
+      <HiddenDialog open={hiddenDialogOpen} setOpen={setHiddenDialogOpen} />
     </>
   );
 };
 
-const ContactTable: FC = () => {
-  const { data: contacts, isLoading, error } = trpc.useQuery(['contact.getAll']);
+const HiddenDialog: FC = ({open, setOpen}: {
+  open: boolean,
+  setOpen: (open: boolean) => void,
+}) => {
+  const { data: contactsUnfiltered } = trpc.useQuery(['contact.getAllAndHidden']);
+  const contacts = useMemo(() => 
+  contactsUnfiltered?.filter(c => c.hidden) ?? [], [contactsUnfiltered]);
 
   const {allTags, addTag} = useAllTags()
 
@@ -113,15 +150,31 @@ const ContactTable: FC = () => {
     contacts?.map((c)=>c.tags).flat().filter(onlyUnique).forEach((tag)=>addTag(tag))
   }, [contacts, addTag])
 
-  if (isLoading) {
-    return (
-      <Loading />
-    );
-  }
+  return (
+    <>
+      <Dialog open={open} onClose={()=>{setOpen(false)}}>
+        <DialogTitle>Ukryte kontakty {"(kontakty które nie mogły być usunięte, bo został do nich wysłany email)"}</DialogTitle>
+        <DialogContent>
+          {/* <ContactTable> */}
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+const ContactTable: FC = ({contacts}: {
+  contacts: inferQueryOutput<"contact.getAllAndHidden">
+}) => {
+
+  const {allTags, addTag} = useAllTags()
+
+  useEffect(()=>{
+    contacts?.map((c)=>c.tags).flat().filter(onlyUnique).forEach((tag)=>addTag(tag))
+  }, [contacts, addTag])
+
+  const contactArray = useMemo(() => contacts?.sort((a,b) => compare(a.email, b.email)).map((contact) => (
+    <ContactRow key={contact.id} contact={contact} />
+  )), [contacts]);
 
   return (
     <TableContainer component={Paper}>
@@ -136,9 +189,7 @@ const ContactTable: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {contacts?.sort((a,b) => compare(a.email, b.email)).map((contact) => (
-            <ContactRow key={contact.id} contact={contact} />
-          ))}
+          {contactArray}
         </TableBody>
       </Table>
     </TableContainer>
@@ -162,26 +213,26 @@ const ContactRow: FC<{contact: Contact & {
   // nightmare nightmare nightmare
   const { mutate: deleteContact } = trpc.useMutation(['contact.delete'], {
     onMutate: async (data) => {
-      const previousContacts = utils.getQueryData(['contact.getAll'])
+      const previousContacts = utils.getQueryData(['contact.getAllAndHidden'])
 
-      utils.setQueryData(['contact.getAll'], old => old!.filter(x=>x.id!=data.id))
+      utils.setQueryData(['contact.getAllAndHidden'], old => old!.filter(x=>x.id!=data.id))
 
       return { previousContacts }
     },
     onError: (err, newContacts, context) => {
-      utils.setQueryData(['contact.getAll'], context!.previousContacts!)
+      utils.setQueryData(['contact.getAllAndHidden'], context!.previousContacts!)
       enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSettled: (data) => {
-      utils.invalidateQueries('contact.getAll');
+      utils.invalidateQueries('contact.getAllAndHidden');
     }
   })
 
   const { mutate: updateContact } = trpc.useMutation(['contact.update'], {
     onMutate: async (data) => {
-      const previousContacts = utils.getQueryData(['contact.getAll']);
+      const previousContacts = utils.getQueryData(['contact.getAllAndHidden']);
 
-      utils.setQueryData(['contact.getAll'], (oldContacts) => {
+      utils.setQueryData(['contact.getAllAndHidden'], (oldContacts) => {
 
         const contactIndex = oldContacts!.findIndex(x=>x.id==data.id)!;
 
@@ -196,19 +247,31 @@ const ContactRow: FC<{contact: Contact & {
       })
 
       return {previousContacts}
-
     },
     onError: (err, newContacts, context) => {
-      utils.setQueryData(['contact.getAll'], context!.previousContacts!)
+      utils.setQueryData(['contact.getAllAndHidden'], context!.previousContacts!)
       enqueueSnackbar(err.message, { variant: 'error' });
     },
     onSuccess: (data) => {
       enqueueSnackbar(`Zaktualizowano ${contact.email}!`);
     },
     onSettled: (data) => {
-      utils.invalidateQueries('contact.getAll');
+      utils.invalidateQueries('contact.getAllAndHidden');
     }
   })
+
+  const deleteOrHide = () => {
+    // if an email has been sent to this contact, hide it
+    if (contact._count.Email > 0) {
+      updateContact({
+        id: contact.id,
+        hidden: true
+      })
+    }
+    else {
+      deleteContact({ id: contact.id })
+    }
+  }
 
   return(
   <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
@@ -273,7 +336,7 @@ const ContactRow: FC<{contact: Contact & {
 
       <IconButton
         aria-label="delete"
-        onClick={()=>deleteContact({ id: contact.id })}
+        onClick={deleteOrHide}
       >
         <DeleteIcon />
       </IconButton>

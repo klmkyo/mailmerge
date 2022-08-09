@@ -2,6 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, Grid, MenuItem, Paper, Select, Stack, TextField } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -106,8 +107,14 @@ const EmailDisplay: FC = () => {
         <div className="flex gap-6">
           {/* sent/unsent filter */}
           <ToggleButtonGroup exclusive value={filter} onChange={(e,v) => setFilter(v ?? filter)}>
-            <ToggleButton value="unsent">Nie wysłane</ToggleButton>
-            <ToggleButton value="sent">Wysłane</ToggleButton>
+            <ToggleButton value="unsent" className="inline-flex items-center gap-2">
+              <ScheduleSendIcon />
+              Nie wysłane
+            </ToggleButton>
+            <ToggleButton value="sent" className="inline-flex items-center gap-2">
+              <MarkEmailReadIcon />
+              Wysłane
+            </ToggleButton>
           </ToggleButtonGroup>
           {filter === "unsent" &&
             <FormControlLabel
