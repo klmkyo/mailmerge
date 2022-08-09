@@ -7,7 +7,7 @@ import { withTRPC } from "@trpc/next";
 import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/dist/shared/lib/utils";
 import { SnackbarProvider } from 'notistack';
-import { createContext, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import superjson from "superjson";
 import Header from "../components/Header";
 import type { AppRouter } from "../server/router";
@@ -20,14 +20,28 @@ const MyApp: AppType = ({
   pageProps: { session, ...pageProps },
 }) => {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
+
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+        setMode((prevMode) => {
+          const newMode = (prevMode === 'light' ? 'dark' : 'light');
+          if(window){
+            localStorage.setItem('theme-preference', newMode);
+          }
+          return newMode;
+        });
       },
     }),
     [],
   );
+
+  useEffect(() => {
+    const localMode = localStorage.getItem('theme-preference');
+    if( localMode && (localMode !== mode) ){
+      setMode(localMode as 'light' | 'dark');
+    }
+  }, [setMode])
 
   const theme = useMemo(
     () =>

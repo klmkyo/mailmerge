@@ -26,6 +26,7 @@ import { useState } from "react";
 import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { inferQueryOutput } from '../../utils/trpc';
+import { Loading } from "../../components/Loading";
 
 const ReactJson = dynamic(() => import('react-json-view'), {ssr: false})
 
@@ -45,6 +46,10 @@ const EmailVisitPage: NextPage = () => {
 
   const [currentQuery, setCurrentQuery] = useState<Object | null>(null);
   const [currentEmail, setCurrentEmail] = useState<EVEmail | null>(null);
+
+  if(isLoading){
+    return <Loading />
+  }
 
   if(emailVisits ? emailVisits.length === 0 : true) return (
     <div className=" text-3xl flex justify-center items-center w-full h-screen">
