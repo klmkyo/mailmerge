@@ -361,6 +361,10 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [sendDate, setSendDate] = useState<Date | null>(email.toBeSentAt);
 
+  if(sendDate !== email.toBeSentAt){
+    setSendDate(email.toBeSentAt)
+  }
+
   const { mutate, error } = trpc.useMutation(['email.delete'], {
     onError: (error) => {
       alert(error)
