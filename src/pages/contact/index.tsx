@@ -12,7 +12,9 @@ import TableBody from '@mui/material/TableBody';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
 import TableCell from '@mui/material/TableCell';
+import Tooltip from '@mui/material/Tooltip';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -29,6 +31,7 @@ import { inferQueryOutput, trpc } from "../../utils/trpc";
 import create from 'zustand'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { DialogTitle } from '@mui/material';
+import RestoreIcon from '@mui/icons-material/Restore';
 
 // get alltags initially by using current method, then use global state bear to mangae them from children
 
@@ -58,8 +61,11 @@ const CreateContactPage: NextPage = () => {
 
   const { data: contactsUnfiltered, isLoading, error } = trpc.useQuery(['contact.getAllAndHidden']);
 
-  const contacts = useMemo(() => 
+  const contacts = useMemo(() =>
   contactsUnfiltered?.filter(c => !c.hidden) ?? [], [contactsUnfiltered]);
+
+  const hiddenContacts = useMemo(() =>
+  contactsUnfiltered?.filter(c => c.hidden) ?? [], [contactsUnfiltered]);
 
   const { mutate: createContacts } = trpc.useMutation(['contact.create-many'], {
     onError: (error) => {
@@ -130,41 +136,36 @@ const CreateContactPage: NextPage = () => {
         </div>
 
       </main>
-      
-      <HiddenDialog open={hiddenDialogOpen} setOpen={setHiddenDialogOpen} />
+
+      <HiddenDialog hiddenContacts={hiddenContacts} open={hiddenDialogOpen} setOpen={setHiddenDialogOpen} />
     </>
   );
 };
 
-const HiddenDialog: FC = ({open, setOpen}: {
+const HiddenDialog: FC<{
   open: boolean,
   setOpen: (open: boolean) => void,
-}) => {
-  const { data: contactsUnfiltered } = trpc.useQuery(['contact.getAllAndHidden']);
-  const contacts = useMemo(() => 
-  contactsUnfiltered?.filter(c => c.hidden) ?? [], [contactsUnfiltered]);
-
-  const {allTags, addTag} = useAllTags()
-
-  useEffect(()=>{
-    contacts?.map((c)=>c.tags).flat().filter(onlyUnique).forEach((tag)=>addTag(tag))
-  }, [contacts, addTag])
+  hiddenContacts: inferQueryOutput<"contact.getAllAndHidden">
+}> = ({open, setOpen, hiddenContacts}) => {
 
   return (
     <>
-      <Dialog open={open} onClose={()=>{setOpen(false)}}>
-        <DialogTitle>Ukryte kontakty {"(kontakty które nie mogły być usunięte, bo został do nich wysłany email)"}</DialogTitle>
-        <DialogContent>
-          {/* <ContactTable> */}
+      <Dialog open={open} onClose={()=>{setOpen(false)}} maxWidth="xl">
+        <DialogTitle>
+          Ukryte kontakty
+          <Typography color="text.secondary" className="italic text-sm">{"(kontakty które nie mogły być usunięte, bo został do nich wysłany email)"}</Typography>
+        </DialogTitle>
+        <DialogContent className="mt-1">
+          <ContactTable contacts={hiddenContacts} />
         </DialogContent>
       </Dialog>
     </>
   )
 }
 
-const ContactTable: FC = ({contacts}: {
+const ContactTable: FC<{
   contacts: inferQueryOutput<"contact.getAllAndHidden">
-}) => {
+}> = ({contacts}) => {
 
   const {allTags, addTag} = useAllTags()
 
@@ -176,6 +177,17 @@ const ContactTable: FC = ({contacts}: {
     <ContactRow key={contact.id} contact={contact} />
   )), [contacts]);
 
+  // an object containing tag: select_count pairs
+  const tagCountMap = useMemo( () => {
+    const tempTagCountMap: {[tag: string]: number} = {}
+    contacts.forEach( (contact) => {
+      contact.tags.forEach( tag => {
+        tempTagCountMap[tag] = (tempTagCountMap[tag] || 0) + 1
+      })
+    })
+    return tempTagCountMap;
+  }, [contacts])
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
@@ -184,7 +196,23 @@ const ContactTable: FC = ({contacts}: {
             <TableCell>Email</TableCell>
             <TableCell>Wysłane Maile</TableCell>
             <TableCell>Nick</TableCell>
-            <TableCell>Tagi</TableCell>
+            <TableCell>
+            <div className="inline-flex gap-4 items-center" style={{width: "min(40em, 50vw)"}}>
+              Tagi:
+              <div className="inline-flex gap-1.5 overflow-scroll">
+              {
+                allTags.map((tag, i) => {
+                  return (
+                    // if some are selected, show the count
+                  <Chip label={`${tag}: ${tagCountMap[tag] ?? 0}`} key={i}
+                    variant="outlined"
+                    size="small"
+                  />)
+                })
+              }
+              </div>
+            </div>
+            </TableCell>
             <TableCell align="right">Akcje</TableCell>
           </TableRow>
         </TableHead>
@@ -296,6 +324,7 @@ const ContactRow: FC<{contact: Contact & {
             })
           }
         }}
+        style={{width: "20rem"}}
       />
     </TableCell>
     <TableCell component="th" scope="row">
@@ -327,19 +356,38 @@ const ContactRow: FC<{contact: Contact & {
             {...params}
             label="Tagi"
             size="small"
+            style={{width: "min(30em, 50vw)"}}
           />
         )}
       />
     </TableCell>
     {/* edit button */}
     <TableCell component="th" align="right" scope="row">
-
-      <IconButton
-        aria-label="delete"
-        onClick={deleteOrHide}
-      >
-        <DeleteIcon />
-      </IconButton>
+      {
+        contact.hidden ?
+        <Tooltip placement="left" title="Przywróć kontakt">
+          <IconButton
+            aria-label="show"
+            onClick={()=>{
+              updateContact({
+                id: contact.id,
+                hidden: false
+              })
+            }}
+          >
+            <RestoreIcon />
+          </IconButton>
+        </Tooltip>
+          :
+        <Tooltip placement="left" title={ contact._count.Email > 0 ? "Schowaj kontakt" : "Usuń kontakt"}>
+          <IconButton
+            aria-label="delete"
+            onClick={deleteOrHide}
+          >
+          { contact._count.Email > 0 ? <VisibilityOffIcon /> : <DeleteIcon />}
+          </IconButton>
+        </Tooltip>
+      }
 
     </TableCell>
   </TableRow>

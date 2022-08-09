@@ -199,7 +199,7 @@ const ContactTable: FC = () => {
 
                       return (
                         // if some are selected, show the count
-                      <Chip label={selectedTagCountMap[tag] ? `${tag}: ${selectedTagCountMap[tag]}` : tag} key={i}
+                      <Chip label={`${tag}: ${selectedTagCountMap[tag]?? 0}/${tagCountMap[tag]}`} key={i}
                        variant={tagSelected ? "filled" : "outlined"}
                        color={tagSelected ? "secondary" : undefined}
                        onClick={()=>{
