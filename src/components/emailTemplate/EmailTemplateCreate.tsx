@@ -29,7 +29,7 @@ const Action = () => {
 const FixSharing = (url: string) => {
   return(
     <a href={url} target="_blank" rel="noreferrer">
-      <Button variant="outlined">
+      <Button color="secondary" variant="outlined">
         Zobacz Plik
       </Button>
     </a>
