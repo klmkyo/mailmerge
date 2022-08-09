@@ -41,6 +41,7 @@ specifiers:
   prisma: ^4.1.1
   react: 18.2.0
   react-dom: 18.2.0
+  react-google-drive-picker: ^1.2.0
   react-hook-form: ^7.34.0
   react-json-view: ^1.21.3
   react-letter: ^0.3.1
@@ -82,6 +83,7 @@ dependencies:
   notistack: 2.0.5_ygbk7drgebzalnbhhtqdcojmwa
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-google-drive-picker: 1.2.0_biqbaboplfbrettd7655fr4n2y
   react-hook-form: 7.34.0_react@18.2.0
   react-json-view: 1.21.3_twyhzqqpkwvvgrmyeapdo6i4my
   react-letter: 0.3.1_react@18.2.0
@@ -3396,6 +3398,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-google-drive-picker/1.2.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-2CmaPLZP+8WkfT/J1xzNMWS99/SHphUk7wzw4/47uvNK4T+YYL7bYGHdwjJ4WMMCj4F0YCM9rDRc2enXqnP/TA==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react-hook-form/7.34.0_react@18.2.0:

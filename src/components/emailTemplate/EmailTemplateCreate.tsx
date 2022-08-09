@@ -11,6 +11,7 @@ import { Editor as TinyMCEEditor } from 'tinymce';
 import { createGdriveChip } from "../../utils/gdriveChip";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
+import useDrivePicker from 'react-google-drive-picker'
 
 const Action = () => {
 
@@ -25,23 +26,24 @@ const Action = () => {
   )
 };
 
+const FixSharing = (url: string) => {
+  return(
+    <a href={url} target="_blank" rel="noreferrer">
+      <Button variant="outlined">
+        Zobacz Plik
+      </Button>
+    </a>
+  )
+};
+
 
 const EmailTemplateCreate: FC = () => {
 
   const utils = trpc.useContext();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [gdriveDialogOpen, setGdriveDialogOpen] = useState(false);
-
   const [subject, setSubject] = useState("");
-
-  // modal state
-  const [url, setUrl] = useState('');
-  const [filename, setFilename] = useState('');
-  const [position, setPosition] = useState('end');
-
   const theme = useTheme();
-
 
   const { mutate, error } = trpc.useMutation(["emailTemplate.create"], {
     onSuccess: () => {
@@ -49,8 +51,53 @@ const EmailTemplateCreate: FC = () => {
       enqueueSnackbar("Utworzono szablon!", { action: Action })
     }
   })
-
   const editorRef = useRef<TinyMCEEditor | null>(null);
+
+  const addDriveChip = (position: "end" | "current", url: string, filename: string) => {
+    if (position === "end") {
+      // yikes
+      editorRef.current?.setContent(editorRef.current?.getContent() + createGdriveChip(url.split("?")[0]!, filename))
+    } else {
+      editorRef.current?.insertContent(createGdriveChip(url.split("?")[0]!, filename),);
+    }
+  }
+
+  const {data: gDriveTokens} = trpc.useQuery(["settings.get-gdrive-tokens"]);
+  const [openPicker, authResponse] = useDrivePicker();
+
+
+  const handleOpenPicker = () => {
+
+    const {accessToken, developerKey, clientId} = gDriveTokens!;
+
+    if(!accessToken || !developerKey || !clientId) {
+      enqueueSnackbar(`Wystąpił błąd podczas logowania do googla, jeśli widzisz ten błąd to weź mi go zgłoś XD`, { variant: "error" });
+    }
+    openPicker({
+      clientId,
+      developerKey,
+      token: accessToken || "",
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      // customViews: customViewsArray, // custom view
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
+        } else if (data.action === "picked"){
+          data.docs.map(obj => {
+            addDriveChip("end", `https://drive.google.com/file/d/${obj.id}/view`, obj.name)
+            if(!obj.isShared){
+              // TODO link to file, button
+              enqueueSnackbar(`${obj.name} nie jest udostępniony, we to napraw bo łajcior znowu nie zobaczy`, { variant: "error", action: () => FixSharing(obj.url) });
+            }
+          })
+        }
+      },
+    })
+  }
 
   const createTemplate = () => {
     const body = editorRef.current?.getContent();
@@ -107,7 +154,7 @@ const EmailTemplateCreate: FC = () => {
           <Button disabled={!subject} startIcon={<MarkEmailReadOutlinedIcon />} className="border" variant="outlined" onClick={createTemplate}>
             Utwórz szablon
           </Button>
-          <Button startIcon={<AddToDriveIcon />} className="border" onClick={() => setGdriveDialogOpen(true)}>
+          <Button startIcon={<AddToDriveIcon />} className="border" onClick={() => handleOpenPicker()} disabled={!gDriveTokens}>
             {/* TODO https://developers.google.com/drive/picker/guides/overview */}
             Dodaj linki z dysku googla
           </Button>
@@ -117,79 +164,6 @@ const EmailTemplateCreate: FC = () => {
       <br />
       <br />
       {isDev && <button className="border" onClick={log}>Log editor content</button>}
-
-      <Dialog
-        open={gdriveDialogOpen}
-        onClose={() => setGdriveDialogOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Dodawanie linku do dysku Googla"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Link do pliku:
-          </DialogContentText>
-          <TextField
-            style={{ marginTop: ".3em" }}
-            placeholder="https://drive.google.com/file/d/1V2sNDeHho_h8psuuTRR4qGrRbSWvRo1_/view"
-            variant="standard"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            fullWidth
-          />
-
-          <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em" }}>
-            Nazwa pliku:
-          </DialogContentText>
-          <TextField
-            style={{ marginTop: ".3em" }}
-            placeholder="1.mp3"
-            variant="standard"
-            value={filename}
-            onChange={(e) => setFilename(e.target.value)}
-            fullWidth
-          />
-
-          <FormControl>
-            <FormLabel style={{ marginTop: "1.5em" }}>Wstaw:</FormLabel>
-            <RadioGroup
-              row
-              name="row-radio-buttons-group"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-            >
-              <FormControlLabel value="end" control={<Radio />} label="Na końcu maila" />
-              <FormControlLabel value="cursor" control={<Radio />} label="Przy kursorze" />
-            </RadioGroup>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setGdriveDialogOpen(false)}>Anuluj</Button>
-          <Button
-            onClick={() => {
-              setGdriveDialogOpen(false);
-
-              if (position === "end") {
-                // yikes
-                editorRef.current?.setContent(editorRef.current?.getContent() + createGdriveChip(url.split("?")[0]!, filename))
-              } else {
-                editorRef.current?.insertContent(createGdriveChip(url.split("?")[0]!, filename),);
-              }
-              setUrl('');
-              setFilename('');
-            }}
-            disabled={(!url || !url.split("?")[0]!.endsWith("view")) || !filename}
-            autoFocus
-          >
-            Dodaj
-          </Button>
-        </DialogActions>
-      </Dialog>
-
     </>
   );
 };

@@ -33,6 +33,38 @@ export const settingsRouter = createProtectedRouter()
       }))
     }
   })
+  .query("get-gdrive-tokens", {
+    async resolve({ ctx }) {
+      // get the refresh token from gmail settings
+      const { refreshToken } = await ctx.prisma.gmailSettings.findUniqueOrThrow({
+        where: {
+          userId: ctx.session.user.id,
+        }
+      })
+
+      if (!refreshToken) {
+        throw new TRPCError({code: "BAD_REQUEST"});
+      }
+
+      oauth2Client.setCredentials({
+        refresh_token: refreshToken,
+      });
+
+      const res = await oauth2Client.getAccessToken();
+
+      oauth2Client.setCredentials({
+        refresh_token: undefined,
+      });
+
+      // console.log(res);
+
+      return {
+        accessToken: res.token, 
+        developerKey: process.env.GOOGLE_GDRIVE_DEVELOPER_KEY!, 
+        clientId: process.env.GOOGLE_CLIENT_ID!
+      };
+    }
+  })
   .mutation("upsert-gmail-auth", {
     input: upsertGmailSettings,
     async resolve({ ctx, input }) {

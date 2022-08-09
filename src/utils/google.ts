@@ -10,7 +10,8 @@ export const oauth2Client = new google.auth.OAuth2(
 const scopes = [
   "https://mail.google.com/",
   "openid",
-  "email"
+  "email",
+  "https://www.googleapis.com/auth/drive.readonly"
 ];
 
 export const emailOAuthUrl = oauth2Client.generateAuthUrl({

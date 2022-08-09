@@ -23,7 +23,6 @@ import { onlyUnique } from "../../utils/onlyUnique";
 import { trpc } from "../../utils/trpc";
 import { ContactContext, ContactContextProvider, EmailTemplateContext, EmailTemplateProvider } from "./contexts";
 
-
 // TODO zaznaczanie na podstawie tagów
 
 export function EmailCreateUnwrapped() {
@@ -206,7 +205,7 @@ const ContactTable: FC = () => {
                           contacts.filter(c=>c.tags.includes(tag)).forEach(c => {
                             toggleContactSelection({id: c.id, selected: !tagSelected})
                           })
-                        }} 
+                        }}
                       />)
                     })
                   }
