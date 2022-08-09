@@ -17,6 +17,10 @@ const smtpTransport = nodemailer.createTransport({
   }
 });
 
+// TO BE DEPRECATED
+// Vercel allows functions to run only for 10 seconds, which is not enough for sending emails
+// TODO: docker container which runs the server and sends emails
+
 // Example router with queries that can only be hit if the user requesting is signed in
 export const publicRouter = createRouter()
   .mutation("send-unsent-emails", {
@@ -94,9 +98,8 @@ export async function sendUnsentEmails(ctx: Context) {
         }
       };
 
-      await smtpTransport.sendMail(mailOptions);
-
       // update the email to indicate it has been sent
+      // do it before the email is actually sent (better safe than sorry)
       await ctx.prisma.email.update({
         where: {
           id: email.id,
@@ -106,6 +109,8 @@ export async function sendUnsentEmails(ctx: Context) {
           sentTo: email.toBeSentTo,
         },
       });
+
+      await smtpTransport.sendMail(mailOptions);
     });
   });
 
