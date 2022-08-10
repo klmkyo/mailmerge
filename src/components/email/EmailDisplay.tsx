@@ -377,10 +377,11 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const setSendDate = useCallback((newDate: Date | null) => { setSendDateStateOnly(newDate); dateRef.current = newDate }, [])
 
   useEffect(()=>{
-    if(email.toBeSentAt.getTime() !== sendDate.getTime()){
+    if(email?.toBeSentAt?.getTime() !== sendDate?.getTime()){
       setSendDate(email.toBeSentAt);
     }
-  }, [email.toBeSentAt, setSendDate])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email.toBeSentAt])
 
   const { mutate, error } = trpc.useMutation(['email.delete'], {
     onError: (error) => {
