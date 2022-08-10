@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -189,17 +190,17 @@ export const EmailCard = ({ email, onClose }: {
             {email.sentAt ? 
               <>
                 {`Wysłano: ${email.sentAt!.toLocaleString()}`}
-                <span className="text-gray-600 italic ml-2">
+                <Typography color="text.secondary" className="italic ml-2">
                   {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
-                </span>
+                </Typography>
               </>
               :
               email.toBeSentAt &&
               <>
                 {`Do wysłania o: ${email.toBeSentAt!.toLocaleString()}`}
-                <span className="text-gray-600 italic ml-2">
+                <Typography color="text.secondary" className="italic ml-2">
                   {`(${moment(email.toBeSentAt!).locale("pl").fromNow()})`}
-                </span>
+                </Typography>
               </>
             }
           </div>

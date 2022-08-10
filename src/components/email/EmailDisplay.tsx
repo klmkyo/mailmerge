@@ -10,6 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -62,7 +63,7 @@ const EmailDisplay: FC = () => {
   })
 
   const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("grid");
-  const setGridView = useCallback((view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);}, [setGridViewSTATEONLY]); 
+  const setGridView = useCallback((view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);}, [setGridViewSTATEONLY]);
 
   useEffect(() => {
     const viewPref = localStorage.getItem('viewPref') as "grid" | "list";
@@ -438,16 +439,16 @@ const EmailRow: FC<{
       {wasSent ?
             <div>
               {email.sentAt!.toLocaleString()}
-              <span className="text-gray-600 italic ml-2">
+              <Typography color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
-              </span>
+              </Typography>
             </div>
             :
             <div className="inline-flex gap-3 items-center">
-              {email.toBeSentAt && 
-                <span className="text-gray-600 italic">
+              {email.toBeSentAt &&
+                <Typography color="text.secondary" className="italic">
                   {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
-                </span>
+                </Typography>
               }
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DateTimePicker
@@ -607,9 +608,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
           {wasSent ?
             <div>
               {`Wysłano: ${email.sentAt!.toLocaleString()}`}
-              <span className="text-gray-600 italic ml-2">
+              <Typography color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
-              </span>
+              </Typography>
             </div>
             :
             <div className="flex gap-3 items-center">
@@ -634,9 +635,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
                   onClose={updateDate}
                 />
               </LocalizationProvider>
-              <span className="text-gray-600 italic">
+              <Typography color="text.secondary" className="italic">
                 {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
-              </span>
+              </Typography>
             </div>
           }
         </div>
