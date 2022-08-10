@@ -41,7 +41,7 @@ const MyApp: AppType = ({
     if( localMode && (localMode !== mode) ){
       setMode(localMode as 'light' | 'dark');
     }
-  }, [setMode])
+  }, [mode, setMode])
 
   const theme = useMemo(
     () =>

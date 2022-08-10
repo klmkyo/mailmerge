@@ -19,7 +19,7 @@ import { Contact, Email } from "@prisma/client";
 import { sanitize } from "dompurify";
 import moment from 'moment';
 import 'moment/locale/pl';
-import { FC, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
@@ -63,12 +63,25 @@ const EmailDisplay: FC = () => {
 
   const { data: emailsUnfiltered, isLoading, error } = trpc.useQuery(['email.getAll']);
   // filter emails
-  const emails = emailsUnfiltered?.filter(email => {
+  let emails = emailsUnfiltered?.filter(email => {
     if (filter === 'sent') {
       return email.sentAt;
     }
     return email.sentAt === null;
   });
+
+  // sort emails by sentAt or toBeSentAt
+  if(emails){
+    if(filter === "sent"){
+      emails = emails.sort((a, b) => {
+        return (b?.sentAt?.getTime() ?? 0) - (a?.sentAt?.getTime() ?? 0);
+      })
+    } else {
+      emails = emails.sort((a, b) => {
+        return (a?.toBeSentAt?.getTime() ?? 0) - (b?.toBeSentAt?.getTime() ?? 0);
+      })
+    }
+  }
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -359,11 +372,15 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const utils = trpc.useContext();
   const { enqueueSnackbar } = useSnackbar();
   const [timePickerOpen, setTimePickerOpen] = useState(false);
-  const [sendDate, setSendDate] = useState<Date | null>(email.toBeSentAt);
+  const [sendDate, setSendDateStateOnly] = useState<Date | null>(email.toBeSentAt);
+  const dateRef = useRef(email.toBeSentAt);
+  const setSendDate = useCallback((newDate: Date | null) => { setSendDateStateOnly(newDate); dateRef.current = newDate }, [])
 
-  if(sendDate !== email.toBeSentAt){
-    setSendDate(email.toBeSentAt)
-  }
+  useEffect(()=>{
+    if(email.toBeSentAt.getTime() !== sendDate.getTime()){
+      setSendDate(email.toBeSentAt);
+    }
+  }, [email.toBeSentAt, setSendDate])
 
   const { mutate, error } = trpc.useMutation(['email.delete'], {
     onError: (error) => {
@@ -388,6 +405,15 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const onDelete = () => {
     console.log(email)
     mutate({ id: email.id })
+  }
+
+  const updateDate = () => {
+    console.log("UPDATING DATE")
+    updateToBeSentAt({
+      id: email.id,
+      toBeSentAt: dateRef.current
+    });
+    setTimePickerOpen(false);
   }
 
   const wasSent = !!email.sentAt;
@@ -431,6 +457,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
                   value={sendDate}
                   onChange={(newDate) => {
                     setSendDate(newDate)
+                    console.log("STATE SET")
                     // if empty, submit
                     if(!newDate){
                       updateToBeSentAt({
@@ -441,13 +468,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
                   }}
                   open={timePickerOpen}
                   onOpen={() => setTimePickerOpen(true)}
-                  onClose={()=>{
-                    updateToBeSentAt({
-                      id: email.id,
-                      toBeSentAt: sendDate!
-                    });
-                    setTimePickerOpen(false);
-                  }}
+                  onClose={updateDate}
                 />
               </LocalizationProvider>
               <span className="text-gray-600 italic">

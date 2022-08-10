@@ -31,7 +31,7 @@ export const contactRouter = createProtectedRouter()
           if (e.code === 'P2002') {
             throw new TRPCError({
               code: "CONFLICT",
-              message: "Kontakt o takim mailu już istnieje",
+              message: `Kontakt o takim mailu już istnieje\n (${e.message})`,
             });
           }
         }
@@ -50,6 +50,7 @@ export const contactRouter = createProtectedRouter()
             tags: tags?.filter(onlyUnique),
             userId: ctx.session.user.id!
           })),
+          skipDuplicates: true,
         });
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError) {

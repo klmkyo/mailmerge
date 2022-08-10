@@ -35,7 +35,7 @@ const Home: NextPage = () => {
     if(window && window.innerWidth < 1600){
       enqueueSnackbar(`Wykryto wąski ekran, jakby co to póki co strona jest przystosowana tylko pod duże ekrany`, {preventDuplicate: true});
     }
-  }, [])
+  }, [enqueueSnackbar])
 
   return (
     <>
