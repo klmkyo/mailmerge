@@ -4,11 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { Button } from "@mui/material";
 import { NextPage } from "next";
 import Head from "next/head";
-import LoadingButton from '@mui/lab/LoadingButton';
 import Link from "next/link";
 import EmailDisplay from "../../components/email/EmailDisplay";
-import { isDev } from '../../utils/isDev';
-import UpdateIcon from '@mui/icons-material/Update';
 import { trpc } from '../../utils/trpc';
 
 const EmailIndexPage: NextPage = () => {

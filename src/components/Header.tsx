@@ -37,7 +37,7 @@ export default function Header() {
       }
 
       {
-        pathname === "/" || 
+        pathname === "/" ||
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link href={"/"}>
             <a className="text-3xl leading-normal font-extrabold drop-shadow-xl">
@@ -46,7 +46,7 @@ export default function Header() {
           </Link>
         </div>
       }
-      
+
       <div className="flex items-center gap-8">
         <IconButton onClick={colorMode.toggleColorMode} color="inherit" size="small">
           {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}

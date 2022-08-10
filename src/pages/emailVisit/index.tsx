@@ -15,20 +15,19 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { Contact, Email } from "@prisma/client";
 import { sanitize } from "dompurify";
 import moment from 'moment';
 import 'moment/locale/pl';
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Letter } from 'react-letter';
-import { isDev } from "../../utils/isDev";
-import { inferQueryOutput } from '../../utils/trpc';
 import { Loading } from "../../components/Loading";
-import { Contact, Email } from "@prisma/client";
+import { inferQueryOutput } from '../../utils/trpc';
 
 const ReactJson = dynamic(() => import('react-json-view'), {ssr: false})
 
@@ -187,7 +186,7 @@ export const EmailCard = ({ email, onClose }: {
       <footer className="flex justify-between items-center pt-3.5">
         <div>
           <div>
-            {email.sentAt ? 
+            {email.sentAt ?
               <>
                 {`Wysłano: ${email.sentAt!.toLocaleString()}`}
                 <Typography color="text.secondary" className="italic ml-2">

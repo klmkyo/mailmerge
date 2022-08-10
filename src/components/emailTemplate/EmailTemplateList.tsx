@@ -1,14 +1,13 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, Grid, Paper, Stack } from "@mui/material";
 import { EmailTemplate } from "@prisma/client";
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
+import { useRouter } from 'next/router';
 import { FC, useState } from "react";
-import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
-import EditIcon from '@mui/icons-material/Edit';
-import { useRouter } from 'next/router';
 
 const EmailTemplateList: FC = () => {
 

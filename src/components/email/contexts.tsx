@@ -48,7 +48,7 @@ export const EmailTemplateProvider = ({ children }: { children: ReactNode }) => 
 };
 
 export const ContactContext = createContext<{
-  contacts: (Contact & { 
+  contacts: (Contact & {
     selected: boolean,
     _count: {
         Email: number

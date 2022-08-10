@@ -1,16 +1,16 @@
-import { Card, CardActionArea } from "@mui/material";
-import type { GetServerSideProps, NextPage } from "next";
-import { getSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
-import { trpc } from "../utils/trpc";
-import { useSnackbar } from 'notistack';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Card, CardActionArea } from "@mui/material";
+import type { GetServerSideProps, NextPage } from "next";
+import { getSession } from "next-auth/react";
+import Head from "next/head";
+import Link from "next/link";
+import { useSnackbar } from 'notistack';
 import { ReactNode, useEffect } from "react";
+import { trpc } from "../utils/trpc";
 
 type TechnologyCardProps = {
   name: string;
@@ -116,7 +116,7 @@ const TechnologyCard = ({
       <Card variant="outlined" className="flex flex-col justify-center duration-500 rounded shadow-xl cursor-pointer">
         <CardActionArea style={{padding: "1.5rem"}}>
           <h2 className={`flex items-center justify-center gap-1.5 text-lg ${highlight && "text-purple-500"}`}>
-            {icon} 
+            {icon}
             {name}
           </h2>
           <h3 className="text-sm">{desc}</h3>

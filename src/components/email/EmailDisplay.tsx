@@ -1,8 +1,8 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, Grid, MenuItem, Paper, Select, Stack, TextField } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,9 +10,9 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,14 +20,13 @@ import { Contact, Email } from "@prisma/client";
 import { sanitize } from "dompurify";
 import moment from 'moment';
 import 'moment/locale/pl';
+import { useSnackbar } from 'notistack';
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Letter } from 'react-letter';
-import { isDev } from "../../utils/isDev";
-import { inferQueryOutput, trpc } from "../../utils/trpc";
-import { useSnackbar } from 'notistack';
-import { Loading } from "../Loading";
+import { EmailCard as EmailDialogCard } from "../../pages/emailVisit/index";
 import { extractText } from '../../utils/emails';
-import { EmailCard as EmailDialogCard } from "../../pages/emailVisit/index"
+import { inferQueryOutput, trpc } from "../../utils/trpc";
+import { Loading } from "../Loading";
 
 
 const timeIntervals = [

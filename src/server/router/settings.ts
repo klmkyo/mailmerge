@@ -59,8 +59,8 @@ export const settingsRouter = createProtectedRouter()
       // console.log(res);
 
       return {
-        accessToken: res.token, 
-        developerKey: process.env.GOOGLE_GDRIVE_DEVELOPER_KEY!, 
+        accessToken: res.token,
+        developerKey: process.env.GOOGLE_GDRIVE_DEVELOPER_KEY!,
         clientId: process.env.GOOGLE_CLIENT_ID!
       };
     }
