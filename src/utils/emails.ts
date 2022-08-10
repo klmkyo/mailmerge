@@ -30,3 +30,9 @@ export const addTracker = (email: Email) => {
   const tracker = `<img src="${DEPLOY_URL}/api/img/${email.id}" width="1" height="1" style="display:none">`;
   return `${trackedBody}${tracker}`;
 }
+
+// function that extracts text from html body, to be used for preview
+export const extractText = (html: string) => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+}

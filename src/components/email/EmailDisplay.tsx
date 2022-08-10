@@ -25,6 +25,8 @@ import { isDev } from "../../utils/isDev";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
 import { useSnackbar } from 'notistack';
 import { Loading } from "../Loading";
+import { extractText } from '../../utils/emails';
+import { EmailCard as EmailDialogCard } from "../../pages/emailVisit/index"
 
 
 const timeIntervals = [
@@ -42,6 +44,7 @@ const timeIntervals = [
   },
 ];
 
+type EmailObj = inferQueryOutput<"email.getAll">[number]
 
 const EmailDisplay: FC = () => {
 
@@ -60,6 +63,7 @@ const EmailDisplay: FC = () => {
 
   const [gridView, setGridView] = useState<"grid" | "list">("grid");
   const [filter, setFilter] = useState<"sent" | "unsent">("unsent");
+  const sentView = filter === "sent";
 
   const { data: emailsUnfiltered, isLoading, error } = trpc.useQuery(['email.getAll']);
   // filter emails
@@ -71,8 +75,8 @@ const EmailDisplay: FC = () => {
   });
 
   // sort emails by sentAt or toBeSentAt
-  if(emails){
-    if(filter === "sent"){
+  if (emails) {
+    if (sentView) {
       emails = emails.sort((a, b) => {
         return (b?.sentAt?.getTime() ?? 0) - (a?.sentAt?.getTime() ?? 0);
       })
@@ -87,6 +91,9 @@ const EmailDisplay: FC = () => {
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [sendMultipleDialogOpen, setSendMultipleDialogOpen] = useState(false);
+
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState<EmailObj | null>(null);
 
   const [sendMultipleStart, setSendMultipleStart] = useState(new Date());
   const [sendMultipleIntervalUnit, setSendMultipleIntervalUnit] = useState(60);
@@ -119,7 +126,7 @@ const EmailDisplay: FC = () => {
         {/* select all */}
         <div className="flex gap-6">
           {/* sent/unsent filter */}
-          <ToggleButtonGroup exclusive value={filter} onChange={(e,v) => setFilter(v ?? filter)}>
+          <ToggleButtonGroup exclusive value={filter} onChange={(e, v) => setFilter(v ?? filter)}>
             <ToggleButton value="unsent" className="inline-flex items-center gap-2">
               <ScheduleSendIcon />
               Nie wysłane
@@ -155,9 +162,9 @@ const EmailDisplay: FC = () => {
           <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
             <Stack direction="row" spacing={2}>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />} onClick={() => {
-                  setSendMultipleDialogOpen(true);
-                  setSendMultipleStart(new Date());
-                }}>
+                setSendMultipleDialogOpen(true);
+                setSendMultipleStart(new Date());
+              }}>
                 Zaplanuj wysłania
               </Button>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={() => setConfirmDialogOpen(true)}>
@@ -172,7 +179,7 @@ const EmailDisplay: FC = () => {
           <ToggleButtonGroup
             value={gridView}
             exclusive
-            onChange={ (e, v)=>setGridView(v ?? gridView)}
+            onChange={(e, v) => setGridView(v ?? gridView)}
           >
             <ToggleButton value="grid">
               <ViewModuleIcon />
@@ -190,24 +197,50 @@ const EmailDisplay: FC = () => {
 
         {
           gridView === "grid" ?
-          // Table
-          (
-            <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
-              {emails?.map((email) => {
-                return (
-                  <EmailCard key={email.id} email={email} handleSelect={handleSelect} checked={selectedIds.includes(email.id)} />
-                )
-              })}
-            </Grid>
-          )
-              :
-          // List
-          (
-            <p>Widok listy nie jest jeszcze gotowy</p>
-          )
+            // Table
+            (
+              <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+                {emails?.map((email) => {
+                  return (
+                    <EmailCard key={email.id} email={email} handleSelect={handleSelect} checked={selectedIds.includes(email.id)} />
+                  )
+                })}
+              </Grid>
+            )
+            :
+            // List
+            (
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} size="small">
+                  <TableHead>
+                    <TableRow>
+                      {/* nickname w `email ${nickName}` */}
+                      <TableCell>Email</TableCell>
+                      <TableCell>Tytuł</TableCell>
+                      <TableCell>Treść</TableCell>
+                      <TableCell align="right">ID </TableCell>
+                      <TableCell align="right">{sentView ? "Data wysłania" : "Do wysłania o"}</TableCell>
+                      <TableCell align="right">Akcje</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {
+                      emails?.map((email) => <EmailRow key={email.id} email={email}
+                        handleSelect={handleSelect} checked={selectedIds.includes(email.id)}
+                        setCurrentEmail={setCurrentEmail} setEmailDialogOpen={setEmailDialogOpen} />)
+                    }
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )
         }
 
       </Box>
+
+      {/* Email Dialog */}
+      <Dialog maxWidth="xl" onClose={() => setEmailDialogOpen(false)} open={emailDialogOpen}>
+        <EmailDialogCard email={currentEmail!} onClose={() => setEmailDialogOpen(false)} />
+      </Dialog>
 
       <Dialog
         open={confirmDialogOpen}
@@ -270,11 +303,11 @@ const EmailDisplay: FC = () => {
               inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               value={sendMultipleInterval}
               placeholder="natychmiast"
-              onChange={(e)=>{
+              onChange={(e) => {
                 const n = e.target.value
-                if( /^\d+$/.test(n) ){
-                  try{
-                    setSendMultipleInterval( parseInt(n, 10) )
+                if (/^\d+$/.test(n)) {
+                  try {
+                    setSendMultipleInterval(parseInt(n, 10))
                   }
                   catch {
                     console.error("nan")
@@ -286,7 +319,7 @@ const EmailDisplay: FC = () => {
             />
             <Select
               value={sendMultipleIntervalUnit}
-              onChange={ (e) => setSendMultipleIntervalUnit( parseInt( (e.target.value as string), 10) ) }
+              onChange={(e) => setSendMultipleIntervalUnit(parseInt((e.target.value as string), 10))}
             >
               {
                 timeIntervals.map((itv) => <MenuItem key={itv.value} value={itv.value}>{itv.label}</MenuItem>)
@@ -297,7 +330,7 @@ const EmailDisplay: FC = () => {
           <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em", marginBottom: "0.5em" }}>
             Podgląd harmonogramu:
           </DialogContentText>
-          <EmailTimesPreview emails={emails!} interval={sendMultipleInterval! * sendMultipleIntervalUnit} start={sendMultipleStart}/>
+          <EmailTimesPreview emails={emails!} interval={sendMultipleInterval! * sendMultipleIntervalUnit} start={sendMultipleStart} />
 
         </DialogContent>
         <DialogActions>
@@ -309,7 +342,7 @@ const EmailDisplay: FC = () => {
               const start = sendMultipleStart;
               const interval = (sendMultipleInterval ?? 0) * sendMultipleIntervalUnit;
               emails!.map((email, i) => {
-                const toBeSentAt = new Date(start.getTime() + ( (interval ?? 0)  * 1000 * i))
+                const toBeSentAt = new Date(start.getTime() + ((interval ?? 0) * 1000 * i))
                 updateToBeSentAt({
                   id: email.id,
                   toBeSentAt
@@ -317,7 +350,7 @@ const EmailDisplay: FC = () => {
               })
             }}
             autoFocus
-            >
+          >
             Wysyłaj
           </Button>
         </DialogActions>
@@ -326,7 +359,47 @@ const EmailDisplay: FC = () => {
   );
 };
 
-const EmailTimesPreview = ({emails, interval, start}:
+const EmailRow: FC<{
+  email: Email & {
+    contact: Contact;
+  },
+  handleSelect: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  setCurrentEmail: (email: Email & {
+    contact: Contact;
+  }) => void
+  setEmailDialogOpen: (bool: boolean) => void,
+  checked: boolean
+}> = ({ email, handleSelect, checked, setCurrentEmail, setEmailDialogOpen }) => {
+
+  const contact = email.contact;
+  return (
+    <TableRow
+      key={email.id}
+      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+    >
+      <TableCell component="th" scope="row">
+        {contact.email} {contact.nickName && ` (${contact.nickName})`}
+      </TableCell>
+      <TableCell>{email.subject}</TableCell>
+      <TableCell>{extractText(email.body).substring(0, 40)}...</TableCell>
+      <TableCell align="right">{email.id}</TableCell>
+      <TableCell align="right">{email.sentAt ? (email.sentAt?.toLocaleString() ?? "") : (email.toBeSentAt?.toLocaleString() ?? "")}</TableCell>
+      <TableCell align="right">
+        <div className="inline-flex items-center gap-2">
+          <Button size="small" onClick={() => {
+            setCurrentEmail(email);
+            setEmailDialogOpen(true);
+          }}>
+            Mail
+          </Button>
+          {!email.sentAt && <Checkbox name={email.id} sx={{ margin: "-0.5em" }} onChange={handleSelect} checked={checked} />}
+        </div>
+      </TableCell>
+    </TableRow>
+  )
+}
+
+const EmailTimesPreview = ({ emails, interval, start }:
   {
     emails: (Email & { contact: Contact; })[],
     interval: number | null,
@@ -334,7 +407,7 @@ const EmailTimesPreview = ({emails, interval, start}:
   }) => {
 
 
-  return(
+  return (
     <TableContainer component={Paper}>
       <Table aria-label="czasy wysłania">
         <TableHead>
@@ -352,7 +425,7 @@ const EmailTimesPreview = ({emails, interval, start}:
             >
               <TableCell component="th" scope="row">{email.contact.email}</TableCell>
               <TableCell align="right">{email.subject}</TableCell>
-              <TableCell align="right">{new Date(start.getTime() + ( (interval ?? 0)  * 1000 * i)).toLocaleString()}</TableCell>
+              <TableCell align="right">{new Date(start.getTime() + ((interval ?? 0) * 1000 * i)).toLocaleString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -376,11 +449,11 @@ const EmailCard = ({ email, handleSelect, checked }: {
   const dateRef = useRef(email.toBeSentAt);
   const setSendDate = useCallback((newDate: Date | null) => { setSendDateStateOnly(newDate); dateRef.current = newDate }, [])
 
-  useEffect(()=>{
-    if(email?.toBeSentAt?.getTime() !== sendDate?.getTime()){
+  useEffect(() => {
+    if (email?.toBeSentAt?.getTime() !== sendDate?.getTime()) {
       setSendDate(email.toBeSentAt);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email.toBeSentAt])
 
   const { mutate, error } = trpc.useMutation(['email.delete'], {
@@ -396,9 +469,9 @@ const EmailCard = ({ email, handleSelect, checked }: {
     onSuccess: (err, updated) => {
       utils.invalidateQueries('email.getAll')
       const msg = updated.toBeSentAt ?
-       `Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`
-       :
-       "Usunięto datę wysłania"
+        `Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`
+        :
+        "Usunięto datę wysłania"
       enqueueSnackbar(msg, { variant: 'success', preventDuplicate: true });
     }
   })
@@ -460,7 +533,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
                     setSendDate(newDate)
                     console.log("STATE SET")
                     // if empty, submit
-                    if(!newDate){
+                    if (!newDate) {
                       updateToBeSentAt({
                         id: email.id,
                         toBeSentAt: null

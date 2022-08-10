@@ -27,6 +27,7 @@ import { Letter } from 'react-letter';
 import { isDev } from "../../utils/isDev";
 import { inferQueryOutput } from '../../utils/trpc';
 import { Loading } from "../../components/Loading";
+import { Contact, Email } from "@prisma/client";
 
 const ReactJson = dynamic(() => import('react-json-view'), {ssr: false})
 
@@ -151,8 +152,10 @@ const EmailVisitPage: NextPage = () => {
   );
 };
 
-const EmailCard = ({ email, onClose }: {
-  email: EVEmail,
+export const EmailCard = ({ email, onClose }: {
+  email: Email & {
+    contact: Contact;
+  },
   onClose: () => void
 }) => {
   return (
@@ -183,10 +186,22 @@ const EmailCard = ({ email, onClose }: {
       <footer className="flex justify-between items-center pt-3.5">
         <div>
           <div>
-            {`Wysłano: ${email.sentAt!.toLocaleString()}`}
-            <span className="text-gray-600 italic ml-2">
-              {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
-            </span>
+            {email.sentAt ? 
+              <>
+                {`Wysłano: ${email.sentAt!.toLocaleString()}`}
+                <span className="text-gray-600 italic ml-2">
+                  {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
+                </span>
+              </>
+              :
+              email.toBeSentAt &&
+              <>
+                {`Do wysłania o: ${email.toBeSentAt!.toLocaleString()}`}
+                <span className="text-gray-600 italic ml-2">
+                  {`(${moment(email.toBeSentAt!).locale("pl").fromNow()})`}
+                </span>
+              </>
+            }
           </div>
         </div>
       </footer>
