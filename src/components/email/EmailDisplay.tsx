@@ -61,7 +61,16 @@ const EmailDisplay: FC = () => {
     }
   })
 
-  const [gridView, setGridView] = useState<"grid" | "list">("grid");
+  const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("grid");
+  const setGridView = (view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);} 
+
+  useEffect(() => {
+    const viewPref = localStorage.getItem('viewPref');
+    if (viewPref && (viewPref !== gridView)) {
+      setGridView(viewPref);
+    }
+  }, [gridView, setGridView]);
+
   const [filter, setFilter] = useState<"sent" | "unsent">("unsent");
   const sentView = filter === "sent";
 
@@ -193,7 +202,7 @@ const EmailDisplay: FC = () => {
         </div>
       </Box>
 
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", paddingBottom: "5rem" }}>
 
         {
           gridView === "grid" ?
@@ -371,19 +380,99 @@ const EmailRow: FC<{
   checked: boolean
 }> = ({ email, handleSelect, checked, setCurrentEmail, setEmailDialogOpen }) => {
 
+  const utils = trpc.useContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
+  const [sendDate, setSendDateStateOnly] = useState<Date | null>(email.toBeSentAt);
+  const dateRef = useRef(email.toBeSentAt);
+  const setSendDate = useCallback((newDate: Date | null) => { setSendDateStateOnly(newDate); dateRef.current = newDate }, [])
+
+  useEffect(() => {
+    if (email?.toBeSentAt?.getTime() !== sendDate?.getTime()) {
+      setSendDate(email.toBeSentAt);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email.toBeSentAt])
+
+  const { mutate: updateToBeSentAt } = trpc.useMutation(['email.update-toBeSentAt'], {
+    onSuccess: (err, updated) => {
+      utils.invalidateQueries('email.getAll')
+      const msg = updated.toBeSentAt ?
+        `Zaktualizowano datę na ${updated.toBeSentAt.toLocaleString()}`
+        :
+        "Usunięto datę wysłania"
+      enqueueSnackbar(msg, { variant: 'success', preventDuplicate: true });
+    }
+  })
+
+
+  const updateDate = () => {
+    console.log("UPDATING DATE")
+    updateToBeSentAt({
+      id: email.id,
+      toBeSentAt: dateRef.current
+    });
+    setTimePickerOpen(false);
+  }
+
+  const wasSent = !!email.sentAt;
+
   const contact = email.contact;
   return (
     <TableRow
       key={email.id}
       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
     >
+      {/* EMAIL */}
       <TableCell component="th" scope="row">
         {contact.email} {contact.nickName && ` (${contact.nickName})`}
       </TableCell>
+      {/* SUBJECT */}
       <TableCell>{email.subject}</TableCell>
+      {/* BODY/HTML */}
       <TableCell>{extractText(email.body).substring(0, 40)}...</TableCell>
+      {/* ID */}
       <TableCell align="right">{email.id}</TableCell>
-      <TableCell align="right">{email.sentAt ? (email.sentAt?.toLocaleString() ?? "") : (email.toBeSentAt?.toLocaleString() ?? "")}</TableCell>
+      <TableCell align="right">
+      {/* TIME */}
+      {wasSent ?
+            <div>
+              {email.sentAt!.toLocaleString()}
+              <span className="text-gray-600 italic ml-2">
+                {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
+              </span>
+            </div>
+            :
+            <div className="inline-flex gap-3 items-center">
+              {email.toBeSentAt && 
+                <span className="text-gray-600 italic">
+                  {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
+                </span>
+              }
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} size="small" />}
+                  label={email.toBeSentAt ? "Edytuj datę wysłania" : "Zaplanuj wysłanie"}
+                  value={sendDate}
+                  onChange={(newDate) => {
+                    setSendDate(newDate)
+                    console.log("STATE SET")
+                    // if empty, submit
+                    if (!newDate) {
+                      updateToBeSentAt({
+                        id: email.id,
+                        toBeSentAt: null
+                      });
+                    }
+                  }}
+                  open={timePickerOpen}
+                  onOpen={() => setTimePickerOpen(true)}
+                  onClose={updateDate}
+                />
+              </LocalizationProvider>
+            </div>
+          }
+      </TableCell>
       <TableCell align="right">
         <div className="inline-flex items-center gap-2">
           <Button size="small" onClick={() => {
