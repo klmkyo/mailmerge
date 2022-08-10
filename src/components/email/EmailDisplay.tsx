@@ -62,10 +62,10 @@ const EmailDisplay: FC = () => {
   })
 
   const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("grid");
-  const setGridView = (view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);} 
+  const setGridView = useCallback((view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);}, [setGridViewSTATEONLY]); 
 
   useEffect(() => {
-    const viewPref = localStorage.getItem('viewPref');
+    const viewPref = localStorage.getItem('viewPref') as "grid" | "list";
     if (viewPref && (viewPref !== gridView)) {
       setGridView(viewPref);
     }
