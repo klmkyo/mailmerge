@@ -284,7 +284,7 @@ const EmailDisplay: FC = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         fullWidth
-        maxWidth="xs"
+        maxWidth="md"
       >
         <DialogTitle id="alert-dialog-title">
           {"Zaplanuj wysłanie maili"}
@@ -438,14 +438,14 @@ const EmailRow: FC<{
       {wasSent ?
             <div>
               {email.sentAt!.toLocaleString()}
-              <Typography color="text.secondary" className="italic ml-2">
+              <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
               </Typography>
             </div>
             :
             <div className="inline-flex gap-3 items-center">
               {email.toBeSentAt &&
-                <Typography color="text.secondary" className="italic">
+                <Typography variant="subtitle1" color="text.secondary" className="italic">
                   {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
                 </Typography>
               }
@@ -507,16 +507,24 @@ const EmailTimesPreview = ({ emails, interval, start }:
           </TableRow>
         </TableHead>
         <TableBody>
-          {emails.map((email, i) => (
-            <TableRow
-              key={email.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">{email.contact.email}</TableCell>
-              <TableCell align="right">{email.subject}</TableCell>
-              <TableCell align="right">{new Date(start.getTime() + ((interval ?? 0) * 1000 * i)).toLocaleString()}</TableCell>
-            </TableRow>
-          ))}
+          {emails.map((email, i) => {
+            const sendDate = new Date(start.getTime() + ((interval ?? 0) * 1000 * i))
+            return (
+              <TableRow
+                key={email.id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">{email.contact.email}</TableCell>
+                <TableCell align="right">{email.subject}</TableCell>
+                <TableCell align="right">
+                  {sendDate.toLocaleString()}
+                  <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
+                    {`(${moment(sendDate).locale("pl").fromNow()})`}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>
@@ -607,7 +615,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
           {wasSent ?
             <div>
               {`Wysłano: ${email.sentAt!.toLocaleString()}`}
-              <Typography color="text.secondary" className="italic ml-2">
+              <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
               </Typography>
             </div>
@@ -634,7 +642,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
                   onClose={updateDate}
                 />
               </LocalizationProvider>
-              <Typography color="text.secondary" className="italic">
+              <Typography variant="subtitle1" color="text.secondary" className="italic">
                 {email.toBeSentAt && moment(email.toBeSentAt).locale("pl").fromNow()}
               </Typography>
             </div>

@@ -46,6 +46,11 @@ const MyApp: AppType = ({
   const theme = useMemo(
     () =>
       createTheme({
+        typography: {
+          subtitle1: {
+            fontSize: 14,
+          },
+        },      
         palette: {
           ...(mode === 'light'
           ? {
