@@ -12,19 +12,8 @@ import { Editor as TinyMCEEditor } from 'tinymce';
 import { createGdriveChip } from "../../utils/gdriveChip";
 import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
-
-const Action = () => {
-
-  const router = useRouter();
-
-  return(
-    <>
-      <Button onClick={() => { router.push("/emailTemplate"); }}>
-        Zobacz szablony
-      </Button>
-    </>
-  )
-};
+import { EmailTemplate } from "@prisma/client";
+import { Edit } from '@mui/icons-material';
 
 const FixSharing = (url: string) => {
   return(
@@ -37,20 +26,33 @@ const FixSharing = (url: string) => {
 };
 
 
-const EmailTemplateCreate: FC = () => {
+export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = ({providedEmailTemplate}) => {
 
+  const router = useRouter()
   const utils = trpc.useContext();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [subject, setSubject] = useState("");
+  // if providedEmTemplate is provided, we are editing a template, so use it's calues
+  const [subject, setSubject] = useState(providedEmailTemplate?.subject ?? "");
   const theme = useTheme();
 
-  const { mutate, error } = trpc.useMutation(["emailTemplate.create"], {
+  // in case we are (creating) an email template
+  const { mutate: createET, error: createError } = trpc.useMutation(["emailTemplate.create"], {
     onSuccess: () => {
       utils.invalidateQueries(["emailTemplate.getAll"]);
-      enqueueSnackbar("Utworzono szablon!", { action: Action })
+      enqueueSnackbar("Utworzono szablon!")
+      router.push("/emailTemplate")
     }
   })
+
+  // in case we are (updating) email template
+  const { mutate: updateET, error: updateError } = trpc.useMutation(["emailTemplate.update"], {
+    onSuccess: () => {
+      utils.invalidateQueries(["emailTemplate.getAll"]);
+      router.push("/emailTemplate")
+    }
+  })
+
   const editorRef = useRef<TinyMCEEditor | null>(null);
 
   const addDriveChip = (position: "end" | "current", url: string, filename: string) => {
@@ -105,10 +107,20 @@ const EmailTemplateCreate: FC = () => {
       alert("Temat oraz treść nie mogą być puste");
       return;
     }
-    mutate({
-      subject,
-      body
-    })
+    if (providedEmailTemplate) {
+      // if we are updating email template
+      updateET({
+        id: providedEmailTemplate.id,
+        subject,
+        body,
+      })
+    } else {
+      // if we are creating email template
+      createET({
+        subject,
+        body
+      })
+    }
   }
 
   const log = () => {
@@ -120,7 +132,8 @@ const EmailTemplateCreate: FC = () => {
   return (
     <>
       <div className="flex flex-col">
-        {error && <p>{error.message}</p>}
+        {createError && <p>{createError.message}</p>}
+        {updateError && <p>{updateError.message}</p>}
         <TextField label="Tytuł Maila" value={subject} onChange={(e)=>setSubject(e.target.value)} style={{width: "30em", marginBottom: "2em"}} />
 
         <span className="text-xl mb-1">
@@ -129,7 +142,8 @@ const EmailTemplateCreate: FC = () => {
         <Editor
           apiKey="akd0k9vvpz6khox3asb2e431rwtfjgc7wxt1ovdudkb2qo53"
           onInit={(evt, editor) => editorRef.current = editor}
-          initialValue={`<div dir="ltr"></div>`}
+          // in case we are (updating) email template
+          initialValue={providedEmailTemplate?.body ?? `<div dir="ltr"></div>`}
           init={{
             language: 'pl',
             ...(theme.palette.mode === "dark" && {skin: "oxide-dark", content_css: "dark"}),
@@ -151,8 +165,11 @@ const EmailTemplateCreate: FC = () => {
         <br />
 
         <div className="flex flex-row-reverse gap-2">
-          <Button disabled={!subject} startIcon={<MarkEmailReadOutlinedIcon />} className="border" variant="outlined" onClick={createTemplate}>
-            Utwórz szablon
+          <Button disabled={!subject} startIcon={providedEmailTemplate ? <Edit /> : <MarkEmailReadOutlinedIcon />}
+            className="border" variant="outlined" onClick={createTemplate}>
+              {
+                providedEmailTemplate ? "Zapisz szablon" : "Utwórz szablon"
+              }
           </Button>
           <Button startIcon={<AddToDriveIcon />} className="border" onClick={() => handleOpenPicker()} disabled={!gDriveTokens}>
             {/* TODO https://developers.google.com/drive/picker/guides/overview */}
