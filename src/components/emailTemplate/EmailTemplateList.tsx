@@ -4,6 +4,7 @@ import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogCont
 import { EmailTemplate } from "@prisma/client";
 import { sanitize } from "dompurify";
 import parse from 'html-react-parser';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FC, useState } from "react";
 import { trpc } from "../../utils/trpc";
@@ -159,7 +160,9 @@ const EmailTemplate = ({ emailTemplate, handleSelect, checked }: {
       <footer className="flex justify-between pt-2">
         <div />
         <div className="flex gap-2">
-          <Button startIcon={<EditIcon />} onClick={()=>{router.push(`/emailTemplate/edit/${emailTemplate.id}`)}} >Edytuj</Button>
+          <Link href={`/emailTemplate/edit/${emailTemplate.id}`}>
+            <Button startIcon={<EditIcon />}>Edytuj</Button>
+          </Link>
           <Button startIcon={<DeleteIcon />} onClick={onDelete}>Usuń</Button>
         </div>
       </footer>
