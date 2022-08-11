@@ -9,7 +9,7 @@ const CreateMailPage: NextPage = () => {
   return (
     <main className="w-full flex flex-col items-center justify-center p-10">
       <Head>
-        <title>Create Mail</title>
+        <title>Utwórz Maila</title>
       </Head>
 
       <EmailCreate />

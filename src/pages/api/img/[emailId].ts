@@ -11,7 +11,7 @@ const examples = async (req: NextApiRequest, res: NextApiResponse) => {
   const { headers, cookies, query} = req;
   const requestData = {headers, cookies, query};
 
-  // if visited by a customer of website, don't save visit
+  // if visited by a "customer" of website, don't save visit
   if(!cookies['next-auth.session-token']){
     saveVisit({ emailId: emailIdStr!, requestData });
   }

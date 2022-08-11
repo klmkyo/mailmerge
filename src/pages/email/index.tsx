@@ -15,7 +15,7 @@ const EmailIndexPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Emails</title>
+        <title>Emaile</title>
       </Head>
 
       <main className="h-screen w-full p-10">

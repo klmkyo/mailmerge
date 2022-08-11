@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useState } from "react";
@@ -31,7 +32,12 @@ const GmailAuth: NextPage = () => {
   }
 
   return (
-    <Loading />
+    <>
+      <Head>
+        <title>Uwierzytelnianie...</title>
+      </Head>
+      <Loading />
+    </>
   );
 };
 
