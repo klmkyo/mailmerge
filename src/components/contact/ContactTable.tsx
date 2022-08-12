@@ -3,6 +3,8 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -85,13 +87,13 @@ export const ContactTable: FC<{
                 Tagi:
                 <div className="inline-flex gap-1.5 overflow-scroll">
                   {allTags.map((tag, i) => {
-                    
+
                     // if there are 0 tags, it is actually undefined
                     const chipSelected = tagCountMap[tag] && (selectedTagCountMap[tag] == tagCountMap[tag]);
 
                     return (
                       // if some are selected, show the count
-                      <Chip 
+                      <Chip
                         label={selectedTagCountMap[tag] ? `${tag}: ${selectedTagCountMap[tag]?? 0}/${tagCountMap[tag]}`:  `${tag}: ${tagCountMap[tag] ?? 0}`} key={i}
                         variant={chipSelected ? "filled" : "outlined"}
                         color={chipSelected ? "secondary" : undefined}
@@ -102,7 +104,27 @@ export const ContactTable: FC<{
                 </div>
               </div>
             </TableCell>
-            <TableCell align="right">Akcje</TableCell>
+            <TableCell align="right">
+              {/* Zaznacz wszystkie */}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedIds.length === (contacts?.length ?? 0)}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        if (contacts) {
+                          setSelectedIds(contacts.map(contact => contact.id));
+                        }
+                      } else {
+                        setSelectedIds([]);
+                      }
+                    }
+                    }
+                  />
+                }
+                label="Zaznacz wszystkie"
+              />
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

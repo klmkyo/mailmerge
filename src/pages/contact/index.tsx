@@ -194,28 +194,9 @@ const CreateContactPage: NextPage = () => {
           <h1 className="text-xl">Ilość kontaktów: <b>{contacts?.length}</b></h1>
         </div>
 
-        <div className="relative w-full flex items-center justify-between mb-4">
-          {/* Zaznacz wszystkie */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selectedIds.length === (contacts?.length ?? 0)}
-                onChange={(event) => {
-                  if (event.target.checked) {
-                    if (contacts) {
-                      setSelectedIds(contacts.map(contact => contact.id));
-                    }
-                  } else {
-                    setSelectedIds([]);
-                  }
-                }
-                }
-              />
-            }
-            label="Zaznacz wszystkie maile"
-          />
+        <div className="relative w-full flex items-center justify-center mb-4">
           {/* Kontrole zaznaczenia */}
-          <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+          <Box>
             <Stack direction="row" spacing={2}>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<TagIcon />} onClick={()=>setTagsDialogOpen(true)}>
                 Dodaj Tagi
@@ -233,7 +214,7 @@ const CreateContactPage: NextPage = () => {
             {/* TODO virtualize this dude */}
             <ContactTable contacts={contacts} selectedContacts={selectedContacts}
             selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
-            
+
             <div className="w-full">
             <Button
               startIcon={<VisibilityOffIcon />}
