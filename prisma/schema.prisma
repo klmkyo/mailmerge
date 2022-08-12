@@ -75,7 +75,7 @@ model EmailVisit {
   emailId     String
   email       Email  @relation(fields: [emailId], references: [id])
   requestData Json?
-  seenByUser  Boolean @default(false)
+  seenByUser  DateTime?
 
   visitedAt DateTime @default(now())
 }
