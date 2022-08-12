@@ -420,7 +420,7 @@ const HiddenDialog: FC<{
               <Typography color="text.secondary" className="italic text-sm">{"(kontakty które nie mogły być usunięte, bo został do nich wysłany email)"}</Typography>
             </div>
 
-            <Button onClick={()=>unHideSelected()} startIcon={<RestoreIcon />}>
+            <Button onClick={()=>unHideSelected()} startIcon={<RestoreIcon />} disabled={selectedIds.length === 0}>
               Przywróć Kontakty
             </Button>
           </div>
