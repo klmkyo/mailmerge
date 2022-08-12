@@ -13,11 +13,14 @@ export const updateContactSchema = z.object({
   hidden: z.boolean().optional(),
 })
 
-
 export type CreateContactSchemaInput = z.TypeOf<typeof createContactSchema>
 
 export const deleteContactSchema = z.object({
   id: z.string().cuid()
+});
+
+export const deleteManyContactSchema = z.object({
+  ids: z.array(z.string().cuid())
 });
 
 export const hideContactSchema = z.object({

@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createContactSchema, deleteContactSchema, updateContactSchema } from "../../schema/contact.schema";
+import { createContactSchema, deleteContactSchema, deleteManyContactSchema, updateContactSchema } from "../../schema/contact.schema";
 import { onlyUnique } from "../../utils/onlyUnique";
 import { createProtectedRouter } from "./protected-router";
 
@@ -74,6 +74,35 @@ export const contactRouter = createProtectedRouter()
         return await ctx.prisma.contact.deleteMany({
           where: {
             id: input.id,
+            user: { id: ctx.session.user.id },
+          },
+        });
+      } catch (e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+          // The .code property can be accessed in a type-safe manner
+
+          // P2003 - foreign key constraint violation
+          if (e.code === 'P2003') {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Nie można usunąć kontaktu, do którego został wysłany email. Spróbuj go schować.",
+            });
+          }
+        }
+        throw e
+      }
+    }
+  })
+  .mutation("delete-many", {
+    input: deleteManyContactSchema,
+    async resolve({ ctx, input }) {
+      try {
+        // delete actual contact
+        return await ctx.prisma.contact.deleteMany({
+          where: {
+            id: {
+              in: input.ids,
+            },
             user: { id: ctx.session.user.id },
           },
         });
@@ -168,6 +197,42 @@ export const contactRouter = createProtectedRouter()
           ...input,
           tags: input.tags?.filter(onlyUnique),
         },
+      });
+    }
+  })
+  .mutation("hide-many", {
+    input: z.object({
+      ids: z.array(z.string().cuid())
+    }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.contact.updateMany({
+        where: {
+          id: {
+            in: input.ids,
+          },
+          user: { id: ctx.session.user.id },
+        },
+        data: {
+          hidden: true,
+        }
+      });
+    }
+  })
+  .mutation("unhide-many", {
+    input: z.object({
+      ids: z.array(z.string().cuid())
+    }),
+    async resolve({ ctx, input }) {
+      return await ctx.prisma.contact.updateMany({
+        where: {
+          id: {
+            in: input.ids,
+          },
+          user: { id: ctx.session.user.id },
+        },
+        data: {
+          hidden: false,
+        }
       });
     }
   })

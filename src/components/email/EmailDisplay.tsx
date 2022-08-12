@@ -178,10 +178,10 @@ const EmailDisplay: FC = () => {
                 setSendMultipleDialogOpen(true);
                 setSendMultipleStart(new Date());
               }}>
-                Zaplanuj wysłania
+                Zaplanuj Wysłania
               </Button>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={() => setConfirmDialogOpen(true)}>
-                Usuń zaznaczone
+                Usuń Zaznaczone
               </Button>
             </Stack>
           </Box>
@@ -255,6 +255,7 @@ const EmailDisplay: FC = () => {
         <EmailDialogCard email={currentEmail!} onClose={() => setEmailDialogOpen(false)} />
       </Dialog>
 
+      {/* delete dialog */}
       <Dialog
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
