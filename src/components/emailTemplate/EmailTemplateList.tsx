@@ -14,8 +14,20 @@ const EmailTemplateList: FC = () => {
 
   const utils = trpc.useContext();
   const { data: emailTemplates, isLoading, error } = trpc.useQuery(['emailTemplate.getAll']);
+
   const { mutate: deleteMany } = trpc.useMutation(["emailTemplate.delete-many"], {
-    onSuccess(){
+    onMutate: async (data) => {
+      await utils.cancelQuery(['emailTemplate.getAll'])
+      const prevoiusTemplates = utils.getQueryData(['emailTemplate.getAll'])
+
+      utils.setQueryData(['emailTemplate.getAll'], old => old!.filter( x => !data.ids.includes(x.id) ))
+
+      return { prevoiusTemplates }
+    },
+    onError: (err, newTemplates, context) => {
+      utils.setQueryData(['emailTemplate.getAll'], context!.prevoiusTemplates!)
+    },
+    onSettled(){
       utils.invalidateQueries('emailTemplate.getAll')
     }
   });
