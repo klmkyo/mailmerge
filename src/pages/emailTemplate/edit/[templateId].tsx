@@ -1,11 +1,23 @@
 import { EmailTemplate } from "@prisma/client";
-import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { FC } from "react";
 import EmailTemplateCreate from "../../../components/emailTemplate/EmailTemplateCreate";
-import {prisma} from "../../../server/db/client";
+import { Loading } from "../../../components/Loading";
+import { trpc } from "../../../utils/trpc";
 
-const EmailTemplateEdit: FC<{providedEmailTemplate: EmailTemplate}> = ({providedEmailTemplate}) => {
+const EmailTemplateEdit: FC<{templateId: string}> = ({templateId}) => {
+
+  const router = useRouter();
+
+  const {data: providedEmailTemplate, isLoading, error} = trpc.useQuery(["emailTemplate.get", {
+    id: router.query.templateId as string,
+  }])
+
+  if(isLoading){
+    return <Loading />
+  }
+
   return (
     <>
       <Head>
@@ -13,33 +25,10 @@ const EmailTemplateEdit: FC<{providedEmailTemplate: EmailTemplate}> = ({provided
       </Head>
 
       <main className="h-screen w-full p-10">
-        <EmailTemplateCreate providedEmailTemplate={providedEmailTemplate} />
+        <EmailTemplateCreate providedEmailTemplate={providedEmailTemplate!} />
       </main>
     </>
   );
 };
 
 export default EmailTemplateEdit;
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { templateId } = ctx.query;
-
-  const template = await prisma.emailTemplate.findFirstOrThrow({
-    where: {
-      id: templateId as string
-    },
-    select: {
-      id: true,
-      subject: true,
-      body: true
-    }
-  });
-
-  console.log(template);
-
-  return {
-    props: {
-      providedEmailTemplate: template
-    }
-  }
-}
