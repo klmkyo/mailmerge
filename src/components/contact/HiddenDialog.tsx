@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
 import { ContactTable } from "./ContactTable";
 
@@ -12,9 +12,10 @@ export const HiddenDialog: FC<{
   open: boolean;
   setOpen: (open: boolean) => void;
   hiddenContacts: inferQueryOutput<"contact.getAllAndHidden">;
+  selectedHiddenContacts: inferQueryOutput<"contact.getAllAndHidden">;
   selectedIds: string[];
-  setSelectedIds: (selectedIds: string[]) => void;
-}> = ({ open, setOpen, hiddenContacts, selectedIds, setSelectedIds }) => {
+  setSelectedIds: Dispatch<SetStateAction<string[]>>;
+}> = ({ open, setOpen, hiddenContacts, selectedIds, setSelectedIds, selectedHiddenContacts }) => {
 
   const utils = trpc.useContext();
 
@@ -64,7 +65,7 @@ export const HiddenDialog: FC<{
           </div>
         </DialogTitle>
         <DialogContent className="mt-1">
-          <ContactTable contacts={hiddenContacts} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
+          <ContactTable contacts={hiddenContacts} selectedIds={selectedIds} setSelectedIds={setSelectedIds} selectedContacts={selectedHiddenContacts} />
         </DialogContent>
       </Dialog>
     </>

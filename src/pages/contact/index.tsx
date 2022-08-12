@@ -74,6 +74,10 @@ const CreateContactPage: NextPage = () => {
   const selectedContacts = useMemo(() =>
   contacts.filter(c => selectedIds.includes(c.id)), [contacts, selectedIds]);
 
+  // for hidden contacts dialog
+  const selectedHiddenContacts = useMemo(() =>
+  hiddenContacts.filter(c => selectedIds.includes(c.id)), [hiddenContacts, selectedIds]);
+
   const { mutate: createContacts } = trpc.useMutation(['contact.create-many'], {
     onError: (error) => {
       alert(error)
@@ -225,8 +229,11 @@ const CreateContactPage: NextPage = () => {
 
         {contacts?.length !== 0 && (
           <>
-          {/* TODO virtualize this dude */}
-            <ContactTable contacts={contacts} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
+
+            {/* TODO virtualize this dude */}
+            <ContactTable contacts={contacts} selectedContacts={selectedContacts}
+            selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
+            
             <div className="w-full">
             <Button
               startIcon={<VisibilityOffIcon />}
@@ -258,9 +265,9 @@ const CreateContactPage: NextPage = () => {
 
       </main>
 
-      {/* hidden contacts dialog */}
+      {/* HIDDEN CONTACTS DIALOG */}
       {/* the prop drill goes brrrr */}
-      <HiddenDialog hiddenContacts={hiddenContacts} open={hiddenDialogOpen}
+      <HiddenDialog hiddenContacts={hiddenContacts} open={hiddenDialogOpen} selectedHiddenContacts={selectedHiddenContacts}
         setOpen={setHiddenDialogOpen} selectedIds={selectedIds} setSelectedIds={setSelectedIds} />
 
       {/* delete dialog */}
@@ -331,8 +338,6 @@ const CreateContactPage: NextPage = () => {
           />
         )}
       />
-
-
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setTagsDialogOpen(false)}>Anuluj</Button>

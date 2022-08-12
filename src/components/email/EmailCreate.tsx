@@ -194,16 +194,16 @@ const ContactTable: FC = () => {
                   {
                     allTags.map((tag, i) => {
                       // check if all contacts with this tag are selected
-                      const tagSelected = selectedTagCountMap[tag] == tagCountMap[tag];
+                      const chipSelected = selectedTagCountMap[tag] == tagCountMap[tag];
 
                       return (
                         // if some are selected, show the count
                       <Chip label={`${tag}: ${selectedTagCountMap[tag]?? 0}/${tagCountMap[tag]}`} key={i}
-                       variant={tagSelected ? "filled" : "outlined"}
-                       color={tagSelected ? "secondary" : undefined}
+                       variant={chipSelected ? "filled" : "outlined"}
+                       color={chipSelected ? "secondary" : undefined}
                        onClick={()=>{
                           contacts.filter(c=>c.tags.includes(tag)).forEach(c => {
-                            toggleContactSelection({id: c.id, selected: !tagSelected})
+                            toggleContactSelection({id: c.id, selected: !chipSelected})
                           })
                         }}
                       />)
