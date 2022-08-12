@@ -13,6 +13,11 @@ export const updateContactSchema = z.object({
   hidden: z.boolean().optional(),
 })
 
+export const addTagsToManySchema = z.object({
+  ids: z.array(z.string().cuid()),
+  tags: z.array(z.string().max(256, "Tag is too long")),
+});
+
 export type CreateContactSchemaInput = z.TypeOf<typeof createContactSchema>
 
 export const deleteContactSchema = z.object({

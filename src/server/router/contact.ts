@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createContactSchema, deleteContactSchema, deleteManyContactSchema, updateContactSchema } from "../../schema/contact.schema";
+import { addTagsToManySchema, createContactSchema, deleteContactSchema, deleteManyContactSchema, updateContactSchema } from "../../schema/contact.schema";
 import { onlyUnique } from "../../utils/onlyUnique";
 import { createProtectedRouter } from "./protected-router";
 
@@ -234,5 +234,40 @@ export const contactRouter = createProtectedRouter()
           hidden: false,
         }
       });
+    }
+  })
+  .mutation("add-tags-to-many", {
+    input: addTagsToManySchema,
+    async resolve({ ctx, input }) {
+      const contacts = await ctx.prisma.contact.findMany({
+        where: {
+          id: {
+            in: input.ids,
+          },
+          user: { id: ctx.session.user.id },
+        }
+      });
+
+      const tags = input.tags.filter(onlyUnique);
+
+      console.log(contacts)
+      console.log(tags)
+      
+      return await Promise.all(contacts.map(async (contact) => {
+        // add the tags to the contact
+        const newTags = [...contact.tags, ...tags].filter(onlyUnique);
+        console.log(newTags);
+
+        // update the contact in the database
+        await ctx.prisma.contact.updateMany({
+          where: {
+            id: contact.id,
+            user: { id: ctx.session.user.id },
+          },
+          data: {
+            tags: newTags,
+          },
+        });
+      }));
     }
   })

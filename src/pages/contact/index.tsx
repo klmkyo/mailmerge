@@ -36,8 +36,11 @@ import { Loading } from "../../components/Loading";
 import { extractEmails } from "../../utils/emails";
 import { onlyUnique } from "../../utils/onlyUnique";
 import { inferQueryOutput, trpc } from "../../utils/trpc";
+import Add from '@mui/icons-material/Add';
 
 // get alltags initially by using current method, then use global state bear to mangae them from children
+
+// TODO convert all selectedIds to sets, possibly using zustand, since setState wont work
 
 function compare( a: string, b: string ) {
   if ( a < b ){ return -1; }
@@ -63,10 +66,15 @@ const CreateContactPage: NextPage = () => {
 
   const [hiddenDialogOpen, setHiddenDialogOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
 
   const { data: contactsUnfiltered, isLoading, error } = trpc.useQuery(['contact.getAllAndHidden']);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // tags for the add multiple tags dialog
+  const [tags, setTags] = useState<string[]>([]);
+  const {allTags, addTag} = useAllTags()
 
   const contacts = useMemo(() =>
   contactsUnfiltered?.filter(c => !c.hidden) ?? [], [contactsUnfiltered]);
@@ -113,6 +121,29 @@ const CreateContactPage: NextPage = () => {
 
       utils.setQueryData(['contact.getAllAndHidden'], old => old!.map( c => {
         c.hidden = selectedContactIds.includes(c.id) ? true : c.hidden;
+        return c
+      }))
+
+      return { previousContacts }
+    },
+    onError: (err, newContacts, context) => {
+      utils.setQueryData(['contact.getAllAndHidden'], context!.previousContacts!)
+    },
+    onSettled: (data) => {
+      utils.invalidateQueries('contact.getAllAndHidden');
+    }
+  })
+
+  const { mutate: addTagsMany } = trpc.useMutation(['contact.add-tags-to-many'], {
+    onMutate: async (data) => {
+      const previousContacts = utils.getQueryData(['contact.getAllAndHidden'])
+
+      const selectedContactIds = data.ids;
+      const tags = data.tags;
+      utils.setQueryData(['contact.getAllAndHidden'], old => old!.map( c => {
+        if (selectedContactIds.includes(c.id)) {
+          c.tags = [...c.tags, ...tags].filter(onlyUnique);
+        }
         return c
       }))
 
@@ -193,7 +224,7 @@ const CreateContactPage: NextPage = () => {
           {/* Kontrole zaznaczenia */}
           <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
             <Stack direction="row" spacing={2}>
-              <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<TagIcon />}>
+              <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<TagIcon />} onClick={()=>setTagsDialogOpen(true)}>
                 Dodaj Tagi
               </Button>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<DeleteIcon />} onClick={()=>setConfirmDialogOpen(true)}>
@@ -267,6 +298,71 @@ const CreateContactPage: NextPage = () => {
               deleteOrHideSelected();
             }} autoFocus>
             Tak
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Tags dialog */}
+      <Dialog
+        open={tagsDialogOpen}
+        onClose={() => setTagsDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Dodaj tagi do zaznaczonych kontaków"}
+        </DialogTitle>
+        <DialogContent>
+
+        <Autocomplete
+        multiple
+        id="tags-filled"
+        options={allTags}
+        freeSolo
+        value={tags}
+        onChange={(event: any, newTags: string[]) => {
+          setTags(newTags);
+
+          if(JSON.stringify(newTags) != JSON.stringify(tags)){
+            // add new tags to allTags
+            newTags.filter(x => !allTags.includes(x)).forEach((tag)=>addTag(tag))
+          }
+        }}
+        renderTags={(value: readonly string[], getTagProps) =>
+          value.map((option: string, index: number) => (
+            <Chip variant="outlined" label={option} {...getTagProps({ index })} key={index} size="small" />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Tagi"
+            size="small"
+            style={{width: "min(30em, 50vw)", marginTop: ".4rem"}}
+          />
+        )}
+      />
+
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTagsDialogOpen(false)}>Anuluj</Button>
+          <Button
+            startIcon={<Add />}
+            disabled={tags.length===0}
+            onClick={() => {
+              console.log({tags});
+              console.log(selectedContacts.map(c=>c.id));
+
+              addTagsMany({
+                ids: selectedContacts.map(c=>c.id),
+                tags
+              })
+
+              setTags([]);
+              setTagsDialogOpen(false);
+            }} autoFocus>
+            Dodaj
           </Button>
         </DialogActions>
       </Dialog>
@@ -425,6 +521,13 @@ const ContactRow: FC<{
   const { enqueueSnackbar } = useSnackbar();
 
   const [tags, setTags] = useState<string[]>(contact.tags);
+
+  // update tags when tags change
+  useEffect(()=>{
+    setTags(contact.tags)
+    // this dep array does not seem right, but it does work
+  }, [contact.tags])
+
   const [nickName, setNickName] = useState(contact.nickName);
 
   // nightmare nightmare nightmare
