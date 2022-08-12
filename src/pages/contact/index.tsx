@@ -20,12 +20,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { Contact } from "@prisma/client";
 import { NextPage } from "next";
 import Head from "next/head";
 import { useSnackbar } from 'notistack';
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState, useCallback } from "react";
 import create from 'zustand';
 import { Loading } from "../../components/Loading";
 import { extractEmails } from "../../utils/emails";
@@ -172,10 +173,6 @@ const ContactTable: FC<{
     contacts?.map((c)=>c.tags).flat().filter(onlyUnique).forEach((tag)=>addTag(tag))
   }, [contacts, addTag])
 
-  const contactArray = useMemo(() => contacts?.sort((a,b) => compare(a.email, b.email)).map((contact) => (
-    <ContactRow key={contact.id} contact={contact} />
-  )), [contacts]);
-
   // an object containing tag: select_count pairs
   const tagCountMap = useMemo( () => {
     const tempTagCountMap: {[tag: string]: number} = {}
@@ -186,6 +183,21 @@ const ContactTable: FC<{
     })
     return tempTagCountMap;
   }, [contacts])
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    if (checked) {
+      setSelectedIds([...selectedIds, name]);
+    } else {
+      setSelectedIds(selectedIds.filter(id => id !== name));
+    }
+  }, [selectedIds, setSelectedIds])
+
+  const contactArray = useMemo(() => contacts?.sort((a,b) => compare(a.email, b.email)).map((contact) => (
+    <ContactRow key={contact.id} contact={contact} handleSelect={handleSelect} checked={selectedIds.includes(contact.id)} />
+  )), [contacts, selectedIds, handleSelect]);
 
   return (
     <TableContainer component={Paper}>
@@ -223,11 +235,15 @@ const ContactTable: FC<{
   );
 };
 
-const ContactRow: FC<{contact: Contact & {
-  _count: {
-      Email: number;
-  };
-}}> = ({ contact }) => {
+const ContactRow: FC<{
+  contact: Contact & {
+    _count: {
+        Email: number;
+    };
+  },
+  checked: boolean,
+  handleSelect: (event: React.ChangeEvent<HTMLInputElement>) => void,
+}> = ({ contact, checked, handleSelect }) => {
 
   const {allTags, addTag} = useAllTags()
 
@@ -360,7 +376,8 @@ const ContactRow: FC<{contact: Contact & {
         )}
       />
     </TableCell>
-    {/* edit button */}
+
+    {/* Actions */}
     <TableCell component="th" align="right" scope="row">
       {
         contact.hidden ?
@@ -387,6 +404,8 @@ const ContactRow: FC<{contact: Contact & {
           </IconButton>
         </Tooltip>
       }
+
+      <Checkbox name={contact.id} sx={{ margin: "-0.5em" }} onChange={handleSelect} checked={checked} />
 
     </TableCell>
   </TableRow>

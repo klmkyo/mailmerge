@@ -125,6 +125,10 @@ const EmailDisplay: FC = () => {
     }
   }
 
+  const selectedEmails = emails?.filter(email => selectedIds.includes(email.id));
+
+  console.log({selectedEmails, selectedIds})
+
   const deleteSelected = () => {
     deleteMany({ ids: selectedIds })
   }
@@ -339,7 +343,7 @@ const EmailDisplay: FC = () => {
           <DialogContentText id="alert-dialog-description" style={{ marginTop: "1.5em", marginBottom: "0.5em" }}>
             Podgląd harmonogramu:
           </DialogContentText>
-          <EmailTimesPreview emails={emails!} interval={sendMultipleInterval! * sendMultipleIntervalUnit} start={sendMultipleStart} />
+          <EmailTimesPreview emails={selectedEmails!} interval={sendMultipleInterval! * sendMultipleIntervalUnit} start={sendMultipleStart} />
 
         </DialogContent>
         <DialogActions>
@@ -347,10 +351,12 @@ const EmailDisplay: FC = () => {
           <Button
             startIcon={<ScheduleSendIcon />}
             onClick={() => {
+              // Planowanie wysłania
               setSendMultipleDialogOpen(false);
               const start = sendMultipleStart;
               const interval = (sendMultipleInterval ?? 0) * sendMultipleIntervalUnit;
-              emails!.map((email, i) => {
+
+              selectedEmails!.map((email, i) => {
                 const toBeSentAt = new Date(start.getTime() + ((interval ?? 0) * 1000 * i))
                 updateToBeSentAt({
                   id: email.id,
