@@ -4,7 +4,7 @@ import Head from "next/head";
 import { trpc } from "../../utils/trpc";
 
 import CloseIcon from '@mui/icons-material/Close';
-import { useTheme } from "@mui/material";
+import { Badge, useTheme } from "@mui/material";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -28,6 +28,7 @@ import { useState } from "react";
 import { Letter } from 'react-letter';
 import { Loading } from "../../components/Loading";
 import { inferQueryOutput } from '../../utils/trpc';
+import CircleIcon from '@mui/icons-material/Circle';
 
 const ReactJson = dynamic(() => import('react-json-view'), {ssr: false})
 
@@ -91,13 +92,19 @@ const EmailVisitPage: NextPage = () => {
               emailVisits?.map((ev) => {
                 const email = ev.email;
                 const contact = email.contact;
+                console.log(ev)
                 return(
                 <TableRow
                   key={ev.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {contact.email}
+                    <div className="inline-flex items-center gap-2">
+                      {ev.seenByUser ? null : 
+                        <CircleIcon color="primary" sx={{height: ".5em"}} />
+                      }
+                      {contact.email}
+                    </div>
                   </TableCell>
                   <TableCell align="right">{contact.nickName}</TableCell>
                   <TableCell align="right">
