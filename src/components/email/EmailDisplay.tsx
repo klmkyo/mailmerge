@@ -443,7 +443,7 @@ const EmailRow: FC<{
       <TableCell align="right">
       {/* TIME */}
       {wasSent ?
-            <div>
+            <div className='inline-flex items-baseline'>
               {email.sentAt!.toLocaleString()}
               <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
@@ -524,10 +524,12 @@ const EmailTimesPreview = ({ emails, interval, start }:
                 <TableCell component="th" scope="row">{email.contact.email}</TableCell>
                 <TableCell align="right">{email.subject}</TableCell>
                 <TableCell align="right">
+                  <div className='inline-flex items-baseline'>
                   {sendDate.toLocaleString()}
-                  <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
-                    {`(${moment(sendDate).locale("pl").fromNow()})`}
-                  </Typography>
+                    <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
+                      {`(${moment(sendDate).locale("pl").fromNow()})`}
+                    </Typography>
+                  </div>
                 </TableCell>
               </TableRow>
             )
@@ -620,7 +622,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
       <footer className="flex justify-between items-center pt-3.5">
         <div>
           {wasSent ?
-            <div>
+            <div className='inline-flex items-baseline'>
               {`Wysłano: ${email.sentAt!.toLocaleString()}`}
               <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
