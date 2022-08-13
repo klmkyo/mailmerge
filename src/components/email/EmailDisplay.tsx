@@ -443,7 +443,7 @@ const EmailRow: FC<{
       <TableCell align="right">
       {/* TIME */}
       {wasSent ?
-            <div className='inline-flex items-baseline'>
+            <div className='inline-flex items-baseline gap-2'>
               {email.sentAt!.toLocaleString()}
               <Typography variant="subtitle1" color="text.secondary" className="italic ml-2">
                 {`(${moment(email.sentAt!).locale("pl").fromNow()})`}
