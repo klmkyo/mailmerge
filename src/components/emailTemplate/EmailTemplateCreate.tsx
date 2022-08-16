@@ -22,7 +22,7 @@ const FixSharing = (url: string, snackbarId: SnackbarKey) => {
     <ThemeProvider theme={createTheme({ palette: { primary: {main: "#fff"} } })}>
       <div className="inline-flex gap-3">
         <a href={url} target="_blank" rel="noreferrer">
-            <Button color="primary" variant="contained" style={{backgroundColor: "#fff"}}>
+            <Button onClick={() => { closeSnackbar(snackbarId) }} color="primary" variant="contained" style={{backgroundColor: "#fff"}}>
               Zobacz Plik
             </Button>
         </a>
