@@ -6,6 +6,7 @@ import { loggerLink } from '@trpc/client/links/loggerLink';
 import { withTRPC } from "@trpc/next";
 import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/dist/shared/lib/utils";
+import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
 import { createContext, useEffect, useMemo, useState } from "react";
 import superjson from "superjson";
@@ -50,7 +51,7 @@ const MyApp: AppType = ({
           subtitle1: {
             fontSize: 14,
           },
-        },      
+        },
         palette: {
           ...(mode === 'light'
           ? {
@@ -83,6 +84,10 @@ const MyApp: AppType = ({
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <CssBaseline />
+            <Head>
+              {/* manifest */}
+              <link rel="manifest" href="/manifest.json" />
+            </Head>
             <Header />
             <Component {...pageProps} />
           </SnackbarProvider>

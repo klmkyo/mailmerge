@@ -2,10 +2,10 @@
 
 import AddToDriveIcon from '@mui/icons-material/AddToDrive';
 import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
-import { Button, TextField, useTheme } from "@mui/material";
+import { Button, TextField, useTheme, IconButton } from "@mui/material";
 import { Editor } from '@tinymce/tinymce-react';
 import { useRouter } from "next/router";
-import { useSnackbar } from 'notistack';
+import { SnackbarKey, useSnackbar } from 'notistack';
 import { FC, useRef, useState } from "react";
 import useDrivePicker from 'react-google-drive-picker';
 import { Editor as TinyMCEEditor } from 'tinymce';
@@ -14,14 +14,23 @@ import { isDev } from "../../utils/isDev";
 import { trpc } from "../../utils/trpc";
 import { EmailTemplate } from "@prisma/client";
 import { Edit } from '@mui/icons-material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-const FixSharing = (url: string) => {
+const FixSharing = (url: string, snackbarId: SnackbarKey) => {
+  const { closeSnackbar } = useSnackbar();
   return(
-    <a href={url} target="_blank" rel="noreferrer">
-      <Button color="secondary" variant="outlined">
-        Zobacz Plik
-      </Button>
-    </a>
+    <ThemeProvider theme={createTheme({ palette: { primary: {main: "#fff"} } })}>
+      <div className="inline-flex gap-3">
+        <a href={url} target="_blank" rel="noreferrer">
+            <Button color="primary" variant="contained" style={{backgroundColor: "#fff"}}>
+              Zobacz Plik
+            </Button>
+        </a>
+        <Button onClick={() => { closeSnackbar(snackbarId) }} variant="outlined">
+          Zamknij
+        </Button>
+      </div>
+    </ThemeProvider>
   )
 };
 
@@ -92,8 +101,11 @@ export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = 
           data.docs.map(obj => {
             addDriveChip("end", `https://drive.google.com/file/d/${obj.id}/view`, obj.name)
             if(!obj.isShared){
-              // TODO link to file, button
-              enqueueSnackbar(`${obj.name} nie jest udostępniony, we to napraw bo łajcior znowu nie zobaczy`, { variant: "error", action: () => FixSharing(obj.url) });
+              enqueueSnackbar(`${obj.name} nie jest udostępniony, we to napraw bo łajcior znowu nie zobaczy`, {
+                variant: "error",
+                action: (snackbarId) => FixSharing(obj.url, snackbarId),
+                persist: true
+              });
             }
           })
         }
