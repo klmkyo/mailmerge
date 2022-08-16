@@ -99,8 +99,9 @@ export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = 
           console.log('User clicked cancel/close button')
         } else if (data.action === "picked"){
           data.docs.map(obj => {
-            addDriveChip("end", `https://drive.google.com/file/d/${obj.id}/view`, obj.name)
-            if(!obj.isShared){
+            if(obj.isShared){
+              addDriveChip("end", `https://drive.google.com/file/d/${obj.id}/view`, obj.name)
+            } else {
               enqueueSnackbar(`${obj.name} nie jest udostępniony, we to napraw bo łajcior znowu nie zobaczy`, {
                 variant: "error",
                 action: (snackbarId) => FixSharing(obj.url, snackbarId),
