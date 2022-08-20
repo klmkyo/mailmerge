@@ -23,10 +23,10 @@ export default function Header() {
   const diffMails = data?.email ? (session?.user!.email != data?.email) : false
 
   return (
-    <Paper elevation={2} className="flex justify-between items-center sticky top-0 p-4 z-10">
+    <Paper elevation={2} className="flex justify-between items-center sticky top-0 p-4 z-10 sm:text-xs">
       {
         session ?
-          <div className="flex flex-col">
+          <div className="flex flex-col" style={{maxWidth: "30vw"}}>
             <div>Zalogowano jako {session.user!.email}</div>
             {diffMails && <Box sx={{ color: 'text.secondary' }} className="italic text-xs">Wysyłanie maili jako {data?.email}</Box>}
           </div>
@@ -40,14 +40,14 @@ export default function Header() {
         pathname === "/" ||
         <div className="absolute left-1/2 -translate-x-1/2">
           <Link href={"/"}>
-            <a className="text-3xl leading-normal font-extrabold drop-shadow-xl">
+            <a className="text-3xl leading-normal font-extrabold drop-shadow-xl sm:text-xl">
               Mail<span className="text-purple-400">Merge</span>
             </a>
           </Link>
         </div>
       }
 
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-8 sm:gap-3">
         <IconButton onClick={colorMode.toggleColorMode} color="inherit" size="small">
           {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>

@@ -40,7 +40,7 @@ const Settings: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4 text-center">
         <div className="text-xl">Możesz tutaj podpiąć dowolny adres Gmail, z którego będą wysyłane maile</div>
         <Box className="italic" sx={{ color: 'text.secondary' }}>{"(może to być adres inny od tego w górnym lewym rogu strony)"}</Box>
 

@@ -227,7 +227,7 @@ const CreateContactPage: NextPage = () => {
           </>
         )}
 
-        <div className="mt-6 gap-2 flex flex-col items-right">
+        <div className="mt-6 gap-2 flex flex-col items-right" style={{width: "min(30em, 90vw)"}}>
         <TextField
           multiline
           value={newEmails}
@@ -235,7 +235,6 @@ const CreateContactPage: NextPage = () => {
           label="Email (można podać kilka)"
           variant="outlined"
           size="small"
-          style={{width: "30em"}}
             />
           <Button disabled={newEmailArr.length < 1} variant="outlined" startIcon={<AddIcon />} onClick={()=>{
             createContacts( newEmailArr.map( (email) => ({email}) ) )
