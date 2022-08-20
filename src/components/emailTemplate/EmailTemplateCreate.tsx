@@ -147,7 +147,7 @@ export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = 
       <div className="flex flex-col">
         {createError && <p>{createError.message}</p>}
         {updateError && <p>{updateError.message}</p>}
-        <TextField label="Tytuł Maila" value={subject} onChange={(e)=>setSubject(e.target.value)} style={{width: "30em", marginBottom: "2em"}} />
+        <TextField label="Tytuł Maila" value={subject} onChange={(e)=>setSubject(e.target.value)} style={{width: "min(30em, 100%)", marginBottom: "2em"}} />
 
         <span className="text-xl mb-1">
           Treść Maila:
