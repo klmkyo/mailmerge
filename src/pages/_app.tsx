@@ -48,7 +48,6 @@ const MyApp: AppType = ({
     () =>
       createTheme({
         typography: {
-          fontSize: 12,
           subtitle1: {
             fontSize: 14,
           },
