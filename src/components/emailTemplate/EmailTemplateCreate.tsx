@@ -93,6 +93,8 @@ export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = 
       showUploadFolders: true,
       supportDrives: true,
       multiselect: true,
+      setIncludeFolders: true,
+      setSelectFolderEnabled: false,
       // customViews: customViewsArray, // custom view
       callbackFunction: (data) => {
         if (data.action === 'cancel') {
