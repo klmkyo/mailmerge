@@ -11,7 +11,7 @@ const scopes = [
   "https://mail.google.com/",
   "openid",
   "email",
-  "https://www.googleapis.com/auth/drive.readonly"
+  "https://www.googleapis.com/auth/drive"
 ];
 
 export const emailOAuthUrl = oauth2Client.generateAuthUrl({
