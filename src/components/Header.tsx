@@ -10,7 +10,7 @@ import { trpc } from "../utils/trpc";
 
 export default function Header() {
 
-  const { data } = trpc.useQuery(["settings.get-gmail-email"]);
+  const { data } = trpc.useQuery(["google.get-gmail-email"]);
 
   // get current page
   const { pathname } = useRouter()

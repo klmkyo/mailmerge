@@ -18,9 +18,9 @@ const Settings: NextPage = () => {
   const utils = trpc.useContext();
   const code = router.query.code as string | undefined;
 
-  const { data: OAdata, error: OAerror } = trpc.useQuery(["settings.get-oauth-url"]);
-  const { data: Edata, error: Eerror } = trpc.useQuery(["settings.get-gmail-email"]);
-  const { data: Cdata, isLoading, error: Cerror } = trpc.useQuery(["settings.is-gmail-connected"]);
+  const { data: OAdata, error: OAerror } = trpc.useQuery(["google.get-oauth-url"]);
+  const { data: Edata, error: Eerror } = trpc.useQuery(["google.get-gmail-email"]);
+  const { data: Cdata, isLoading, error: Cerror } = trpc.useQuery(["google.is-gmail-connected"]);
 
   const { mutate: sendTestMail, error: TMerror, isLoading: isEmailSending } = trpc.useMutation(["email.send-test-mail"], {
     onSuccess() {

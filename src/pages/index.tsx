@@ -24,7 +24,7 @@ type TechnologyCardProps = {
 
 const Home: NextPage = () => {
 
-  const { data: Cdata } = trpc.useQuery(["settings.is-gmail-connected"]);
+  const { data: Cdata } = trpc.useQuery(["google.is-gmail-connected"]);
 
   const isConnected = Cdata?.valueOf() ?? true;
 

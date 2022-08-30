@@ -6,14 +6,14 @@ import { contactRouter } from "./contact";
 import { emailRouter } from "./email";
 import { emailTemplateRouter } from "./emailTemplate";
 import { emailVisitRouter } from "./emailVisit";
-import { settingsRouter } from "./settings";
+import { googleRouter } from "./google";
 
 export const appRouter = createRouter()
   .transformer(superjson)
   .merge("emailTemplate.", emailTemplateRouter)
   .merge("email.", emailRouter)
   .merge("contact.", contactRouter)
-  .merge("settings.", settingsRouter)
+  .merge("google.", googleRouter)
   .merge("emailVisit.", emailVisitRouter)
 
 // export type definition of API

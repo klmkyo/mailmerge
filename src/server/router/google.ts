@@ -4,7 +4,7 @@ import { emailOAuthUrl, oauth2Client } from "../../utils/google";
 import { createProtectedRouter } from "./protected-router";
 
 // Example router with queries that can only be hit if the user requesting is signed in
-export const settingsRouter = createProtectedRouter()
+export const googleRouter = createProtectedRouter()
   .query("get-oauth-url", {
     resolve() {
       return {
