@@ -73,7 +73,7 @@ export const EmailTemplateCreate: FC<{providedEmailTemplate?: EmailTemplate}> = 
     }
   }
 
-  const {data: gDriveTokens} = trpc.useQuery(["settings.get-gdrive-tokens"]);
+  const {data: gDriveTokens} = trpc.useQuery(["google.get-gdrive-tokens"]);
   const [openPicker, authResponse] = useDrivePicker();
 
 
