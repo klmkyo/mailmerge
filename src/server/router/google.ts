@@ -1,4 +1,6 @@
 import { TRPCError } from "@trpc/server";
+import { google } from "googleapis";
+import { z } from "zod";
 import { upsertGmailSettings } from "../../schema/settings.schema";
 import { emailOAuthUrl, oauth2Client } from "../../utils/google";
 import { createProtectedRouter } from "./protected-router";
@@ -45,6 +47,11 @@ export const googleRouter = createProtectedRouter()
       if (!refreshToken) {
         throw new TRPCError({code: "BAD_REQUEST"});
       }
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID!,
+        process.env.GOOGLE_CLIENT_SECRET!
+      );
 
       oauth2Client.setCredentials({
         refresh_token: refreshToken,
