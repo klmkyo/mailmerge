@@ -33,7 +33,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     // yell at user if the window width is below 1600px
     if(window && window.innerWidth < 1600){
-      enqueueSnackbar(`Wykryto wąski ekran, jakby co to póki co strona jest przystosowana tylko pod duże ekrany`, {preventDuplicate: true});
+      enqueueSnackbar(`Wykryto wąski ekran, jakby co to póki co strona jest przystosowana tylko pod duże ekrany, zmniejsz stronę czy coś`, {preventDuplicate: true});
     }
   }, [enqueueSnackbar])
 
