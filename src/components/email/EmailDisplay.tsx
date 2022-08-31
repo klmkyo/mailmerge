@@ -172,8 +172,8 @@ const EmailDisplay: FC = () => {
         </div>
 
         {filter === 'unsent' &&
-          <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
-            <Stack direction="row" spacing={2}>
+          <Box sx={{ display: "block", position: "absolute", left: "50%", transform: "translateX(-50%)", height: "100%" }}>
+            <Stack direction="row" spacing={2} sx={{height: "100%"}}>
               <Button variant="outlined" disabled={selectedIds.length === 0} startIcon={<ScheduleSendIcon />} onClick={() => {
                 setSendMultipleDialogOpen(true);
                 setSendMultipleStart(new Date());
