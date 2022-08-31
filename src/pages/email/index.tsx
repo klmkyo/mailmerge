@@ -13,7 +13,7 @@ const EmailIndexPage: NextPage = () => {
   const utils = trpc.useContext();
 
   return (
-    <>
+    <div style={{minWidth: "1599px"}}>
       <Head>
         <title>Emaile</title>
       </Head>
@@ -29,7 +29,7 @@ const EmailIndexPage: NextPage = () => {
           </Button>
         </Link>
       </div>
-    </>
+    </div>
   );
 };
 
