@@ -53,7 +53,6 @@ export const googleRouter = createProtectedRouter()
           refresh_token: undefined,
         });
 
-        console.log(res.token)
         return !!res.token
 
       } catch (e) {
