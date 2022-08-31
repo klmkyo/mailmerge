@@ -28,11 +28,38 @@ export const googleRouter = createProtectedRouter()
   })
   .query("is-gmail-connected", {
     async resolve({ ctx }) {
-      return !!(await ctx.prisma.gmailSettings.findUnique({
+
+      const dbRecords = await ctx.prisma.gmailSettings.findUnique({
         where: {
           userId: ctx.session.user.id,
         }
-      }))
+      })
+
+      if(!dbRecords) return false
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID!,
+        process.env.GOOGLE_CLIENT_SECRET!
+      );
+
+      oauth2Client.setCredentials({
+        refresh_token: dbRecords.refreshToken,
+      });
+
+      try{
+        const res = await oauth2Client.getAccessToken();
+
+        oauth2Client.setCredentials({
+          refresh_token: undefined,
+        });
+
+        console.log(res.token)
+        return !!res.token
+
+      } catch (e) {
+        console.error(JSON.stringify(e))
+        return false
+      }
     }
   })
   .query("get-gdrive-tokens", {
