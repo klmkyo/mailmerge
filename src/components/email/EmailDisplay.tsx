@@ -61,6 +61,12 @@ const EmailDisplay: FC = () => {
     }
   })
 
+  const { mutate: updateManyToBeSentAt } = trpc.useMutation(['email.update-many-toBeSentAt'], {
+    onSuccess: (data) => {
+      utils.invalidateQueries('email.getAll')
+    }
+  })
+
   const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("grid");
   const setGridView = useCallback((view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);}, [setGridViewSTATEONLY]);
 
@@ -357,12 +363,13 @@ const EmailDisplay: FC = () => {
               const start = sendMultipleStart;
               const interval = (sendMultipleInterval ?? 0) * sendMultipleIntervalUnit;
 
-              selectedEmails!.map((email, i) => {
+              const toBeUpdated = selectedEmails!.map((email, i) => {
                 const toBeSentAt = new Date(start.getTime() + ((interval ?? 0) * 1000 * i))
-                updateToBeSentAt({
-                  id: email.id,
-                  toBeSentAt
-                })
+                return {id: email.id, toBeSentAt}
+              })
+
+              updateManyToBeSentAt({
+                emails: toBeUpdated
               })
             }}
             autoFocus

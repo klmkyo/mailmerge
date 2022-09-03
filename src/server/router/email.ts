@@ -159,6 +159,70 @@ export const emailRouter = createProtectedRouter()
       });
     }
   })
+  .mutation("update-many-toBeSentAt", {
+    input: z.object({
+      emails: z.array(z.object({
+        id: z.string().cuid(), toBeSentAt: z.date().nullable()
+      })),
+    }),
+    async resolve({ ctx, input }) {
+
+      const time = new Date();
+
+      // maybe get all the emails, check if any of them has been sent, then update
+      const allEmailIds = input.emails.map(email => email.id)
+
+      const emailFromDB = await ctx.prisma.email.findMany({
+        where: {
+          id: {
+            in: allEmailIds
+          }
+        }
+      });
+
+
+      // It's checking if any of the emails has been sent. If it has, it throws an error.
+      emailFromDB.forEach(email => {
+        if(email?.sentAt) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Email został już wysłany",
+          })
+        }
+      })
+
+      // check if the email has already been sent
+      // if i batch this somehow the performance should be fine
+
+      const prismaOperations = []
+
+      for await (const email of input.emails){
+        prismaOperations.push(
+          ctx.prisma.email.updateMany({
+            where: {
+              id: email.id,
+              user: { id: ctx.session.user.id },
+            },
+            data: {
+              toBeSentAt: email.toBeSentAt,
+            },
+          })
+        )
+      }
+
+      await ctx.prisma.$transaction(prismaOperations);
+
+      console.log(`Processed ${input.emails.length} emails in ${(new Date().getTime() - time.getTime())}`)
+      // 204 in 41s
+      // bad
+      // 204 in 34s
+      // still bad
+      // TODO batch the writes somehow
+      // well i think i did it
+      // 204 in 15s
+      // still bad.
+    }
+  })
   .mutation("send-test-mail", {
     async resolve ({ctx}) {
 
