@@ -169,6 +169,7 @@ export const emailRouter = createProtectedRouter()
 
       const time = new Date();
 
+      // Note: checking part happens almost in an instant (>0.2s)
       // maybe get all the emails, check if any of them has been sent, then update
       const allEmailIds = input.emails.map(email => email.id)
 
@@ -179,7 +180,6 @@ export const emailRouter = createProtectedRouter()
           }
         }
       });
-
 
       // It's checking if any of the emails has been sent. If it has, it throws an error.
       emailFromDB.forEach(email => {
