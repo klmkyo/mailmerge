@@ -8,8 +8,7 @@ export const generateEmails = (contacts: Contact[], emailTemplates: EmailTemplat
     const template = emailTemplates[Math.floor(Math.random() * emailTemplates.length)]!;
 
     return {
-      subject: template.subject,
-      body: template.body,
+      emailTemplateId: template.id,
       tags: template.tags,
       contactId: contact.id,
       toBeSentTo: contact.email,

@@ -1,3 +1,4 @@
+import { EmailTemplate } from '@prisma/client';
 import { TRPCError } from "@trpc/server";
 import nodemailer from "nodemailer";
 import { MailOptions } from "nodemailer/lib/smtp-transport";
@@ -38,13 +39,31 @@ export const emailRouter = createProtectedRouter()
     input: createMultipleEmailSchema,
     async resolve({ ctx, input }) {
 
-      const mails = await Promise.all(input.map( async (mail) => {
-        return {
-          ...mail,
+      const cachedMails: {[id: string]: EmailTemplate} = {}
+
+      const mails = []
+
+      for await (const mail of input){
+
+        // if emailtemplate is not cached yet, save it to the cached mails
+        if(!cachedMails[mail.emailTemplateId]){
+
+          cachedMails[mail.emailTemplateId] = await ctx.prisma.emailTemplate.findFirstOrThrow({
+            where: {
+              id: mail.emailTemplateId,
+              userId: ctx.session.user.id
+            }
+          })
+        }
+
+        mails.push({
+          contactId: mail.contactId,
+          subject: cachedMails[mail.emailTemplateId]!.subject,
+          body: cachedMails[mail.emailTemplateId]!.body,
           userId: ctx.session.user.id!,
           toBeSentTo: mail.toBeSentTo
-        }
-      }));
+        })
+      }
 
       return await ctx.prisma.email.createMany({
         data: mails,
