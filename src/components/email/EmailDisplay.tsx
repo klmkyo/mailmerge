@@ -368,6 +368,8 @@ const EmailDisplay: FC = () => {
                 return {id: email.id, toBeSentAt}
               })
 
+              // todo make only the last mutation invalidate query, there was somehting in the v4 docs that might help
+              // https://tanstack.com/query/v4/docs/guides/mutations#consecutive-mutations
               while(true){
                 console.log(toBeUpdated)
                 if(toBeUpdated.length === 0) break
