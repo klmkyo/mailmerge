@@ -61,7 +61,7 @@ const EmailDisplay: FC = () => {
     }
   })
 
-  const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("grid");
+  const [gridView, setGridViewSTATEONLY] = useState<"grid" | "list">("list");
   const setGridView = useCallback((view: "grid" | "list") => {setGridViewSTATEONLY(view); localStorage.setItem('viewPref', view);}, [setGridViewSTATEONLY]);
 
   useEffect(() => {
@@ -423,8 +423,7 @@ const EmailRow: FC<{
   }
 
   const wasSent = !!email.sentAt;
-
-  const contact = email.contact;
+  const nickName = email?.contact?.nickName ?? null;
   return (
     <TableRow
       key={email.id}
@@ -432,7 +431,7 @@ const EmailRow: FC<{
     >
       {/* EMAIL */}
       <TableCell component="th" scope="row">
-        {contact.email} {contact.nickName && ` (${contact.nickName})`}
+        {email.toBeSentTo} {nickName && ` (${nickName})`}
       </TableCell>
       {/* SUBJECT */}
       <TableCell>{email.subject}</TableCell>
@@ -521,7 +520,7 @@ const EmailTimesPreview = ({ emails, interval, start }:
                 key={email.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell component="th" scope="row">{email.contact.email}</TableCell>
+                <TableCell component="th" scope="row">{email.toBeSentTo}</TableCell>
                 <TableCell align="right">{email.subject}</TableCell>
                 <TableCell align="right">
                   <div className='inline-flex items-baseline'>
@@ -605,7 +604,7 @@ const EmailCard = ({ email, handleSelect, checked }: {
         {/* Subject / Recepient */}
         <div>
           <div className="text-3xl">{email.subject}</div>
-          <div><i>Do: {email.contact.email}</i></div>
+          <div><i>Do: {email.toBeSentTo}</i></div>
         </div>
         <div className="flex flex-col items-end">
           {!wasSent && <Checkbox name={email.id} sx={{ margin: "-0.5em -0.5em 0" }} onChange={handleSelect} checked={checked} />}
