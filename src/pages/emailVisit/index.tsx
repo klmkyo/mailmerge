@@ -91,7 +91,7 @@ const EmailVisitPage: NextPage = () => {
               {
               emailVisits?.map((ev) => {
                 const email = ev.email;
-                const contact = email.contact;
+                const nickName = email?.contact?.nickName ?? null;
                 console.log(ev)
                 return(
                 <TableRow
@@ -100,13 +100,14 @@ const EmailVisitPage: NextPage = () => {
                 >
                   <TableCell component="th" scope="row">
                     <div className="inline-flex items-center gap-2">
-                      {ev.seenByUser ? null : 
+                      {ev.seenByUser ? null :
                         <CircleIcon color="primary" sx={{height: ".5em"}} />
                       }
-                      {contact.email}
+                      {/* realistically it will always be the first one, but whatever */}
+                      {email.sentTo ?? email.toBeSentTo}
                     </div>
                   </TableCell>
-                  <TableCell align="right">{contact.nickName}</TableCell>
+                  <TableCell align="right">{nickName}</TableCell>
                   <TableCell align="right">
                   <Button size="small" onClick={()=>{
                     setCurrentQuery(ev.requestData);
@@ -172,7 +173,7 @@ export const EmailCard = ({ email, onClose }: {
         {/* Subject / Recepient */}
         <div>
           <div className="text-3xl">{email.subject}</div>
-          <div><i>Do: {email.contact.email}</i></div>
+          <div><i>Do: {email.sentTo}</i></div>
         </div>
         <div className="flex flex-col items-end">
           <IconButton
