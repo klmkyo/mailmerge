@@ -363,14 +363,18 @@ const EmailDisplay: FC = () => {
               const start = sendMultipleStart;
               const interval = (sendMultipleInterval ?? 0) * sendMultipleIntervalUnit;
 
-              const toBeUpdated = selectedEmails!.map((email, i) => {
+              let toBeUpdated = selectedEmails!.map((email, i) => {
                 const toBeSentAt = new Date(start.getTime() + ((interval ?? 0) * 1000 * i))
                 return {id: email.id, toBeSentAt}
               })
 
-              updateManyToBeSentAt({
-                emails: toBeUpdated
-              })
+              while(true){
+                console.log(toBeUpdated)
+                if(toBeUpdated.length === 0) break
+                updateManyToBeSentAt({
+                  emails: toBeUpdated.splice(0,50)
+                })
+              }
             }}
             autoFocus
           >

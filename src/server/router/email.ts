@@ -221,6 +221,8 @@ export const emailRouter = createProtectedRouter()
       // well i think i did it
       // 204 in 15s
       // still bad.
+      // attempted doing executeRaw, but for whatever reason it suppports only one operation per request
+      // so it's useless
     }
   })
   .mutation("send-test-mail", {
