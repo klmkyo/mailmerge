@@ -27,6 +27,7 @@ import { EmailCard as EmailDialogCard } from "../../pages/emailVisit/index";
 import { extractText } from '../../utils/emails';
 import { inferQueryOutput, trpc } from "../../utils/trpc";
 import { Loading } from "../Loading";
+import { EmailObj } from '../../utils/trpc';
 
 
 const timeIntervals = [
@@ -44,7 +45,6 @@ const timeIntervals = [
   },
 ];
 
-type EmailObj = inferQueryOutput<"email.getAll">[number]
 
 const EmailDisplay: FC = () => {
 
@@ -389,13 +389,9 @@ const EmailDisplay: FC = () => {
 };
 
 const EmailRow: FC<{
-  email: Email & {
-    contact: Contact;
-  },
+  email: EmailObj,
   handleSelect: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  setCurrentEmail: (email: Email & {
-    contact: Contact;
-  }) => void
+  setCurrentEmail: (email: EmailObj) => void
   setEmailDialogOpen: (bool: boolean) => void,
   checked: boolean
 }> = ({ email, handleSelect, checked, setCurrentEmail, setEmailDialogOpen }) => {
@@ -509,7 +505,7 @@ const EmailRow: FC<{
 
 const EmailTimesPreview = ({ emails, interval, start }:
   {
-    emails: (Email & { contact: Contact; })[],
+    emails: (EmailObj)[],
     interval: number | null,
     start: Date
   }) => {
@@ -553,9 +549,7 @@ const EmailTimesPreview = ({ emails, interval, start }:
 }
 
 const EmailCard = ({ email, handleSelect, checked }: {
-  email: Email & {
-    contact: Contact;
-  },
+  email: EmailObj,
   handleSelect: (event: React.ChangeEvent<HTMLInputElement>) => void,
   checked: boolean
 }) => {

@@ -1,7 +1,7 @@
 
 import { NextPage } from "next";
 import Head from "next/head";
-import { trpc } from "../../utils/trpc";
+import { EmailObj, trpc } from "../../utils/trpc";
 
 import CloseIcon from '@mui/icons-material/Close';
 import { Badge, useTheme } from "@mui/material";
@@ -161,9 +161,7 @@ const EmailVisitPage: NextPage = () => {
 };
 
 export const EmailCard = ({ email, onClose }: {
-  email: Email & {
-    contact: Contact;
-  },
+  email: EmailObj,
   onClose: () => void
 }) => {
   return (
